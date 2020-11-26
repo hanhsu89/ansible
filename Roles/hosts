@@ -34,6 +34,11 @@ win
 
 #========== Fwork ==========
 
+[stg-mongodb]
+10.10.35.5	# MongoDB 1
+10.10.35.11	# MongoDB 2
+10.10.35.12	# MongoDB 3
+
 [stg]
 10.10.35.6	# Haproxy1
 10.10.35.7	# Haproxy2

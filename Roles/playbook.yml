@@ -9,7 +9,7 @@
       - { role: ntp, tags: ntp }
       - { role: packages, tags: packages }
       - { role: firewall, tags: firewall }
-      - { role: users, tags: user }
+      - { role: users, tags: users }
       - { role: common_k8s, tags: commonk8s }
       - { role: terraform, tags: terraform }
       - { role: vault, tags: vault }

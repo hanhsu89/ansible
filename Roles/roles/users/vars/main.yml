@@ -1,17 +1,19 @@
 ---
-users:
-#===== HanhNN ======
-  - name: test
-    servers:
-      #[vm30]
-      192.168.206.250   # TEST
 
-      
+#----------- ADD USER ------------
+users:
+  - name: tungdd5
+    servers:
+      #[stg-mongodb]
+      - 10.10.35.5	# MongoDB 1
+      - 10.10.35.11	# MongoDB 2
+      - 10.10.35.12	# MongoDB 3
+
     groups: sudo
     authorized_keys:
-      - test.pub
+      - tungdd5.pub
 
 
-#----REMOVE USER------------
+#----------- REMOVE USER ------------
 absent_users:
-      - anhpt
+      #- anhpt
