@@ -26,7 +26,7 @@
   with_subelements:
     - "{{ users }}"
     - authorized_keys
-  # when: item.0.servers and inventory_hostname in item.0.servers and item.0.name!="deploy"
+  when: item.0.servers and inventory_hostname in item.0.servers and item.0.name!="deploy"
 
 - name: Set owner file authorized_keys
   file:
@@ -36,7 +36,7 @@
   with_subelements:
     - "{{ users }}"
     - authorized_keys
-  # when: item.0.servers and inventory_hostname in item.0.servers and item.0.name!="deploy"
+  when: item.0.servers and inventory_hostname in item.0.servers and item.0.name!="deploy"
 
 # - name: restart sshd | CentOS 7
 #   systemd:
