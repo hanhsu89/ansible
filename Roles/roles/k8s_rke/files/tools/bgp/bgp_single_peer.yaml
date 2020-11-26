@@ -1,0 +1,9 @@
+---
+apiVersion: projectcalico.org/v3
+kind: BGPPeer
+metadata:
+  name: rke-01-rr
+spec:
+  node: rke-01
+  peerIP: 192.168.10.61
+  asNumber: 64512

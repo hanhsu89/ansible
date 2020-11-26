@@ -1,0 +1,95 @@
+#{{ ansible_managed }}
+{% for site in nginx_sites %}
+
+# Upstream servers
+    {% for upstream in nginx_upstreams %}
+        upstream {{ site.server_name }} {
+
+    {% if upstream.strategy is defined %}
+        {{ upstream.strategy }};
+    {% endif %}
+
+    {% for server in upstream.servers %}
+        server {{ server }};
+    {% endfor %}
+
+    {% if upstream.keepalive is defined %}
+        keepalive {{ upstream.keepalive }};
+    {% endif %}
+        }
+    {% endfor %}
+#---------------------------------------------------------
+# proxy_cache
+    {% if site.server_name is defined %}
+        proxy_cache_path {{ nginx_proxy_cache_path }}/{{ site.server_name }} levels=1:2    keys_zone={{ site.server_name }}:2000m  inactive=5m  max_size=400g;
+    {% endif %}
+#---------------------------------------------------------
+    server {
+        listen {{ site.listen | default('80 default_server') }};
+
+    {% if site.server_name is defined %}
+        server_name {{ site.server_name }};
+    {% endif %}
+
+    {% if site.root is defined %}
+        root {{ site.root }};
+    {% endif %}
+        index {{ site.index | default('index.html index.htm') }};
+
+    {% if site.error_page is defined %}
+        error_page {{ site.error_page }};
+    {% endif %}
+    {% if site.access_log is defined %}
+        access_log {{ site.access_log }};
+    {% endif %}
+    {% if site.error_log is defined %}
+        error_log {{ site.error_log }} error;
+    {% endif %}
+
+    {% if site.return is defined %}
+        return {{ site.return }};
+    {% endif %}
+
+    {% if site.extra_parameters is defined %}
+        {{ site.extra_parameters }}
+    {% endif %}
+
+    {% if site.location_parameters is defined %}
+        {{ site.location_parameters }}
+    {% else %}
+        location ~ .*\.(txt|html|xml)$ {
+        {% if site.server_name is defined %}
+            proxy_pass http://{{ site.server_name }};
+        {% endif %}
+            include {{ nginx_proxy_params }};
+        }
+
+        location / {
+        {% for nginx_limit_rate in nginx_limit_rate_params %}
+            {{ nginx_limit_rate }};
+        {% endfor %}
+
+        {% for nginx_secure in nginx_secure_params %}
+            {{ nginx_secure }};
+        {% endfor %}
+
+        # international cdn 
+        {% for nginx_foreign_cdn in nginx_foreign_cdn_params %}
+            {{ nginx_foreign_cdn }};
+        {% endfor %}
+
+        {% if site.server_name is defined %}
+            proxy_pass http://{{ site.server_name }};
+            proxy_cache {{ site.server_name }};
+        {% endif %}
+            include {{ nginx_proxy_params }};
+            
+        {% for proxy_cache in proxy_cache_params %}
+            {{ proxy_cache }};
+        {% endfor %}
+        }
+
+    {% endif %} {% endif %} {% endif %}
+    }
+{% endfor %}
+#---------------------------------------------------------

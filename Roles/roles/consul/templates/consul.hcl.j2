@@ -1,0 +1,68 @@
+#jinja2: lstrip_blocks: True, trim_blocks: False
+data_dir = "/var/lib/consul"
+log_level = "INFO"
+log_file = "/var/log/consul/"
+
+datacenter = "{{ datacenter }}"
+
+server = true
+
+leave_on_terminate = true
+rejoin_after_leave = true
+skip_leave_on_interrupt = true
+enable_local_script_checks = true
+
+bootstrap_expect = {{ groups['consul'] | length }}
+ui = true
+
+bind_addr = "0.0.0.0"
+client_addr = "0.0.0.0"
+
+encrypt = "{{ key }}"
+enable_syslog = true
+syslog_facility = "LOCAL0"
+
+addresses {
+	http = "0.0.0.0"
+	dns = "0.0.0.0"
+}
+
+recursors = [
+	"1.1.1.1",
+	"8.8.8.8"
+]
+
+performance {
+  raft_multiplier = 1
+}
+
+disable_update_check = true
+
+domain = "{{ domain }}"
+
+ports {
+  dns = 53
+  http = 8500
+}
+
+dns_config {
+	allow_stale = true
+	enable_truncate = true
+    only_passing = true
+}
+
+start_join = [
+	{%- for host in groups['consul'] %}
+	"{{ host }}"
+	{% if not loop.last %},
+	{% endif %}
+	{% endfor -%}
+]
+
+retry_join = [
+	{%- for host in groups['consul'] %}
+	"{{ host }}"
+	{% if not loop.last %},
+	{% endif %}
+	{% endfor -%}
+]

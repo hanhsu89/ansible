@@ -1,0 +1,91 @@
+Percona Server for MongoDB
+(Standalone, Replication Set, Sharding)
+==================================
+
+
+
+
+https://www.percona.com/doc/percona-server-for-mongodb/4.0/install/apt.html
+https://repo.percona.com/apt/
+
+https://github.com/twoyao/ansible-mongodb-cluster
+https://sysadmins.co.za/setup-a-3-node-mongodb-replica-set-on-ubuntu/
+https://medium.com/setup-a-production-ready-mongodb-4-2-replica-set/setup-a-production-ready-mongodb-4-2-replica-set-with-ansible-2ba26b7bcf73
+
+#=== Tunning
+https://github.com/PharosProduction/tutorial-mongodb-ansible/blob/master/mongodb/tasks/main.yml
+
+
+===> Create DB test Cluster
+    mongo --eval="db.getSiblingDB('hanhsu').createCollection('empty')"
+
+
+===> Add & Config new host
+1. Install MongoDB
+2. Update /et/hosts all host mongodb
+3. Update config /etc/mongod.conf
+4. Restart mongod service
+
+Run command in PRIMARY node to add new host
+    rs.add("ubuntu-244:27017");
+
+
+===> Add Arbiter
+    rs.addArb("{{ ansible_hostname }}:{{ mongod_port }}");
+
+
+===> Upgrading a MongoDB Replica Set
+When you want to upgrade a mongodb node in a replica set, you can accomplish that with a rolling upgrade.
+
+You will first shutdown a secondary, do the upgrade, start the node, then upgrade the other secondary. When all the secondaries are upgraded, then upgrade the primary. This involves initiating a stepdown on the primary which will trigger an election, where one of the secondary nodes will be promoted as a primary, once the primary is selected on another node, the old primary can be upgraded.
+
+The correct way of shutting down a mongodb node is with using db.shutdownServer():
+
+civo-demo-replset:PRIMARY> use admin
+switched to db admin
+civo-demo-replset:PRIMARY> db.shutdownServer()
+And to stepdown a node from primary to secondary:
+
+civo-demo-replset:PRIMARY> rs.stepDown()
+civo-demo-replset:SECONDARY>
+
+
+
+
+
+
+
+
+
+### Guide
+------------------------------------
+1. Khởi tạo Replication trên Master
+   > rs.initiate()
+
+2. Add/Remove Replication
+   PRIMARY> rs.add('mongo2.com:38128')
+   PRIMARY> rs.remove('mongo2.com:38128')
+
+3. Add Arbitrator
+   PRIMARY> rs.addArb('mongo3.com:38128')
+
+4. Troubleshoot Replications
+    PRIMARY> rs.config()
+    PRIMARY> rs.status()
+
+    SECONDARY> rs.slaveOk()
+    SECONDARY> show dbs
+
+	# Check current start slave vs master
+    SECONDARY> rs.printSlaveReplicationInfo()
+    
+    # Check optime , optimeDate, stateStr, lastHeartbeatMessage
+    SECONDARY> rs.status()
+
+5. Check storageEngine
+    db.serverStatus().storageEngine
+    db.serverStatus().wiredTiger
+
+6. Get User in DB
+    SECONDARY> use database
+    SECONDARY> db.getUsers()

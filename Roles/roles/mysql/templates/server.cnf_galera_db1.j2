@@ -1,0 +1,110 @@
+[server]
+
+[mysqld]
+
+[galera]
+wsrep_sst_method = xtrabackup-v2
+wsrep_sst_auth = galera_user:TgEb8uZBGh3NhuT
+wsrep_cluster_name = Cluster
+wsrep_provider = /usr/lib64/galera/libgalera_smm.so
+wsrep_node_name = cluster_db01
+wsrep_cluster_address="gcomm://{{ hostvars[groups['mysql_galera'][0]].node_host }},{{ hostvars[groups['mysql_galera'][1]].node_host }},{{ hostvars[groups['mysql_galera'][2]].node_host }}"
+
+wsrep_slave_threads = 16
+wsrep_provider_options = "gcache.size=16G; gcache.name = /data/galera/galera.cache; gcache.dir=/data/galera; gcs.recv_q_hard_limit=32M; gcs.fc_limit=32; gcs.fc_master_slave=False; gcs.fc_factor=0.5"
+
+wsrep_node_address = {{ hostvars[groups['mysql_galera'][0]].node_host }}
+wsrep_sst_receive_address = {{ hostvars[groups['mysql_galera'][0]].node_host }}
+wsrep_on=ON
+
+wsrep_log_conflicts = ON
+wsrep_certify_nonPK = ON
+wsrep_recover = OFF
+wsrep_retry_autocommit = 3
+
+[embedded]
+
+[mariadb]
+### basic ###
+user = mysql
+datadir = /var/lib/mysql
+socket = /var/lib/mysql/mysql.sock
+port = 3306
+skip_name_resolve = 1
+max_allowed_packet = 254M
+bind_address = {{ hostvars[groups['mysql_galera'][0]].node_host }}
+
+### innodb ###
+default_storage_engine = InnoDB
+innodb_autoinc_lock_mode = 2
+innodb_doublewrite = 1
+innodb_flush_log_at_trx_commit = 1
+innodb_buffer_pool_size = 10000M
+innodb_buffer_pool_instances = 10
+innodb_file_per_table = 1
+innodb_flush_method = O_DIRECT
+innodb_log_buffer_size = 32M
+
+### query cache ###
+query_cache_size = 0
+query_cache_type = 0
+
+### timeout ###
+wait_timeout = 300
+interactive_timeout = 30
+connect_timeout = 300
+
+### Redo log
+innodb_log_files_in_group = 2
+innodb_log_file_size = 256M
+
+### temporary tables ###
+tmp_table_size = 512M
+max_heap_table_size = 512M
+tmpdir = /var/log/mysqld/tmp
+
+table_open_cache = 4000
+
+### thread pool ###
+thread_handling = pool-of-threads
+thread_pool_size = 16
+extra_port = 6033
+extra_max_connections = 10
+max_connections = 1000
+
+### thread cache ###
+# I do not use thread cache
+
+### log ###
+log_output = FILE
+log_error = /var/log/mysqld/mysql_error.log
+slow_query_log = 1
+log_queries_not_using_indexes = 0
+log_warnings = 2
+long_query_time = 2
+slow_query_log_file = /var/log/mysqld/mysql_slow.log
+general_log = 0
+general_log_file = /var/log/mysqld/mysql_general.log
+
+### replication ###
+gtid_domain_id = 10
+report_host = cluster_db01
+report_port = 3306
+expire_logs_days = 7
+log_bin = cluster_db01-bin
+log_bin_index = cluster_db01-bin.log.index
+relay_log = cluster_db01-relay-bin
+relay_log_index = cluster_db01-relay-bin.index
+server_id = 235
+log_slave_updates = 1
+binlog_format = ROW
+max_binlog_size = 200M
+
+[mariadb-10.1]
+
+[xtrabackup]
+datadir = /var/lib/mysql
+socket = /var/lib/mysql/mysql.sock
+streamfmt = xbstream
+innodb_log_files_in_group = 2
+innodb_log_file_size = 64M

@@ -1,0 +1,46 @@
+---
+- name: Nginx | Install PHP-FPM
+  yum: state=latest name={{ item }}
+  with_items:
+      - epel-release
+      - php-fpm
+      - php-mysql
+      - php-common
+      - php-mbstring
+      - php-mcrypt
+      - php-gd
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "6"
+  sudo: yes
+  tags:
+      - php
+
+- name: PHP-FPM | Config PHP-FPM
+  template:
+    src: www.conf.j2
+    dest: /etc/php-fpm.d/www.conf
+    owner: root
+    group: root
+    mode: 0644
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "6"
+  sudo: yes
+  tags:
+      - php
+
+- name: PHP-FPM | Install info.php test
+  copy:
+    src: info.php
+    dest: "{{ nginx_www_dir }}"
+    owner: "{{php-fpm_user}}"
+    group: "{{php-fpm_group}}"
+    mode: 0644
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "6"
+  sudo: yes
+  tags:
+      - php
+
+- name: PHP-FPM | Restart & Enable boot
+  service: name=php-fpm state=started enabled=yes
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "6"
+  sudo: yes
+  tags:
+      - php

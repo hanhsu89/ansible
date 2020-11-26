@@ -1,0 +1,17 @@
+[Unit]
+Description=LVS and VRRP High Availability Monitor
+Documentation=https://www.keepalived.org/manpage.html
+After=network.target network-online.target syslog.target
+Wants=network.target
+ConditionFileNotEmpty=/etc/keepalived/keepalived.conf
+
+[Service]
+Type=forking
+KillMode=process
+EnvironmentFile=-/etc/default/keepalived
+ExecStart=/usr/local/sbin/keepalived $KEEPALIVED_OPTIONS
+ExecReload=/bin/kill -HUP $MAINPID
+SyslogIdentifier=keepalived
+
+[Install]
+WantedBy=multi-user.target

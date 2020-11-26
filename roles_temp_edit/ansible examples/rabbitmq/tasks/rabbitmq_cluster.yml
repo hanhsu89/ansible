@@ -1,0 +1,34 @@
+---
+
+- name: rabbitmq_clustering | copy erlang cookie
+  template: 
+    src: erlang.cookie.j2
+    dest: /var/lib/rabbitmq/.erlang.cookie
+    owner: rabbitmq
+    group: rabbitmq
+    mode: 0400
+    backup: yes
+
+- name: rabbitmq_clustering | restarting rabbitmq-server
+  service: name=rabbitmq-server state=restarted
+
+- lineinfile:
+    path: /etc/hosts
+    line: '{{ master_ip }} {{ master_hostname }}'
+  when: ansible_hostname != master_hostname
+
+- name: rabbitmq_clustering | stopping rabbitmq app
+  command: rabbitmqctl stop_app
+  when: ansible_hostname != master_hostname
+
+- name: rabbitmq_clustering | resetting rabbitmq app
+  command: rabbitmqctl reset
+  when: ansible_hostname != master_hostname
+
+- name: rabbitmq_clustering | joining rabbitmq cluster
+  command: rabbitmqctl join_cluster 'rabbit@{{ master_hostname }}'
+  when: ansible_hostname != master_hostname
+
+- name: rabbitmq_clustering | starting rabbitmq app
+  command: rabbitmqctl start_app
+  when: ansible_hostname != master_hostname

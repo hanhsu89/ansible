@@ -1,0 +1,26 @@
+---
+
+- name: Runner | Register Runner for physical backend
+  command: gitlab-ci-multi-runner register -n \
+    --url '{{ gitlab_url }}' \
+    --registration-token '{{ project_token }}' \
+    --name '{{ project_runner_name }}' \
+    --executor 'docker' \
+    --tag-list '{{ project_runner_tags }}' \
+    --docker-image 'docker:latest' \
+    --docker-volumes "{{ project_dir_runner }}:/root/.ssh:ro"
+
+- name: Runner | Register Runner for Rancher
+  command: gitlab-ci-multi-runner register -n \
+    --url '{{ gitlab_url }}' \
+    --registration-token '{{ project_token }}' \
+    --name '{{ project_runner_name }}-dev' \
+    --executor 'docker' \
+    --tag-list 'docker, development' \
+    --docker-image 'docker:latest' \
+    --docker-volumes "/var/run/docker.sock:/var/run/docker.sock"
+
+- name: Runner | Restart Gitlab Runner
+  service:
+    name: gitlab-runner
+    state: restarted

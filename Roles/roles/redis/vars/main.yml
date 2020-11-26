@@ -1,0 +1,14 @@
+---
+# Variables for Redis stanalone install
+
+
+redis_src_dir: '/usr/local/src'
+redis_install_dir: '/etc/redis'
+redis_log_dir: '/var/log/redis'
+redis_data_dir: '/var/lib/redis'
+redis_sock_dir: '/var/lib/redis/run'
+
+
+redis_port: 6379
+redis_url: http://download.redis.io/redis-stable.tar.gz
+redis_masterauth: "64212833414c2245486c3c4472a742112d3bc525"

@@ -1,0 +1,66 @@
+---
+- name: Download Hosts Blacklist
+  get_url:
+    url: 'https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/{{ hosts_blacklist_name }}/hosts'
+    mode: 0444
+    force: yes
+    dest: /tmp/hosts
+
+- name: Unblock whitelisted hosts
+  replace:
+    path: /tmp/hosts
+    regexp: '^(.+\s{{ item }})$'
+    replace: '#\1'
+    backup: yes
+  with_items: '{{ hosts_whitelist }}'
+
+- name: Prepare custom hosts
+  template:
+    dest: /tmp/hosts_custom
+    src: hosts_custom.j2
+  with_items: '{{ hosts_custom }}'
+  when: hosts_custom is defined
+
+- name: Merge custom hosts to final hosts file
+  replace:
+    path: /tmp/hosts
+    # the string identifies where to place new hosts directives
+    regexp: '#\sCustom\shost\srecords\sare\slisted\shere\.'
+    replace: "{{ lookup('file', '/tmp/hosts_custom') }}"
+  when: hosts_custom is defined
+
+- name: Is runnning inside Docker?
+  shell: if ps -p1|grep -qE "init|systemd"; then echo 0; else echo 1; fi
+  register: running_docker
+  ignore_errors: true
+
+- name: Install new hosts file - safe mode
+  copy:
+    src: /tmp/hosts
+    dest: /etc/hosts
+    owner: root
+    group: root
+    mode: 0644
+    force: yes
+  sudo: true
+  when: not running_docker
+
+- name: Install new hosts file - unsafe mode - docker only
+  copy:
+    src: /tmp/hosts
+    dest: /etc/hosts
+    owner: root
+    group: root
+    mode: 0644
+    force: yes
+    unsafe_writes: yes
+  sudo: true
+  when: running_docker
+
+- name: Remove temporary files
+  file:
+    path: '{{ item }}'
+    state: absent
+  with_items:
+    - /tmp/hosts
+    - /tmp/hosts_custom

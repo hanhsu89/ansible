@@ -1,0 +1,62 @@
+---
+# tasks file for filebeat
+
+- name: stop service filebeat
+  service:
+    name: filebeat
+    state: stopped
+  ignore_errors: True
+
+- name: Check filebeat old version
+  shell: rpm -qa | grep filebeat > /root/filbeat-old-version
+  ignore_errors: True
+
+- name: backup filebeat config
+  shell: 'cp /etc/filebeat /root/filebeat-bak -R'
+  ignore_errors: True
+
+- name: Remove current filebeat 
+  yum:
+    name: filebeat
+    state: absent
+  ignore_errors: True
+
+- name: remove old folder config
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - /etc/filebeat
+    - /var/log/filebeat
+    - /var/lib/filebeat
+    - /usr/share/filebeat
+  ignore_errors: True
+
+- name: install filebeat version 6.2.4
+  yum:
+    name: https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-6.2.4-x86_64.rpm
+    state: present
+
+- name: copy template filebeat.yml
+  template:
+    src: filebeat.j2
+    dest: "/etc/filebeat/filebeat.yml"
+    force: yes
+    backup: yes
+    mode: 0644
+    owner: root
+    group: root
+  tags:
+   - hot_fix
+
+- name: Restart service filebeat
+  service:
+    name: filebeat
+    state: restarted
+  tags:
+   - hot_fix
+
+- name: creat folder conf.d
+  file:
+    path: "/etc/filebeat/conf.d"
+    state: directory

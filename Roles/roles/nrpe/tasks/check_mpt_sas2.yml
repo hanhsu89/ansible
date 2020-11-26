@@ -1,0 +1,33 @@
+---
+- name: check_mpt_sas2 | copy sas2ircu binary file to server
+  become: yes
+  copy: >
+    src=sas2ircu
+    dest=/usr/sbin/sas2ircu
+    mode=0755
+    owner=root
+    group=root
+  when: ansible_os_family == "RedHat"
+
+- name: check_mpt_sas2 | copy sas2ircu-status to server
+  become: yes
+  template: >
+    src=sas2ircu-status.j2
+    dest="{{ mpt_sas2_plugin_path }}"
+    mode=0755
+    owner=root
+    group=root
+  when: ansible_os_family == "RedHat"
+
+- name: check_mpt_sas2 | edit sudoers file with Fusion-MPT SAS2
+  become: yes
+  lineinfile: >
+    dest=/etc/sudoers
+    line="{{ item }}"
+    validate='visudo -cf %s'
+  with_items:
+    - "Defaults:{{ nrpe_user }} !requiretty"
+    - "Defaults:{{ nrpe_user }} !syslog"
+    - "{{ nrpe_user }} ALL=(ALL) NOPASSWD:{{ mpt_sas2_plugin_path }}"
+  notify: restart nrpe
+  when: ansible_os_family == "RedHat"

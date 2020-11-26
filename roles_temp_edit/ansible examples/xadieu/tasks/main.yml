@@ -1,0 +1,131 @@
+---
+#- name: set hostname
+#  become: yes
+#  hostname:
+#    name: "{{ ptnk_hostname }}"
+
+- name: set bashrc
+  become: yes
+  template:
+    src: bashrc.j2
+    dest: /root/.bashrc
+
+#- name: create /root/.ssh folder
+#  become: yes
+#  file: >
+#    path=/root/.ssh
+#    state=directory
+#    mode=0700
+#    owner=root
+#    group=root
+
+#- name: copy /root/.ssh/authorized_keys
+#  become: yes
+#  copy: >
+#    src=authorized_keys
+#    dest=/root/.ssh/authorized_keys
+#    mode=0600
+#    owner=root
+#    group=root
+#
+#- name: install ntp
+#  become: yes
+#  yum: name=ntp state=present
+#  when: ansible_os_family == "RedHat"
+#
+#- name: start and enable ntpd service
+#  become: yes
+#  service: name=ntpd state=started enabled=yes
+#  when: ansible_os_family == "RedHat"
+#
+#- name: update local DNS
+#  become: yes
+#  lineinfile:
+#    dest: /etc/sysconfig/network-scripts/ifcfg-em1
+#    regexp: "{{ item.regexp }}"
+#    line: "{{ item.line }}"
+#  with_items:
+#    - { regexp: '^DNS1.*', line: 'DNS1=43.239.221.208' }
+#    - { regexp: '^DNS2.*', line: 'DNS2=43.239.221.209' }
+#  when: ansible_os_family == "RedHat"
+#
+#- name: Allow iptables to Server Monitor
+#  iptables:
+#    source: "{{ zabbix_agent_Server }}"
+#    chain: INPUT
+#    jump: ACCEPT
+#    protocol: tcp
+#    destination_port: 10050
+#    state: present
+#  register: iptables_monitor
+#  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "6"
+#  become: yes
+#
+#- name: Allow iptables to Server Monitor
+#  iptables:
+#    source: "{{ nagios_master_ip }}"
+#    chain: INPUT
+#    jump: ACCEPT
+#    protocol: tcp
+#    destination_port: 5666
+#    state: present
+#  register: iptables_monitor
+#  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "6"
+#  become: yes
+#
+#- name: Save Iptables
+#  command: service iptables save
+#  when: iptables_monitor|changed
+#  become: yes
+#
+#- name: Firewalld Allow Port Monitor
+#  firewalld:
+#    zone: public
+#    port: "{{item}}"
+#    permanent: true
+#    state: enabled
+#  with_items:
+#      - 5666/tcp
+#      - 10050/tcp
+#  register: firewalld_monitor
+#  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"
+#  become: yes
+#  tags:
+#      - pre
+#
+#- name: Reload firewalld
+#  command: firewall-cmd --reload
+#  when: firewalld_monitor|changed
+#  become: yes
+#  tags:
+#         - pre
+#
+#- name: disable ssh login by password
+#  become: yes
+#  lineinfile:
+#    dest: /etc/ssh/sshd_config
+#    regexp: '^PasswordAuthentication.*'
+#    line: 'PasswordAuthentication no'
+#  notify: restart sshd
+#  when: ansible_os_family == "RedHat"
+#
+#
+- name: Add repository
+  yum:
+    name=https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+    state=present
+
+- name: Install env packages
+  yum:
+    name={{ item }}
+    state=latest
+    update_cache=yes
+  with_items:
+    - gperftools*
+    - p7zip
+    - screen
+    - gdb
+    - glibc
+    - wget
+    - lrzsz
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"

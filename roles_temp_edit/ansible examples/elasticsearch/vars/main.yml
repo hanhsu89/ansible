@@ -1,0 +1,13 @@
+---
+# vars file for elasticsearch
+
+version: 6.4.0
+
+cluster_name: ELK-Cluster
+master_nodes: 192.168.10.51
+minimum_master_nodes: 1
+
+data_dir: /data
+log_dir: /var/log/elasticsearch
+config_dir: /etc/elasticsearch
+home_dir: /usr/share/elasticsearch

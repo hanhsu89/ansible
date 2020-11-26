@@ -1,0 +1,154 @@
+{% if item.value.user is defined %}
+{% for user in item.value.user.locations %}
+user {{ item.value.user.locations[user].user }}
+{% if item.value.user.locations[user].worker_processes is defined %}
+    worker_processes {{ item.value.user.locations[user].worker_processes }};
+{% endif %}
+{% if item.value.user.locations[user].worker_rlimit_nofile is defined %}
+    worker_rlimit_nofile {{ item.value.user.locations[user].worker_rlimit_nofile }};
+{% endif %}
+
+{% if item.value.user.locations[user].error_log is defined %}
+    error_log {{ item.value.user.locations[user].error_log }};
+{% endif %}
+{% if item.value.user.locations[user].pid is defined %}
+    pid {{ item.value.user.locations[user].pid }};
+{% endif %}
+{% endfor %}
+{% endif %}
+
+{% if item.value.event is defined %}
+{% for event in item.value.event %}
+event {{ item.value.event[event].event }} {
+{% if item.value.event[event].worker_connections is defined %}
+    worker_connections {{ item.value.event[event].worker_connections }}
+{% endif %}
+}
+{% endfor %}
+{% endif %}
+
+
+http {
+{% if item.value.server_tokens is defined %}
+    server_tokens {{ item.value.server_tokens | ternary("on", "off") }};
+{% endif %}
+{% if item.value.include is defined %}
+    include {{ item.value.include }};
+{% endif %}
+{% if item.value.default_type is defined %}
+    default_type  {{ item.value.default_type }};
+{% endif %}
+
+{% if item.value.log_format is defined %}
+    log_format  {{ item.value.log_format }};
+{% endif %}
+
+{% if item.value.geoip_country is defined %}
+    geoip_country {{ item.value.geoip_country }};
+{% endif %}
+{% if item.value.geoip_city is defined %}
+    geoip_city {{ item.value.geoip_city }};
+{% endif %}
+
+{% if item.value.sendfile is defined %}
+    sendfile {{ item.value.sendfile | ternary("on", "off") }};
+{% endif %}
+{% if item.value.client_max_body_size is defined %}
+    client_max_body_size {{ item.value.client_max_body_size }};
+{% endif %}
+
+{% if item.value.ignore_invalid_headers is defined %}
+    ignore_invalid_headers {{ item.value.ignore_invalid_headers | ternary("on", "off") }};
+{% endif %}
+{% if item.value.client_body_timeout is defined %}
+    client_body_timeout {{ item.value.client_body_timeout }};
+{% endif %}
+{% if item.value.client_header_timeout is defined %}
+    client_header_timeout {{ item.value.client_header_timeout }};
+{% endif %}
+{% if item.value.send_timeout is defined %}
+    send_timeout        {{ item.value.send_timeout }};
+{% endif %}
+
+{% if item.value.sendfile is defined %}
+    sendfile {{ item.value.sendfile | ternary("on", "off") }};
+{% endif %}
+{% if item.value.keepalive_timeout is defined %}
+    keepalive_timeout       {{ item.value.keepalive_timeout }};
+{% endif %}
+
+{% if item.value.tcp_nopush is defined %}
+    tcp_nopush {{ item.value.tcp_nopush | ternary("on", "off") }};
+{% endif %}
+{% if item.value.tcp_nodelay is defined %}
+    tcp_nodelay {{ item.value.tcp_nodelay | ternary("on", "off") }};
+{% endif %}
+{% if item.value.server_names_hash_bucket_size is defined %}
+    server_names_hash_bucket_size {{ item.value.server_names_hash_bucket_size }};
+{% endif %}
+
+{% if item.value.gzip is defined %}
+    gzip {{ item.value.gzip | ternary("on", "off") }};
+{% endif %}
+{% if item.value.gzip_http_version is defined %}
+    gzip_http_version {{ item.value.gzip_http_version }};
+{% endif %}
+{% if item.value.gzip_comp_level is defined %}
+    gzip_comp_level {{ item.value.gzip_comp_level }};
+{% endif %}
+{% if item.value.gzip_proxied is defined %}
+    gzip_proxied {{ item.value.gzip_proxied }};
+{% endif %}
+{% if item.value.gzip_min_length is defined %}
+    gzip_min_length {{ item.value.gzip_min_length }};
+{% endif %}
+{% if item.value.gzip_buffers is defined %}
+    gzip_buffers {{ item.value.gzip_buffers }};
+{% endif %}
+{% if item.value.gzip_buffers is defined %}
+    gzip_buffers {{ item.value.gzip_buffers }};
+{% endif %}
+{% if item.value.gzip_vary is defined %}
+    gzip_vary {{ item.value.gzip_vary | ternary("on", "off") }};
+{% endif %}
+{% if item.value.gzip_types is defined %}
+    gzip_types {{ item.value.gzip_types }};
+{% endif %}
+{% if item.value.gzip_disable is defined %}
+    gzip_disable {{ item.value.gzip_disable }};
+{% endif %}
+
+{% if item.value.open_file_cache is defined %}
+    open_file_cache {{ item.value.open_file_cache }};
+{% endif %}
+{% if item.value.open_file_cache_valid is defined %}
+    open_file_cache_valid {{ item.value.open_file_cache_valid }};
+{% endif %}
+{% if item.value.open_file_cache_min_uses is defined %}
+    open_file_cache_min_uses {{ item.value.open_file_cache_min_uses }};
+{% endif %}
+{% if item.value.open_file_cache_errors is defined %}
+    open_file_cache_errors {{ item.value.open_file_cache_errors | ternary("on", "off") }};
+{% endif %}
+{% if item.value.server_names_hash_bucket_size is defined %}
+    server_names_hash_bucket_size {{ item.value.server_names_hash_bucket_size }};
+{% endif %}
+        
+{% if item.value.include1 is defined %}
+    include {{ item.value.include1 }};
+{% endif %}
+{% if item.value.include2 is defined %}
+    include {{ item.value.include2 }};
+{% endif %}
+{% if item.value.include3 is defined %}
+    include {{ item.value.include3 }};
+{% endif %}
+{% if item.value.include4 is defined %}
+    include {{ item.value.include4 }};
+{% endif %}
+{% if item.value.include5 is defined %}
+    include {{ item.value.include5 }};
+{% endif %}
+
+}
+

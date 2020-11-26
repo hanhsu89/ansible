@@ -1,0 +1,46 @@
+[Unit]
+Description=Kubernetes API Server
+Documentation=https://github.com/kubernetes/kubernetes
+
+[Service]
+ExecStart=/usr/local/bin/kube-apiserver \
+  --advertise-address={{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }} \
+  --allow-privileged=true \
+  --audit-log-maxage=30 \
+  --audit-log-maxbackup=3 \
+  --audit-log-maxsize=100 \
+  --audit-log-path=/var/log/kubernetes/audit.log \
+  --authorization-mode=Node,RBAC \
+  --bind-address={{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }} \
+  --cert-dir=/etc/kubernetes/certs \
+  --client-ca-file=/etc/kubernetes/certs/ca.pem \
+  --enable-admission-plugins=NamespaceLifecycle,LimitRanger,ServiceAccount,DefaultStorageClass,DefaultTolerationSeconds,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,Priority,ResourceQuota,PodSecurityPolicy \
+  --etcd-cafile=/etc/kubernetes/certs/ca.pem \
+  --etcd-certfile=/etc/kubernetes/certs/apiserver-etcd-client.pem \
+  --etcd-keyfile=/etc/kubernetes/certs/apiserver-etcd-client-key.pem \
+  --etcd-servers=https://{{ etcd_url }}:2379 \
+  --insecure-port=0 \
+  --secure-port=6443 \
+  --event-ttl=12h \
+  --kubelet-certificate-authority=/etc/kubernetes/certs/ca.pem \
+  --kubelet-client-certificate=/etc/kubernetes/certs/apiserver-kubelet-client.pem \
+  --kubelet-client-key=/etc/kubernetes/certs/apiserver-kubelet-client-key.pem \
+  --kubelet-https=true \
+  --runtime-config=api/all \
+  --requestheader-client-ca-file=/etc/kubernetes/certs/ca.pem \
+  --proxy-client-cert-file=/etc/kubernetes/certs/front-proxy-client.pem \
+  --proxy-client-key-file=/etc/kubernetes/certs/front-proxy-client-key.pem \
+  --requestheader-extra-headers-prefix=X-Remote-Extra- \
+  --requestheader-group-headers=X-Remote-Group \
+  --requestheader-username-headers=X-Remote-User \
+  --service-account-key-file=/etc/kubernetes/certs/sa.pem \
+  --service-cluster-ip-range={{ service_cidr }} \
+  --service-node-port-range={{ nodeport_range }} \
+  --tls-cert-file=/etc/kubernetes/certs/apiserver.pem \
+  --tls-private-key-file=/etc/kubernetes/certs/apiserver-key.pem \
+  --v=2
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

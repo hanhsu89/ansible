@@ -1,0 +1,53 @@
+---
+# - name: Install unzip
+#   package:
+#     name: unzip
+#     update_cache: yes
+
+# - name: Download and install vault binary v.{{ vault_version }}
+#   unarchive:
+#     src: "https://releases.hashicorp.com/vault/{{ vault_version }}/vault_{{ vault_version }}_linux_amd64.zip"
+#     dest: /usr/bin/
+#     remote_src: True
+
+# - name: Create vault config directory
+#   file: 
+#     state: directory 
+#     path: 
+#       - /etc/opt/vault/
+#       - /var/log/vault/
+
+# - name: Copy vault config to server
+#   copy: 
+#     src: config.json
+#     dest: /etc/opt/vault/
+
+# - name: Copy vault service to server | CentOS
+#   copy: 
+#     src: vault.service 
+#     dest: /usr/lib/systemd/system/vault.service
+#   when: ansible_os_family == 'RedHat'
+
+# - name: Copy vault service to server | Ubuntu
+#   copy: 
+#     src: vault.service 
+#     dest: /etc/systemd/system/vault.service
+#   when: ansible_os_family == 'Debian'
+
+# - name: Start vault service
+#   systemd:
+#     state: started
+#     name: vault
+#     daemon_reload: yes
+
+# - name: sleep for 15 seconds and continue with play
+#   wait_for:
+#     timeout: 15
+
+- name: Initialize the vault
+  command: vault operator init
+  register: keys
+  environment:
+    VAULT_ADDR: "http://{{ vault_host }}:8200"
+
+- debug: msg="{{ keys }}"

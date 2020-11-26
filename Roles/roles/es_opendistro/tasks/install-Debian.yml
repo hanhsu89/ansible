@@ -1,0 +1,20 @@
+---
+
+- name: Install opendistroforelasticsearch_extra_packages
+  apt:
+    name: "{{ opendistroforelasticsearch_extra_packages }}"
+    state: present
+
+- name: Install opendistroforelasticsearch_package
+  apt:
+    name: "{{ opendistroforelasticsearch_package }}"
+    state: present
+
+- name: Create default/elasticsearch
+  template:
+    src: Debian.default.j2
+    dest: /etc/default/elasticsearch
+    owner: root
+    group: root
+    validate: sh -n %s
+    mode: 0644

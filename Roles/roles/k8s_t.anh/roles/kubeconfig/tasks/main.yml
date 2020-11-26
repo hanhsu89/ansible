@@ -1,0 +1,102 @@
+- name: Create kubeconfig directory
+  file:
+    path: '{{ k8s.kubeconfig_dir }}'
+    state: directory
+
+- name: Generate kubeconfig file for admin
+  shell: |
+    kubectl config set-cluster {{ cluster_name }} \
+      --certificate-authority={{ pki.path }}/ca.pem \
+      --embed-certs=true \
+      --server=https://{{ apis_url }}:6443 \
+      --kubeconfig={{ lookup('env', 'HOME') }}/.kube/config
+
+    kubectl config set-credentials admin \
+      --client-certificate={{ pki.k8s_path }}/admin.pem \
+      --client-key={{ pki.k8s_path }}/admin-key.pem \
+      --kubeconfig={{ lookup('env', 'HOME') }}/.kube/config
+
+    kubectl config set-context admin \
+      --cluster={{ k8s.cluster_name }} \
+      --user=admin \
+      --kubeconfig={{ lookup('env', 'HOME') }}/.kube/config
+
+    kubectl config use-context admin --kubeconfig={{ lookup('env', 'HOME') }}/.kube/config
+
+- name: Generate kubeconfig file for kube-controller-manager service
+  shell: |
+    kubectl config set-cluster {{ k8s.cluster_name }} \
+      --certificate-authority={{ pki.path }}/ca.pem \
+      --embed-certs=true \
+      --server=https://{{ k8s.apis_url }}:6443 \
+      --kubeconfig={{ k8s.kubeconfig_dir }}/kube-controller-manager.conf
+
+    kubectl config set-credentials system:kube-controller-manager \
+      --client-certificate={{ pki.k8s_path }}/kube-controller-manager.pem \
+      --client-key={{ pki.k8s_path }}/kube-controller-manager-key.pem \
+      --embed-certs=true \
+      --kubeconfig={{ k8s.kubeconfig_dir }}/kube-controller-manager.conf
+
+    kubectl config set-context controller-manager \
+      --cluster={{ k8s.cluster_name }} \
+      --user=system:kube-controller-manager \
+      --kubeconfig={{ k8s.kubeconfig_dir }}/kube-controller-manager.conf
+
+    kubectl config use-context controller-manager --kubeconfig={{ k8s.kubeconfig_dir }}/kube-controller-manager.conf
+  args:
+    creates: '{{ k8s.kubeconfig_dir }}/kube-controller-manager.conf'
+
+- name: Generate kubeconfig file for kube-scheduler service
+  shell: |
+    kubectl config set-cluster {{ k8s.cluster_name }} \
+      --certificate-authority={{ pki.path }}/ca.pem \
+      --embed-certs=true \
+      --server=https://{{ k8s.apis_url }}:6443 \
+      --kubeconfig={{ k8s.kubeconfig_dir }}/kube-scheduler.conf
+
+    kubectl config set-credentials system:kube-scheduler \
+      --client-certificate={{ pki.k8s_path }}/kube-scheduler.pem \
+      --client-key={{ pki.k8s_path }}/kube-scheduler-key.pem \
+      --embed-certs=true \
+      --kubeconfig={{ k8s.kubeconfig_dir }}/kube-scheduler.conf
+
+    kubectl config set-context scheduler \
+      --cluster={{ k8s.cluster_name }} \
+      --user=system:kube-scheduler \
+      --kubeconfig={{ k8s.kubeconfig_dir }}/kube-scheduler.conf
+
+    kubectl config use-context scheduler --kubeconfig={{ k8s.kubeconfig_dir }}/kube-scheduler.conf
+  args:
+    creates: '{{ k8s.kubeconfig_dir }}/kube-scheduler.conf'
+
+- name: Generate kubeconfig file for kubelet service
+  shell: |
+    kubectl config set-cluster {{ k8s.cluster_name }} \
+      --certificate-authority={{ pki.path }}/ca.pem \
+      --embed-certs=true \
+      --server=https://{{ k8s.apis_url }}:6443 \
+      --kubeconfig={{ k8s.kubeconfig_dir }}/{{ item }}.conf
+
+    kubectl config set-credentials system:node:{{ item }} \
+      --client-certificate={{ pki.k8s_path }}/{{ item }}.pem \
+      --client-key={{ pki.k8s_path }}/{{ item }}-key.pem \
+      --embed-certs=true \
+      --kubeconfig={{ k8s.kubeconfig_dir }}/{{ item }}.conf
+
+    kubectl config set-context kubelet \
+      --cluster={{ k8s.cluster_name }} \
+      --user=system:node:{{ item }} \
+      --kubeconfig={{ k8s.kubeconfig_dir }}/{{ item }}.conf
+
+    kubectl config use-context kubelet --kubeconfig={{ k8s.kubeconfig_dir }}/{{ item }}.conf
+  args:
+    creates: '{{ k8s.kubeconfig_dir }}/{{ item }}.conf'
+  loop: "{{ groups['worker'] }}"
+
+- name: Be sure kubeconfig file is accessable
+  file:
+    path: '{{ k8s.kubeconfig_dir }}'
+    state: directory
+    recurse: Yes
+    mode: 0644
+    owner: "{{ lookup('env', 'USER') }}"

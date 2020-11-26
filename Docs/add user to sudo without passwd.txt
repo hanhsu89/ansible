@@ -1,0 +1,10 @@
+- name: Allow users to use sudo without a password
+  lineinfile: >
+    dest=/etc/sudoers
+    regexp='%sudo ' 
+    line='%sudo ALL=(ALL) NOPASSWD: ALL'
+    state=present
+    validate='visudo -cf %s'
+  tags:
+    - users
+    - accounts

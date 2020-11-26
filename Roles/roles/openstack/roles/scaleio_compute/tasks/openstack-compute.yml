@@ -1,0 +1,63 @@
+---
+
+- name: Compute Node || Add the br_netfilter module
+  modprobe:
+    name: br_netfilter
+    state: present
+
+- name: Compute Node || Update sysctl.conf
+  sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    sysctl_set: yes
+    state: present
+    reload: yes
+  with_items:
+    - { name: 'net.bridge.bridge-nf-call-ip6tables', value: '1' }
+    - { name: 'net.bridge.bridge-nf-call-iptables', value: '1' }
+
+- name: Compute Node || Update Compute node config
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: root
+    group: "{{ item.group }}"
+    mode: 0640
+  with_items:
+    #- { src: 'nova.conf.j2', dest: '/etc/nova/nova.conf', group: 'nova'}
+    - { src: 'neutron.conf.j2', dest: '/etc/neutron/neutron.conf', group: 'neutron'}
+    - { src: 'dhcp_agent.ini.j2', dest: '/etc/neutron/dhcp_agent.ini', group: 'neutron'}
+    - { src: 'metadata_agent.ini.j2', dest: '/etc/neutron/metadata_agent.ini', group: 'neutron'}
+    - { src: 'ml2_conf.ini.j2', dest: '/etc/neutron/plugins/ml2/ml2_conf.ini', group: 'neutron'}
+    - { src: 'openvswitch_agent.ini.j2', dest: '/etc/neutron/plugins/ml2/openvswitch_agent.ini', group: 'neutron'}
+
+- name: Compute Node || Update Compute network config
+  template:
+    src: ifcfg-em.j2
+    dest: "/etc/sysconfig/network-scripts/ifcfg-{{ item }}"
+    owner: root
+    group: root
+    mode: 0640
+    backup: yes
+  with_items:
+    - "{{ wan_interface }}"
+
+- name: Compute Node || Restart network port
+  shell: |
+    ifdown "{{ item }}" && ifup "{{ item }}"
+  with_items:
+    - "{{ wan_interface }}"
+
+- name: Compute Node || Start OVS service
+  systemd:
+    state: restarted
+    name: openvswitch
+
+- name: Compute Node || Create provider network via Openvswitch
+  shell: |
+    ovs-vsctl add-br wan-provider                                                                                                                                                                 
+    ovs-vsctl add-port wan-provider "{{ wan_interface }}"
+
+#- name: Compute Node || Final Reboot
+#  shell: "sleep 3 && reboot"
+#  ignore_errors: yes

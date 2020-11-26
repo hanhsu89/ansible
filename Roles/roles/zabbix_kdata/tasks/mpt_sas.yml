@@ -1,0 +1,52 @@
+---
+- name: check_mpt_sas | copy rpm file to server
+  become: yes
+  copy: >
+    src="{{ mpt_status_rpm_file }}"
+    dest="/tmp/{{ mpt_status_rpm_file }}"
+    mode=0644
+    owner=root
+    group=root
+  when: ansible_os_family == "RedHat"
+
+- name: check_mpt_sas | install mpt-status
+  become: yes
+  yum: name="/tmp/{{ mpt_status_rpm_file }}" state=present
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "6"
+
+- name: check_mpt_sas | remove rpm file after install
+  become: yes
+  file: path="/tmp/{{ mpt_status_rpm_file }}" state=absent
+  when: ansible_os_family == "RedHat"
+
+- name: check_mpt_sas | modprobe mptctl
+  become: yes
+  command: modprobe mptctl
+  when: ansible_os_family == "RedHat"
+
+- name: check_mpt_sas | depmod -a
+  become: yes
+  command: depmod -a
+  when: ansible_os_family == "RedHat"
+
+- name: check_mpt_sas | configure sudoer file
+  become: yes
+  template:
+     src=agent/zabbix-mpt-sudoers.j2
+     dest=/etc/sudoers.d/zabbix-sudoers
+     mode=0640
+     owner=root
+     group=root
+     validate='visudo -cf %s'
+  register: zabbixSudo
+  when: ansible_os_family == "RedHat"
+
+- name: zabbix_check_mpt_sas | copy mpt-sas user parameter
+  become: yes
+  template:
+    src=agent/userparameter_mpt_sas.conf.j2
+    dest=/etc/zabbix/zabbix_agentd.d/userparameter_mpt_sas.conf
+    mode=0644
+    owner=root
+    group=root
+  when: ansible_os_family == "RedHat"

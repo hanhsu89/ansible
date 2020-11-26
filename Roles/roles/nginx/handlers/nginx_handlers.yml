@@ -1,0 +1,37 @@
+---
+
+- name: restart nginx
+  debug: msg="Checking config first"
+  changed_when: True
+  notify:
+    - check config
+    - restart nginx - after config check
+    - enable nginx with system
+
+- name: reload nginx
+  debug: msg="Checking config first"
+  changed_when: True
+  notify:
+    - check config
+    - reload nginx - after config check
+
+- name: check config
+  command: "{{ nginx_binary_file }} -t -c {{ nginx_main_file }}"
+  register: result
+  changed_when: "result.rc != 0"
+  check_mode: no
+
+- name: restart nginx - after config check
+  service: 
+    name: nginx 
+    state: restarted
+
+- name: enable nginx with system
+  service: 
+    name: nginx 
+    enabled: yes
+
+- name: reload nginx - after config check
+  service: 
+    name: nginx
+    state: reloaded

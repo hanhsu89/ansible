@@ -1,0 +1,35 @@
+---
+- name: Install vhost Nginx Config File
+  template:
+    src: vhost.j2
+    dest: "{{ config_vhost_dir }}{{ item }}.conf"
+    mode: 0644
+  with_items:
+        - "{{ vhost_domain }}"
+  tags: vhost
+  become: yes
+
+- name: Create Folder Nginx-vHost
+  file: path=/data/www/{{ item }}/public_html/ state=directory
+  with_items:
+        - "{{ vhost_domain }}"
+  mode: 0755
+  tags: vhost
+  become: yes
+
+- name: Copy index.html Test Page
+  template:
+    src: index-vhost.html.j2
+    dest: /data/www/{{ item }}/public_html/index.html
+    mode: 0644
+  with_items:
+        - "{{ vhost_domain }}"
+  tags: vhost
+  become: yes
+
+- name: Nginx | Restart Nginx
+  service: name=nginx state=restarted
+  when: ansible_os_family == "RedHat"
+  tags:
+      - vhost
+  become: yes

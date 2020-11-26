@@ -1,0 +1,11 @@
+---
+
+
+- hosts: all
+  strategy: free
+  gather_facts: yes
+  become: yes
+  roles:
+    - common
+    - bash
+    - users

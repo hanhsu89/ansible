@@ -1,0 +1,73 @@
+---
+
+- name: Install Repo GlusterFS v5
+  yum:
+    name: centos-release-gluster5
+    state: present
+
+- name: Install Heketi
+  yum:
+    name:
+     - heketi
+     - heketi-client
+    enablerepo: "centos-gluster5"
+    state: present
+
+- name: Copy file config
+  template:
+    src: heketi.j2
+    dest: /etc/heketi/heketi.json
+    mode: 0644
+    backup: yes
+
+- name: Copy file Topology
+  template:
+    src: topology_for.j2
+    dest: /etc/heketi/topology.json
+    mode: 0644
+
+- name: Start Heketi Service 
+  service:
+    name: heketi
+    state: restarted
+    enabled: True
+
+- name: Checking service status
+  command: systemctl status heketi
+  register: result_status
+  ignore_errors: yes
+
+- name: Showing service status
+  debug:
+    var: result_status    
+
+- name: Verify heketi is started and configured properly
+  uri:
+    url: http://{{ hostvars[groups['glusterfs'][0]].name_gfs }}:8080/hello
+    status_code: 200
+    method: GET
+    
+- name: Add heketi_cli_server ENV var to load topology
+  lineinfile:
+    dest: ~/.bashrc
+    line: "export HEKETI_CLI_SERVER=http://{{ hostvars[groups['glusterfs'][0]].name_gfs }}:8080"
+
+- name: Reload source bashrc
+  action: shell source ~/.bashrc
+
+- name: Create keyfile
+  shell: ssh-keygen -f /etc/heketi/heketi_key -t rsa -N ''
+
+- name: Chown directories
+  shell:
+    cmd: chown -R heketi:heketi /etc/heketi/ /var/lib/heketi
+    warn: False
+
+#- name: Copy ssh-key to remote server
+#  shell:
+#    cmd: ssh-copy-id -i /etc/heketi/heketi_key.pub root@192.168.10.43
+
+#- name: load topology file
+#  command: "heketi-cli topology load --json=topology.json"
+#  args:
+#    chdir: /etc/heketi/

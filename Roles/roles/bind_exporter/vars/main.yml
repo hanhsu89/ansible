@@ -1,0 +1,17 @@
+---
+# Variables for Node_Exporter
+
+bind_exporter_group: prometheus
+bind_exporter_user: prometheus
+
+
+#===> ansible_architecture
+go_arch_map:
+  i386: '386'
+  x86_64: 'amd64'
+  aarch64: 'arm64'
+  armv7l: 'armv7'
+  armv6l: 'armv6'
+
+go_arch: "{{ go_arch_map[ansible_architecture] | default(ansible_architecture) }}"
+#===> ansible_architecture

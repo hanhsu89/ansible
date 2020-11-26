@@ -1,0 +1,72 @@
+---
+
+- name: Redis| Create redis group
+  group:
+    name: redis
+    state: present
+
+- name: Redis| Create redis user
+  user:
+    name: redis
+    group: redis
+    shell: /sbin/nologin
+    state: present
+
+- name: Redis| Remove all file in src folder
+  shell: "rm -rf {{ redis_src_dir }}/redis-*"
+
+- name: Redis| Download redis source file
+  get_url:
+    url: "http://download.redis.io/releases/redis-{{ redis_version }}.tar.gz"
+    dest: "{{ redis_src_dir }}/redis-{{ redis_version }}.tar.gz"
+    timeout: 120
+
+- name: Redis| Decompress redis source file
+  unarchive:
+    src: "{{ redis_src_dir }}/redis-{{ redis_version }}.tar.gz"
+    dest: "{{ redis_src_dir }} creates={{ redis_src_dir }}/redis-{{ redis_version }}"
+    copy: "no"
+
+- name: Redis| Build redis from source
+  command: chdir={{ redis_src_dir }}/redis-{{ redis_version }} {{ item }}
+  with_items: 
+  - make -j 4
+  - make install
+
+- name: Redis| Create conf.d directory for loadbalancer
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: redis
+    group: redis
+  with_items:
+    - "{{ redis_install_dir }}"
+    - "{{ redis_log_dir }}"
+    - "{{ redis_data_dir }}"
+    - "{{ redis_data_dir }}/{{ redis_port }}"
+    - "{{ redis_sock_dir }}"
+
+- name: Redis| File {{ redis_port }}.conf
+  template:
+    src: redis_sample.conf.j2
+    dest: "{{ redis_install_dir }}/{{ redis_port }}.conf"
+    mode: 0644
+    owner: redis
+    group: redis
+
+- name: Redis| Create systemd service file for Redhat 7 or CentOS 7
+  template: 
+    src: redis.service.j2
+    dest: "/usr/lib/systemd/system/redis_{{ redis_port }}.service"
+    mode: 0755
+  when: ansible_os_family == "RedHat" and ansible_service_mgr == "systemd"
+
+- name: Redis| Reload systemd to reread configs
+  systemd: 
+    daemon_reload: yes
+  when: ansible_service_mgr == "systemd"
+
+- name: Redis| Restart redis
+  service:
+    name: "redis_{{ redis_port }}"
+    state: restarted

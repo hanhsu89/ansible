@@ -1,0 +1,4 @@
+---
+# vars file for zabbix
+monitor_user: 'zabbix'
+monitor_pass: 'dcpkN33nXCZCRztuUz5k'

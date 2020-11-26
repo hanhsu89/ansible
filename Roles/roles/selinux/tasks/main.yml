@@ -1,0 +1,47 @@
+---
+#==== For Ubuntu
+# - name: Install Packages | Ubuntu
+#   apt: 
+#     name:
+#       - python
+#       - python-apt
+#     state: latest
+#     force_apt_get: yes    
+#   when: ansible_os_family == "Debian" 
+
+# - name: Update repositories cache | Ubuntu
+#   apt: 
+#     update_cache: yes
+#     force_apt_get: yes
+#   when: ansible_os_family == "Debian"    
+
+# - name: Install Packages | Ubuntu
+#   apt: 
+#     name:
+#       - policycoreutils
+#       - selinux-utils
+#       - selinux-basics
+#       - build-essential
+#       - python-selinux
+#       - selinux-policy-default
+#       - auditd
+#     state: latest
+#     force_apt_get: yes    
+#   when: ansible_os_family == "Debian" 
+
+# - name: Disable SELinux | Ubuntu
+#   selinux: 
+#     state: disabled
+#   when: ansible_os_family == "Debian"
+
+
+#==== For CentOS
+- name: Disable selinux temporary | CentOS
+  command: setenforce 0
+  ignore_errors: True
+  when: ansible_os_family == "RedHat"
+
+- name: Disable selinux after reboot | CentOS
+  selinux:
+    state: disabled
+  when: ansible_os_family == "RedHat"    

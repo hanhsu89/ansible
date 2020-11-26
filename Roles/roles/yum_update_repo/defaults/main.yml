@@ -1,0 +1,11 @@
+---
+## What compmentes to install
+install_epel_repo               : False # Install epel repo
+install_remi_repo               : False # Install remi repo
+
+## Default repo url
+epel_url                        : https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
+remi_url                        : http://rpms.famillecollet.com/enterprise/remi-release-6.rpm
+
+## Default rpm file location
+epel_rpm_file                   : /tmp/epel.rpm

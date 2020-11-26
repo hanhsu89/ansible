@@ -1,0 +1,17 @@
+---
+users:
+#===== HanhNN ======
+  - name: test
+    servers:
+      #[vm30]
+      192.168.206.250   # TEST
+
+      
+    groups: sudo
+    authorized_keys:
+      - test.pub
+
+
+#----REMOVE USER------------
+absent_users:
+      - anhpt

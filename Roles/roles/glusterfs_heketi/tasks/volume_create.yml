@@ -1,0 +1,18 @@
+---
+- name: Create Gluster Volume "{{ volume_name }}"
+  gluster_volume:
+    state: present
+    name: "{{ volume_name }}"
+    brick: "{{ brick_dir }}"
+    replicas: "{{ replicas_count }}"
+    cluster:
+      - "{{ cluster_1 }}"
+      - "{{ cluster_2 }}"
+    transport: tcp
+    force: true
+  run_once: true
+
+- name: Start Gluster Volume
+  gluster_volume:  
+    name: "{{ volume_name }}"
+    state: started

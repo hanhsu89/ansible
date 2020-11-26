@@ -1,0 +1,24 @@
+- name: Install Chrony CentOS
+  become: yes
+  yum:
+    name: chrony
+    state: present
+  when: ansible_os_family == "RedHat"
+
+- name: Install Chrony Debian
+  become: yes
+  apt:
+    name: chrony
+    state: present
+    update_cache: yes
+  when: ansible_os_family == "Debian"
+
+- name: Config Chrony
+  template:
+    src: chrony_config.j2
+    dest: "{{ chrony_config_file }}"
+    owner: root
+    group: root
+    mode: '0644'
+  when: ansible_os_family == "RedHat" or ansible_os_family == "Debian"
+  notify: restart chrony

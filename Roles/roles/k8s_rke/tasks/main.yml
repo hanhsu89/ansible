@@ -1,0 +1,13 @@
+---
+
+- import_tasks: rke_node.yml
+  tags: k8s_rke_node
+  when: roles == "rke-node" and ansible_os_family == 'RedHat'
+
+- import_tasks: rke_ssh_key.yml
+  when: roles == "rke-node" and ansible_os_family == 'RedHat'
+  tags: k8s_node
+
+- import_tasks: k8s_node.yml
+  when: roles != "rke-node" and ansible_os_family == 'RedHat'
+  tags: k8s_node

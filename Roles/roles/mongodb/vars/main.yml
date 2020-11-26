@@ -1,0 +1,18 @@
+---
+# vars file for mongodb
+#
+# https://www.percona.com/doc/percona-server-for-mongodb/4.0/install/apt.html
+#
+
+version: 44
+
+mongodb_port: 27017
+mongodb_user: "hanhnn"
+mongodb_password: "123@hanhsu"
+
+path_systemlog: /data/log/mongodb/mongod.log
+path_pidfile: /var/run/mongodb/mongod.pid
+path_storage_db: /data/mongodb
+path_keyfile: /data/mongodb.key
+
+replicaSetName: mongodb-rs

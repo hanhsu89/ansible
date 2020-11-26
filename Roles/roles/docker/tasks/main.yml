@@ -1,0 +1,6 @@
+---
+# tasks file for Docker
+# - import_tasks: docker-version.yml
+#   tags: docker-version
+
+- include: "{{ ansible_os_family }}.yml"

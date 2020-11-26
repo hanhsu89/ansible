@@ -1,0 +1,26 @@
+---
+
+- import_tasks: redis_debian.yml
+  when: ansible_os_family == "Debian"
+  tags:
+   - redis_install
+   - redis_sentinel
+
+- import_tasks: redis_redhat.yml
+  when: ansible_os_family == "RedHat"
+  tags:
+   - redis_install
+   - redis_sentinel
+
+- include: redis_install.yml
+  tags:
+   - redis_install
+   - redis_sentinel
+
+- include: redis_sentinel.yml
+  tags:
+   - redis_sentinel
+
+- include: redis_uninstall.yml
+  tags:
+   - redis_uninstall

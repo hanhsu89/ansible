@@ -1,0 +1,42 @@
+---
+
+#===== For CentOS 6/7
+- name: Install Packages
+  yum:
+    name:
+      - libev
+    state: present
+
+- name: CentOS | Install the Percona repository
+  yum:
+    name:
+      - https://repo.percona.com/yum/percona-release-latest.noarch.rpm
+    state: present
+  when: ansible_os_family == 'RedHat'
+
+- name: CentOS | Install Percona XtraBackup
+  yum:
+    name:
+      - percona-xtrabackup-{{ xtrabackup_version }}
+    state: present
+  when: ansible_os_family == 'RedHat'
+
+
+#===== For Debian/Ubuntu
+- name: Debian | Install the Percona repository
+  apt:
+    deb: https://repo.percona.com/apt/percona-release_latest.$(lsb_release -sc)_all.deb
+    state: "present"
+  register: "percona_package_installed"
+  when: ansible_os_family == 'Debian'
+
+- name: Debian | Updating Apt-Cache
+  apt:
+    update_cache: true
+  when: percona_package_installed.changed and ansible_os_family == 'Debian'
+
+- name: Debian | Installing Percona Xtrabackup
+  apt:
+    name: "percona-xtrabackup-{{ xtrabackup_version }}"
+    state: "present"
+  when: ansible_os_family == 'Debian'

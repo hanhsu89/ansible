@@ -1,0 +1,21 @@
+---
+- name: Ensure sudoers.d is enabled        | Add SSH key
+  lineinfile: dest=/etc/sudoers state=present backup=yes regexp='^#includedir /etc/sudoers.d' line='#includedir /etc/sudoers.d'
+  become: yes
+- name: Set up password-less sudo for user  | Add SSH key
+  copy: content="{{ user_deploy }} ALL=(ALL) NOPASSWD:ALL" dest="/etc/sudoers.d/{{ user_deploy }}" owner=root group=root mode=0440
+
+- name: Create user                         | Add SSH key
+  user: name={{ user_deploy }} state=present group=wheel shell=/bin/bash
+- name: add deploy key to authorized keys   | Add SSH key
+  authorized_key:
+    user: "{{ user_deploy }}"
+    key: "{{ hostvars[ ip_runner ].runner_pub_key.stdout}}"
+
+- name: Create .ssh folder                   | Add SSH key
+  file: path="{{ deploy_home }}/.ssh" state=directory mode=0700
+
+- name: Copy known_hosts                     | Add SSH key
+  template:
+    src: "known_hosts_web.j2"
+    dest: "{{ deploy_home }}/.ssh/known_hosts"

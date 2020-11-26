@@ -1,0 +1,16 @@
+---
+
+# install
+galera_repo:
+  name: MariaDB
+  description: "MariaDB Repo"
+  baseurl: "http://yum.mariadb.org/{{ galera_major_version }}/centos7-amd64"
+  gpgkey: "https://yum.mariadb.org/RPM-GPG-KEY-MariaDB"
+galera_major_version: 10.1
+mysql_server_id: 
+## setup mysql_replication
+mysql_replication_master: "{{ ('databases' in groups) | ternary(groups['databases'][0], 'localhost') }}"
+mysql_replication_user: 
+  name: replication
+  password: secret 
+mariadb_root_password: 123456

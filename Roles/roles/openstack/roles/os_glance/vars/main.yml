@@ -1,0 +1,50 @@
+---
+
+os_controller_primary_node: "{{ groups['controller'][0] }}"
+# vars file for os_glance
+glance_yum_packages:
+    - openstack-glance
+# glance_config
+galera_root_user: root  
+galera_root_password: Jd0Hs5XHmFrJzPTW
+glance_galera_address: "{{ galera_address | default('controller1') }}"
+glance_db_setup_host: "{{ ('database' in groups) | ternary(groups['database'][0], 'localhost') }}"
+glance_galera_database: glance
+glance_system_user_name: glance
+# glance_config_template
+glance_image_cache_max_size: 20737418240
+glance_image_cache_stall_time: 86400
+glance_galera_user: glance
+glance_user_password: Jd0Hs5XHmFrJzPTW
+### [keystone_authtoken]
+glance_keystone_auth_plugin: password
+keystone_service_adminurl: http://controller1:5000
+keystone_service_internaluri: http://controller1:5000
+glance_service_project_domain_name: Default
+glance_service_domain_name: Default
+glance_service_project_name: service 
+glance_service_user_name: glance
+glance_service_password: Jd0Hs5XHmFrJzPTW
+memcached_servers: controller1:11211,controller2:11211,controller3:11211
+### [oslo_messaging_notifications]
+### [glance_store]
+glance_default_store: cinder 
+
+# glance setup_service
+glance_service_name: glance
+glance_service_type: image
+glance_service_description: "Glance Image Service"
+glance_role_name: admin
+glance_service_region: RegionOne
+glance_service_publicurl: http://controller1:9292
+glance_service_internalurl: http://controller1:9292
+glance_service_adminurl: http://controller1:9292
+# Enable/Disable Ceilometer
+glance_ceilometer_enabled: False
+keystone_service_adminuri_insecure: false
+glance_service_setup_host_python_interpreter: "{{ openstack_service_setup_host_python_interpreter | default((glance_service_setup_host == 'localhost') | ternary(ansible_playbook_python, ansible_python['executable'])) }}"
+glance_service_setup_host: "{{ groups['utility_all'][0] }}"
+glance_default_system_group: glance
+glance_etc_dir: "/etc/glance"
+#galera_address: "{% if groups['database']|length == 3 %}{{ cluster_virtual_ip_address }}{% else %}{{ hostvars[groups['database'][0]]['ansible_host'] }}{% endif%}"
+

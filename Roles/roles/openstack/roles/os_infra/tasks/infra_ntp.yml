@@ -1,0 +1,31 @@
+---
+- name: Install ntp service
+  yum:
+    name: "{{ item }}"
+    state: latest
+  register: install_packages
+  until: install_packages is success
+  retries: 5
+  delay: 1
+  with_items:
+    - chrony
+
+- name: Place `chrony` config
+  template:
+    src: "chrony.conf.j2"
+    dest: "/etc/chrony.conf"
+  notify:
+    - restart ntp server
+
+- name: start ntp service
+  systemd:
+    name: "chronyd.service"
+    state: started
+  register: service_started
+  until: service_started is success
+  retries: 5
+  delay: 1
+
+- name: Set timezone
+  command: /usr/bin/timedatectl set-timezone Asia/Ho_Chi_Minh
+  become: yes

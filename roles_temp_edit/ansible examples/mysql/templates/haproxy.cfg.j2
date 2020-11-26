@@ -1,0 +1,85 @@
+global
+        pidfile /var/run/haproxy.pid
+        daemon
+        user haproxy
+        group haproxy
+        stats socket /var/run/haproxy.socket user haproxy group haproxy mode 600 level admin
+        node haproxy_192.168.10.50
+        description haproxy server
+
+        #* Performance Tuning
+        maxconn 8192
+        spread-checks 3
+        quiet
+defaults
+        #log    global
+        mode    tcp
+        option  dontlognull
+        option tcp-smart-accept
+        option tcp-smart-connect
+        #option dontlog-normal
+        retries 3
+        option redispatch
+        maxconn 8192
+        timeout check   3500ms
+        timeout queue   3500ms
+        timeout connect 3500ms
+        timeout client  10800s
+        timeout server  10800s
+
+userlist STATSUSERS
+        group admin users admin
+        user admin insecure-password admin
+        user stats insecure-password admin
+
+listen admin_page
+        bind *:9600
+        mode http
+        stats enable
+        stats refresh 60s
+        stats uri /
+        acl AuthOkay_ReadOnly http_auth(STATSUSERS)
+        acl AuthOkay_Admin http_auth_group(STATSUSERS) admin
+        stats http-request auth realm admin_page unless AuthOkay_ReadOnly
+        #stats admin if AuthOkay_Admin
+
+listen  mysql_galera_cluster
+        bind *:3307
+        mode tcp
+        timeout client  10800s
+        timeout server  10800s
+        balance roundrobin
+        option httpchk
+#        option allbackups
+        default-server port 9200 inter 2s downinter 5s rise 3 fall 2 slowstart 60s maxconn 64 maxqueue 128 weight 100
+        server 192.168.10.234 192.168.10.234:3306 check 
+        server 192.168.10.235 192.168.10.235:3306 check 
+
+
+
+listen  mysql_replication_rw
+        bind *:3309
+        mode tcp
+        timeout client  10800s
+        timeout server  10800s
+        tcp-check expect string master\ is\ running
+        balance roundrobin
+        option tcp-check
+#       option allbackups
+        default-server port 9200 inter 2s downinter 5s rise 3 fall 2 slowstart 60s maxconn 64 maxqueue 128 weight 100
+        server 192.168.10.52 192.168.10.52:3306 check 
+        server 192.168.10.51 192.168.10.51:3306 check 
+
+
+listen  mysql_replication_ro
+        bind *:3310
+        mode tcp
+        timeout client  10800s
+        timeout server  10800s
+        tcp-check expect string is\ running
+        balance roundrobin
+        option tcp-check
+#       option allbackups
+        default-server port 9200 inter 2s downinter 5s rise 3 fall 2 slowstart 60s maxconn 64 maxqueue 128 weight 100
+        server 192.168.10.52 192.168.10.52:3306 check 
+        server 192.168.10.51 192.168.10.51:3306 check 

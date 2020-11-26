@@ -1,0 +1,11 @@
+---
+mariadb_version: 10.1
+
+mysql_conf_tpl: server_standalone.cnf.j2
+mysql_conf_file: server.cnf
+
+mysql_data_dir: "/var/lib/mysql"
+mysql_log_prefix: "/var/log/mysql"
+mysql_log_tmpdir: "{{ mysql_log_prefix }}/tmpdir"
+
+mysql_secure_installation: true

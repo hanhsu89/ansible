@@ -1,0 +1,10 @@
+---
+
+- include: kernel.yml
+  tags: compute-node
+
+- include: openstack-compute.yml
+  tags: compute-node
+
+- include: live-migrate.yml
+  tags: live-migrate

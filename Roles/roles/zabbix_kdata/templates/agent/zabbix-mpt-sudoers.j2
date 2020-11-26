@@ -1,0 +1,8 @@
+## Zabbix sudoers files
+
+# Disable requiretty
+Defaults:zabbix !requiretty
+# Disable log to syslog
+Defaults:zabbix !syslog
+# mpt-status path
+zabbix ALL=(ALL) NOPASSWD:{{ mpt_status_path }}

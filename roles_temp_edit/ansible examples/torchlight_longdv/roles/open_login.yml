@@ -1,0 +1,9 @@
+- hosts: all
+  tasks:
+          #   - name: Open login   | group servers
+          #shell: iptables-restore < /etc/sysconfig/iptables
+          #when: inventory_hostname in groups['servers']
+  
+   - name: Ket thuc bao tri 
+     shell: /home/longdv/notice.sh
+     when: inventory_hostname in groups['origin']

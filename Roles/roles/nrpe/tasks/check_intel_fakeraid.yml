@@ -1,0 +1,10 @@
+---
+- name: check_intel_fakeraid | copy check_raid.pl script to server
+  become: yes
+  template:
+    src=check_raid.pl.j2
+    dest="{{ intel_fakeraid_plugin_path }}"
+    owner=root
+    group=root
+    mode=0755
+  when: ansible_os_family == "RedHat" or ansible_os_family == "Debian"

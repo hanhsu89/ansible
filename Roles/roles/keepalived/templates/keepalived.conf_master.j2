@@ -1,0 +1,26 @@
+vrrp_script chk_service {                           # Requires keepalived-1.1.13
+        script '/etc/keepalived/check_script.sh'    # cheaper than pidof
+        interval 2                                  # check every 2 seconds
+        weight 2
+}
+
+vrrp_instance VI_1 {
+    state MASTER
+    interface {{ interface }}
+    virtual_router_id {{ keepalived_router_id }}
+    priority {{ priority_master }}    # {{ priority_master }} on MASTER, {{ priority_backup }} on BACKUP
+    advert_int 1
+
+    authentication {
+        auth_type {{ auth_type }}
+        auth_pass {{ auth_pass }}
+    }
+    
+    virtual_ipaddress {
+        {{ virtual_ipaddress }} dev {{ interface }}
+    }
+
+    track_script {
+        chk_service
+    }
+}

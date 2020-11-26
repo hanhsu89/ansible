@@ -1,0 +1,19 @@
+---
+
+- name: Install Necessary Packages
+  apt:
+    name: 
+      - python-apt
+      - python
+      - python-docker
+      - unzip
+    state: present         
+    update_cache: yes
+    force_apt_get: yes 
+
+
+- name: Download & Decompress Loki v{{ loki_version }}
+  unarchive:
+    src: "{{ loki_url }}"
+    dest: /tmp
+    remote_src: yes

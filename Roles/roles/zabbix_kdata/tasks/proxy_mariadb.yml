@@ -1,0 +1,17 @@
+---
+- name: install mysqldb package
+  yum: name=MySQL-python state=present
+
+- name: Create Zabbix proxy mysql database
+  mysql_db: name={{ zabbix_proxy_db_name }} state=present
+  tags: mysql_proxy
+
+- name: Create Zabbix proxy mysql user
+  action:
+    module: mysql_user
+    name: "{{ zabbix_proxy_db_user }}"
+    password: "{{ zabbix_proxy_db_pass }}"
+    priv: "{{ zabbix_proxy_db_name }}.*:ALL"
+    state: present
+    host: "{{ zabbix_proxy_db_host }}"
+  tags: mysql_proxy

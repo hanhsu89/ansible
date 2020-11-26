@@ -1,0 +1,27 @@
+---
+
+- name: Uninstall| Stop all redis service
+  service:
+    name: "{{ item }}"
+    state: stopped
+  ignore_errors: True
+  with_items:
+    - "redis_{{ redis_port }}"
+    - "redis_sentinel"
+
+- name: Uninstall| Remove file
+  shell: "rm -rf {{ item }}"
+  ignore_errors: True
+  with_items:
+    - "{{ redis_install_dir }}"
+    - "{{ redis_log_dir }}"
+    - "{{ redis_data_dir }}"
+    - "{{ redis_data_dir }}/{{ redis_port }}"
+    - "{{ redis_sock_dir }}"
+    - /usr/lib/systemd/system/redis_*
+    - "{{ redis_src_dir }}/redis-*"
+
+- name: Uninstall| Reload systemd to reread configs
+  systemd: 
+    daemon_reload: yes
+  when: ansible_service_mgr == "systemd"

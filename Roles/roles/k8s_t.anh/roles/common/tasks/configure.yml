@@ -1,0 +1,53 @@
+- name: Create sudo file
+  file:
+      path: /etc/sudoers.d/{{ sudo_user }}
+      state: touch
+
+- name: Sudo without password
+  lineinfile:
+    path: /etc/sudoers.d/{{ sudo_user }}
+    insertbefore: BOF
+    line: '{{ sudo_user }} ALL=(ALL:ALL) NOPASSWD: ALL'
+    validate: '/usr/sbin/visudo -cf %s'
+
+- name: Disable Ctrl Alt Del reboot
+  systemd:
+    name: ctrl-alt-del.target
+    state: stopped
+    masked: Yes
+    daemon_reload: Yes
+
+- name: Tweaking sysctl
+  copy:
+    src: sysctl.conf
+    dest: /etc/sysctl.conf
+  notify:
+    - reload sysctl
+
+- name: Update rc.local
+  copy:
+    src: rc.local
+    dest: /etc/rc.local
+    mode: 0755
+
+- name: Update hostname
+  shell: hostnamectl set-hostname {{ inventory_hostname }}
+
+- name: Update hosts file
+  template:
+    src: hosts.j2
+    dest: /etc/hosts
+
+- name: Update apt sources file
+  copy:
+    src: sources.list
+    dest: /etc/apt/sources.list
+
+- name: Update DNS Resolv
+  copy:
+    src: resolv.conf
+    dest: /etc/resolv.conf
+  register: dns
+
+- name: Setting up timezone
+  shell: timedatectl set-timezone Asia/Ho_Chi_Minh

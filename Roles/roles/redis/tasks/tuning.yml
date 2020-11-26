@@ -1,0 +1,35 @@
+---
+
+- name: Enable overcommit in sysctl
+  sysctl:
+    name: vm.overcommit_memory
+    value: 1
+    state: present
+    reload: yes
+    ignoreerrors: yes
+
+- name: Optimize sysctl
+  blockinfile:
+    path: /etc/sysctl.conf
+    block: |
+      net.core.somaxconn = 65535
+      net.ipv4.tcp_max_syn_backlog = 8192
+      net.ipv4.tcp_fin_timeout = 15
+      net.ipv4.tcp_keepalive_time = 300
+      net.ipv4.tcp_keepalive_probes = 5
+      net.ipv4.tcp_keepalive_intvl = 15
+      net.ipv4.tcp_max_tw_buckets = 1440000
+      net.ipv4.tcp_tw_recycle = 1
+      net.ipv4.tcp_tw_reuse = 1
+
+- name: Optimize limits.conf
+  blockinfile:
+    path: /etc/security/limits.conf
+    content: |
+      *   soft    nofile          65536
+      *   hard    nofile          65536
+
+- name: Apply sysctl and disable transparent_hugepage
+  shell: |
+      sysctl -p
+      echo never > /sys/kernel/mm/transparent_hugepage/enabled

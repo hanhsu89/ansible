@@ -1,0 +1,53 @@
+---
+# - name: Create the bind_exporter group
+#   group:
+#     name: "{{ bind_exporter_group }}"
+#     state: present
+#     system: true
+
+# - name: Create the bind_exporter user
+#   user:
+#     name: "{{ bind_exporter_user }}"
+#     groups: "{{ bind_exporter_group }}"
+#     append: true
+#     shell: /usr/sbin/nologin
+#     system: true
+#     create_home: false
+#     home: /
+
+- name: Setup bind_exporter folders
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - /etc/bind/
+
+- name: Install Bind9 Exporter Service
+  apt:
+    name: 
+      - prometheus-bind-exporter
+    state: present         
+    update_cache: yes
+    force_apt_get: yes 
+
+- name: Create config file
+  template: 
+    src: named.conf.local.j2
+    dest: /etc/bind/named.conf.local
+    mode: 0755
+
+- name: Reload systemd to reread configs
+  systemd: 
+    daemon_reload: yes
+
+# - name: Restart Bind9 Service
+#   service:
+#     name: bind9
+#     state: restarted
+#     enabled: true
+
+- name: Restart Bind9 Exporter Service
+  service:
+    name: prometheus-bind-exporter
+    state: restarted
+    enabled: true

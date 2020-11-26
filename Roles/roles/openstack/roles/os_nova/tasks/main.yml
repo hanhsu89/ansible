@@ -1,0 +1,12 @@
+---
+- include: nova_controller_install.yml
+  tags: nova_install
+- include: nova_compute_install.yml
+  tags: nova_install_compute
+- include: nova_db_setup.yml
+  when: inventory_hostname == os_controller_primary_node
+  tags: nova_db
+- include: nova_service_setup.yml
+  when: inventory_hostname == os_controller_primary_node 
+  tags: nova_service
+  

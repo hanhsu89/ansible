@@ -1,0 +1,18 @@
+---
+- name: Create SSH key
+  include: ssh_runner.yml
+  when: inventory_hostname in groups['runner']
+
+- name: Add SSH key
+  include: ssh_web.yml
+  when: inventory_hostname in groups['web']
+
+- name: Setup register
+  include: setup_register.yml
+  when: inventory_hostname in groups['runner']
+- name: Configr
+  include: nginx.yml
+  when: inventory_hostname in groups['web']
+- name: Haproxy
+  include: haproxy.yml
+  when: inventory_hostname in groups['haproxy']

@@ -1,0 +1,48 @@
+---
+- name: Add Elasticsearch yum repository
+  template:
+    src: elasticsearch.repo.j2
+    dest: /etc/yum.repos.d/elasticsearch.repo
+    mode: 0644
+
+- name: Add Elasticsearch GPG key
+  rpm_key:
+    state: present
+    key: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+
+- name: Install filebeat
+  yum: 
+    name: filebeat
+    state: installed
+    update_cache: yes
+
+- name: Update file config filebeat
+  template:
+    src: filebeat.j2
+    dest: /etc/filebeat/filebeat.yml
+
+- name: Reload systemd to reread configs
+  systemd:
+    daemon_reload: yes
+
+#- name: Make direcotry
+#  file:
+#    path: "/etc/pki/tls/certs/"
+#    state: directory
+
+#- name: Copy certificate from ELK_Server
+#  synchronize: 
+#    src: /etc/pki/tls/certs/logstash-forwarder.crt
+#    dest: /etc/pki/tls/certs/
+#  delegate_to: "{{ elk_ip }}"
+
+- name: Enable filebeat Service
+  systemd:
+    name: filebeat.service
+    enabled: yes
+
+- name: Start filebeat Service
+  systemd:
+    name: filebeat
+    state: restarted
+    enabled: yes      

@@ -1,0 +1,59 @@
+---
+- name: set hostname
+  become: yes
+  hostname:
+    name: "{{ torchlight_hostname }}"
+
+- name: set bashrc
+  become: yes
+  template:
+    src: bashrc.j2
+    dest: /root/.bashrc
+
+- name: create /root/.ssh folder
+  become: yes
+  file: >
+    path=/root/.ssh
+    state=directory
+    mode=0700
+    owner=root
+    group=root
+
+- name: copy /root/.ssh/authorized_keys
+  become: yes
+  copy: >
+    src=authorized_keys
+    dest=/root/.ssh/authorized_keys
+    mode=0600
+    owner=root
+    group=root
+
+- name: install ntp
+  become: yes
+  yum: name=ntp state=present
+  when: ansible_os_family == "RedHat"
+
+- name: start and enable ntpd service
+  become: yes
+  service: name=ntpd state=started enabled=yes
+  when: ansible_os_family == "RedHat"
+
+- name: update local DNS
+  become: yes
+  lineinfile:
+    dest: /etc/sysconfig/network-scripts/ifcfg-em1
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  with_items:
+    - { regexp: '^DNS1.*', line: 'DNS1=43.239.221.208' }
+    - { regexp: '^DNS2.*', line: 'DNS2=43.239.221.209' }
+  when: ansible_os_family == "RedHat"
+
+- name: disable ssh login by password
+  become: yes
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: '^PasswordAuthentication.*'
+    line: 'PasswordAuthentication no'
+  notify: restart sshd
+  when: ansible_os_family == "RedHat"

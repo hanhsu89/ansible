@@ -1,0 +1,21 @@
+---
+opendistroforelasticsearch_user: elasticsearch
+opendistroforelasticsearch_group: elasticsearch
+opendistroforelasticsearch_log_dir: /var/log/elasticsearch
+opendistroforelasticsearch_db_dir: /var/lib/elasticsearch
+opendistroforelasticsearch_package: opendistroforelasticsearch
+opendistroforelasticsearch_conf_dir: /etc/elasticsearch
+opendistroforelasticsearch_scripts_dir: ""
+opendistroforelasticsearch_plugins_dir: /usr/share/elasticsearch/plugins
+opendistroforelasticsearch_plugin_command: /usr/share/elasticsearch/bin/elasticsearch-plugin
+opendistroforelasticsearch_service: elasticsearch
+opendistroforelasticsearch_java_home: ""
+
+opendistroforelasticsearch_plugins: ""
+opendistroforelasticsearch_extra_packages: ""
+opendistroforelasticsearch_jvm_options: ""
+opendistroforelasticsearch_flags: ""
+opendistroforelasticsearch_config: ""
+opendistroforelasticsearch_http_port: 9200
+opendistroforelasticsearch_extra_plugin_files: []
+opendistroforelasticsearch_include_role_x509_certificate: yes

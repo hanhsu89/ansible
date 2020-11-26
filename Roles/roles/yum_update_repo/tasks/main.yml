@@ -1,0 +1,6 @@
+---
+- include: epel.yml
+  when: install_epel_repo
+
+- include: remi.yml
+  when: install_remi_repo

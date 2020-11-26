@@ -1,0 +1,22 @@
+# Common settings
+
+# bind 0.0.0.0
+port 9736
+logfile "/var/log/redis_cluster/slave/redis-server.log"
+dir "/var/lib/redis_cluster/slave"
+pidfile "/var/run/redis_cluster/slave.pid"
+daemonize yes
+supervised no
+loglevel notice
+maxmemory 0
+maxmemory-policy volatile-lru
+appendonly yes
+protected-mode no
+
+masterauth {{ redis_masterauth }}
+requirepass {{ redis_masterauth }}
+
+# Cluster settings
+cluster-enabled yes
+cluster-config-file nodes.conf
+cluster-node-timeout 5000

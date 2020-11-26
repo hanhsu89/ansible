@@ -1,0 +1,65 @@
+---
+- name: Install Necessary Packages | Ubuntu
+  apt:
+    force_apt_get: yes    
+    state: latest
+    name:
+      - htop
+      - iotop
+      - atop
+      - glances
+      - vim
+      - telnet
+      - traceroute
+      - net-tools
+      - wget
+      - git
+      - curl
+      - nmap
+      - tmux
+      - make
+      - jq
+      - gcc
+      - ca-certificates 
+      - libc6-dev 
+      - liblua5.3-dev 
+      - libpcre3-dev 
+      - libssl-dev 
+      - libsystemd-dev 
+      - zlib1g-dev
+      - build-essential      
+  ignore_errors: yes
+  when: ansible_distribution == "Ubuntu" or ansible_distribution == "Debian"
+
+
+- name: Install Necessary Packages | CentOS
+  apt:
+    force_apt_get: yes    
+    state: latest
+    name:
+      - htop
+      - iotop
+      - atop
+      - glances
+      - vim
+      - telnet
+      - traceroute
+      - net-tools
+      - wget
+      - git
+      - curl
+      - nmap
+      - tmux
+      - make
+      - jq
+      - gcc
+      - ca-certificates 
+      - libc6-dev 
+      - liblua5.3-dev 
+      - libpcre3-dev 
+      - libssl-dev 
+      - libsystemd-dev 
+      - zlib1g-dev
+      - build-essential  
+  ignore_errors: yes
+  when: ansible_distribution == "CentOS" or ansible_distribution == "RedHat"

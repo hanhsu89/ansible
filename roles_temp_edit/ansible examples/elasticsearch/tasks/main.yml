@@ -1,0 +1,10 @@
+---
+# tasks file for elasticsearch
+
+- include: install.yml
+  tags:
+    - elasticsearch_install
+
+- include: uninstall.yml
+  tags:
+    - elasticsearch_uninstall

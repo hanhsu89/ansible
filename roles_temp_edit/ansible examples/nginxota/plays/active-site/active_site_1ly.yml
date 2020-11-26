@@ -1,0 +1,64 @@
+---
+- hosts: login
+  roles:
+    - role: ansible-role-nginx
+      nginx_sites:
+        lvtc:
+            upstream_enable: "true"
+            upstream_method: "least_conn"
+            upstream_keepalive: "16"
+            upstream_servers: {
+                "127.0.0.1:80 weight=3 max_fails=3 fail_timeout=30s",
+                "127.0.0.1:443 weight=3 max_fails=3 fail_timeout=30s",
+            }
+            upstream_extras: |
+                upstream lvtc_test {
+                    least_conn;
+                    server 127.0.0.1:80 weight=3 max_fails=3 fail_timeout=30s;
+                    server 127.0.0.1:443 weight=3 max_fails=3 fail_timeout=30s;
+                }
+            listen: 80
+            server_name: lvtc.cdn.gamota.net
+            root: /data/www/lvtc.cdn.gamota.net
+            index: "index.html" #index.php index.html index.htm
+            #error_page:
+            access_log: "true"
+            error_log: "true"
+            nginx_secure_params: |
+                location ^~ /application/cache/ { deny all; }
+                location ^~ /application/ { deny all; }
+                location ^~ /system/ { deny all; }
+            
+            proxy_cache_enable: "true"
+            rewrites: |
+                return 301 https://lvtc.cdn.gamota.net;
+            #extra_parameters:
+            location_html: "true"
+            location_php: "true"
+            location_hhvm: "true"
+            location_extras: |
+                location ^~ /diepdh/ { deny all; }
+            nginx_limit_rate_params: |
+                limit_rate        512k;
+                limit_rate_after  10M;
+            nginx_foreign_cdn_params: |
+                if ($geoip_country_code ~ ^(US|CA)$) {
+                    return 301 http://us.lvtc.cdn.gamota.net$request_uri;
+                }
+            proxy_cache_params: |
+                proxy_cache_valid      200 206 15m;
+                proxy_cache_valid  301 10m;
+                proxy_cache_valid  400 403 404 500 502 503 1m;
+                proxy_cache_key "$scheme$host$uri$is_args$args";
+
+
+
+
+        touch:
+            listen: 80
+            server_name: touch.cdn.gamota.net
+            root: /data/www/touch.cdn.gamota.net
+            index: index.html
+            #proxy_cache_enable: "false"
+            upstream_enable: "false"
+

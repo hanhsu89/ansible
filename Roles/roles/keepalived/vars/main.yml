@@ -1,0 +1,16 @@
+---
+# vars file for keepalived
+
+keepalived_version: 2.1.5
+
+keepalived_router_id: "50"
+keepalived_check_process: "haproxy"
+
+auth_type: "PASS"
+auth_pass: "1111"
+
+interface: "ens33"
+virtual_ipaddress: "192.168.10.45"
+
+priority_master: 101
+priority_backup: 100

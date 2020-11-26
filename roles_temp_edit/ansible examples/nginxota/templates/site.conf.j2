@@ -1,0 +1,116 @@
+#{{ ansible_managed }}
+{% set site = nginx_sites[item.key] if nginx_sites[item.key] is defined else [] %}
+
+# Upstream servers
+{% if site['upstream_enable'] == "true" %}
+    upstream {{ site['server_name'] }} {
+{% if site['upstream_method'] is defined %}
+        {{ site['upstream_method'] }};
+{% endif %}
+{% for backend_server in site['upstream_servers'] %}
+        server {{ backend_server }};
+{% endfor %}
+{% if site['upstream_keepalive'] is defined %}
+        keepalive {{ site['upstream_keepalive'] }};
+{% endif %}
+    }
+
+{% if site['upstream_extras'] is defined %}
+        {{ site['upstream_extras'] }}
+{% endif %}
+{% endif %}
+
+#--------------------------------------------
+# proxy_cache
+{% if site['proxy_cache_enable'] is defined %}
+    proxy_cache_path {{ ngx_proxy_cache_path }}/{{ site['server_name'] }} levels=1:2    keys_zone={{ site['server_name'] }}:2000m  inactive=5m  max_size=400g;
+{% endif %}
+#--------------------------------------------
+    server {
+        listen {{ site['listen'] | default('80 default_server') }};
+        server_name {{ site['server_name'] }} {{ site['alias_name'] }};
+{% if site['root'] is defined %}
+        root {{ site['root'] }};
+{% endif %}
+        index {{ site['index'] | default('index.html index.htm') }};
+
+{% if site['access_log'] is defined %}
+        access_log {{ nginx_log_dir }}/{{ site['server_name'] }}.access.log {{ nginx_log_format }} {{ nginx_log_buffer }};
+{% endif %}
+{% if site['error_log'] is defined %}
+        error_log {{ nginx_log_dir }}/{{ site['server_name'] }}.error.log;
+{% endif %}
+
+{% if site['error_page'] is defined %}
+        error_page {{ site['error_page'] }};
+{% endif %}
+
+{% if site['rewrites'] is defined %}
+        {{ site['rewrites'] }}
+{% endif %}
+
+{% if site['extra_parameters'] is defined %}
+        {{ site['extra_parameters'] }}
+{% endif %}
+#-------------------------------------------
+
+{% if site['nginx_secure_params'] is defined %}
+        {{ site['nginx_secure_params'] }}
+{% endif %}
+
+{% if site['location_html'] is defined %}
+        location ~ .*\.(txt|html|xml)$ {
+{% if site['nginx_proxy_enable'] is defined %}
+            proxy_pass http://{{ site['server_name'] }};
+            include {{ nginx_proxy_params }};
+{% endif %}
+        }
+{% endif %}
+#-------------------------------------------
+        location / {
+{% if site['try_files_params'] is defined %}
+            {{ site['try_files_params'] }}
+{% endif %}
+
+{% if site['nginx_limit_rate_params'] is defined %}
+            {{ site['nginx_limit_rate_params'] }}
+{% endif %}
+
+# international cdn
+{% if site['nginx_foreign_cdn_params'] is defined %}
+            {{ site['nginx_foreign_cdn_params'] }}
+{% endif %}
+
+{% if site['nginx_proxy_enable'] is defined %}
+            proxy_pass http://{{ site['server_name'] }};
+            include {{ nginx_proxy_params }};
+{% endif %}
+
+{% if site['proxy_cache_enable'] is defined %}
+            proxy_cache {{ site['server_name'] | default(off) }};
+            {{ site['proxy_cache_params'] }}
+{% endif %}
+        }
+#-------------------------------------------
+{% if site['location_php'] is defined %}
+        location ~ \.php {
+            fastcgi_keep_conn on;
+{% if site['location_hhvm'] is defined %}
+            fastcgi_pass unix:{{ hhvm_sock | default (php_fpm_sock) }};
+{% endif %}
+            fastcgi_index   index.php;
+            include         fastcgi_params;
+            fastcgi_param   SCRIPT_FILENAME $document_root$fastcgi_script_name;
+            fastcgi_split_path_info ^(.+\.php)(.*)$;
+            fastcgi_param PATH_INFO $fastcgi_path_info;
+            fastcgi_param PATH_TRANSLATED $document_root$fastcgi_path_info;
+            fastcgi_connect_timeout 300;
+            fastcgi_send_timeout 300;
+            fastcgi_read_timeout 300;
+            fastcgi_buffer_size 128k;
+            fastcgi_buffers 4 256k;
+            fastcgi_busy_buffers_size 256k;
+        }
+{% endif %}
+}
+

@@ -1,0 +1,8 @@
+
+---
+- name: Install & Configure scaleio-compute Service
+  hosts: compute
+  become: true
+  roles:
+     - scaleio_compute
+

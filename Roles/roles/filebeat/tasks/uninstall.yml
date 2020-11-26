@@ -1,0 +1,25 @@
+---
+# tasks file for filebeat
+
+- name: stop service filebeat
+  service:
+    name: filebeat
+    state: stopped
+  ignore_errors: True
+
+- name: Remove current filebeat 
+  yum:
+    name: filebeat
+    state: absent
+  ignore_errors: True
+
+- name: remove old folder config
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - /etc/filebeat
+    - /var/log/filebeat
+    - /var/lib/filebeat
+    - /usr/share/filebeat
+  ignore_errors: True

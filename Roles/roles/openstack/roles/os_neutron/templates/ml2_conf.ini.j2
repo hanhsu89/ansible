@@ -1,0 +1,29 @@
+[ml2]
+{% if neutron_selfservice_networks is defined and neutron_network_options == 'self-service' %}
+mechanism_drivers = {{ neutron_selfservice_networks.mechanism_drivers }}
+type_drivers = {{ neutron_selfservice_networks.type_drivers }}
+tenant_network_types = {{ neutron_selfservice_networks.tenant_network_types }}
+{% else %}
+mechanism_drivers = {{ neutron_provider_networks.mechanism_drivers }}
+type_drivers = {{ neutron_provider_networks.type_drivers }}
+tenant_network_types = 
+{% endif %}
+extension_drivers = port_security
+
+[ml2_type_flat]
+{% if neutron_provider_networks.neutron_flat_networks %}
+flat_networks = {{ neutron_provider_networks.neutron_flat_networks }}
+{% endif %}
+
+[ml2_type_vlan]
+{% if neutron_provider_networks.neutron_vlan_ranges is defined %}
+network_vlan_ranges = {{ neutron_provider_networks.neutron_vlan_ranges }}
+{% endif %}
+
+{% if neutron_network_options == 'self-service' and neutron_selfservice_networks.vxlan_vni_ranges is defined %}
+[ml2_type_vxlan]
+vni_ranges = {{ neutron_selfservice_networks.vxlan_vni_ranges }}
+{% endif %}
+
+[securitygroup]
+enable_ipset = True

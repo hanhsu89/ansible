@@ -1,0 +1,18 @@
+---
+
+- name: Copy config check mysql
+  template:
+    src=userparameter_mysql.j2
+    dest=/etc/zabbix/zabbix_agentd.d/userparameter_mysql.conf
+    mode=0644
+
+- name: Create conf.d directory for backend
+  file: path={{ item }} state=directory
+  with_items:
+    - /var/lib/zabbix
+
+- name: Copy client mysql config
+  template:
+    src=my.cnf.j2   
+    dest=/var/lib/zabbix/.my.cnf 
+    mode=0644

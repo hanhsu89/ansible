@@ -1,0 +1,13 @@
+---
+
+- name: install repo
+  yum: name=epel-release state=present
+
+- name: install jq
+  yum: name=jq state=present
+
+- name: Copy the scripts to mongodb host in /etc/zabbix/scripts
+  template: src={{ item.src }} dest={{ item.dest }} mode=755
+  with_items:
+    - { src: 'mongodb.sh.j2', dest: '/etc/zabbix/scripts/mongodb.sh' }
+    - { src: 'userparameter_mongodb.conf.j2', dest: '/etc/zabbix/zabbix_agentd.d/userparameter_mongodb.conf' }

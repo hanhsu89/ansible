@@ -1,0 +1,16 @@
+---
+
+- import_tasks: glusterfs.yml
+  tags: glusterfs
+
+- import_tasks: volume_create.yml
+  tags: gfs_cre_volume
+
+- import_tasks: volume_mount.yml
+  tags: gfs_mnt_volume
+
+- import_tasks: peer.yml
+  tags: gfs_peer
+
+- import_tasks: heketi.yml
+  tags: heketi

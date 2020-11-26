@@ -1,0 +1,7 @@
+---
+
+- name: Copy monitor memcached config file
+  copy:
+    src=userparameter_memcached.conf
+    dest=/etc/zabbix/zabbix_agentd.d/userparameter_memcached.conf
+    mode=0644

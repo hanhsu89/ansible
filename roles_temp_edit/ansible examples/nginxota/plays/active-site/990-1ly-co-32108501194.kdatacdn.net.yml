@@ -1,0 +1,36 @@
+- hosts: kdata_cdn_nodes   
+  roles:
+    - role: config-nginx-cdn 
+      nginx_sites:    
+        990-1ly-co-32108501194.kdatacdn.net:                
+            upstream_enable: "true"          
+            #upstream_method: "ip_hash"
+            upstream_servers: {              
+                "990.1ly.co:80 weight=3 max_fails=3 fail_timeout=30s"
+            }
+
+            listen: 80
+            server_name: 990-1ly-co-32108501194.kdatacdn.net
+            root: /data/www/990-1ly-co-32108501194.kdatacdn.net
+            index: "index.html"              
+            access_log: "true"               
+            error_log: "true"
+            nginx_secure_params: |      
+                location ^~ /application/cache/ { deny all; }
+                location ^~ /application/ { deny all; }
+                location ^~ /system/ { deny all; }
+            proxy_cache_enable: "true"
+
+            location_html: "true"           
+            proxy_cache_params: |            
+                proxy_cache_valid      200 206 15m;
+                proxy_cache_valid  301 10m;
+                proxy_cache_valid  400 403 404 500 502 503 1m;
+                proxy_cache_key "$scheme$host$uri";
+
+        touch:
+            listen: 80
+            server_name: 990-1ly-co-32108501194.kdatacdn.net
+            root: /data/www/990-1ly-co-32108501194.kdatacdn.net
+            index: index.html
+            upstream_enable: "false"

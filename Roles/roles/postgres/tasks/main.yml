@@ -1,0 +1,202 @@
+---
+
+- name: Install Repo for PostgreSQL v{{ postgresql_version }}
+  yum:
+    name: https://download.postgresql.org/pub/repos/yum/{{ postgresql_version }}/redhat/rhel-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+    state: present
+  tags: 
+    - psql_install
+    - psql_repl
+
+- name: Install Packages
+  yum:
+    name:
+      - epel-release
+      - yum-utils
+      - python-psycopg2      
+    state: latest
+  tags: 
+    - psql_install
+    - psql_repl
+
+- name: Install PostgreSQL v{{ postgresql_version }}
+  yum:
+    name: 
+      - postgresql{{ postgresql_version }}
+      - postgresql{{ postgresql_version }}-server
+      - postgresql{{ postgresql_version }}-contrib
+    state: latest
+  tags: 
+    - psql_install
+    - psql_repl
+
+- name: Initialize Database for PostgreSQL v{{ postgresql_version }}
+  command: /usr/pgsql-{{ postgresql_version }}/bin/postgresql-{{ postgresql_version }}-setup initdb
+  args:
+    creates: /var/lib/pgsql/{{ postgresql_version }}/data/PG_VERSION
+  tags: 
+    - psql_install
+    - psql_repl
+
+- name: Start PostgreSQL Service
+  service: 
+    name: postgresql-{{ postgresql_version }}
+    state: started
+    enabled: yes
+  tags: 
+    - psql_install
+    - psql_repl
+
+
+#==================== Config for Standalone ===================
+- name: Configure PostgreSQL
+  template:
+    src: postgresql.conf.j2
+    dest: "/var/lib/pgsql/{{ postgresql_version }}/data/postgresql.conf"
+    owner: postgres
+    group: postgres
+    mode: 0640
+  tags: 
+    - psql_install
+
+- name: Configure pg_hba.conf
+  template:
+    src: pg_hba.conf.j2
+    dest: "/var/lib/pgsql/{{ postgresql_version }}/data/pg_hba.conf"
+    owner: postgres
+    group: postgres
+    mode: 0640    
+  tags: 
+    - psql_install
+
+- name: Update Pasword for User postgres
+  become: yes
+  become_user: postgres
+  postgresql_user: 
+    user: "{{ postgres_user }}"
+    password: "{{ postgres_password }}"
+    role_attr_flags: "{{ role_attr_flags_user_postgres }}"
+    state: present
+  tags: 
+    - psql_install
+
+- name: Update Configure pg_hba.conf
+  lineinfile:
+    path: /var/lib/pgsql/{{ postgresql_version }}/data/pg_hba.conf
+    regexp: '^local   all             all                                     peer'
+    line: 'local   all             all                                     md5'
+  tags: 
+    - psql_install
+
+- name: Restart PostgreSQL Service
+  service: 
+    name: postgresql-{{ postgresql_version }}
+    state: restarted
+  tags: 
+    - psql_install
+
+#============ Creat DB/User to TEST
+#- name: Ensure database {{ db_name }} is created
+#  postgresql_db:
+#    name: "{{ db_name }}"
+#    encoding: 'UTF-8'
+#    lc_collate: 'en_US.UTF-8'
+#    lc_ctype: 'en_US.UTF-8'
+#    template: 'template0'
+#    state: present
+#  become_user: postgres 
+#  tags: 
+#    - psql_install
+
+#- name: Create user {{ db_user }} for database {{ db_name }}
+#  become: yes
+#  become_user: postgres
+#  postgresql_user:
+#    db: "{{ db_name }}"
+#    name: "{{ db_user }}"
+#    password: "{{ db_password }}"
+#    priv: ALL
+#    role_attr_flags: "{{ role_attr_flags }}"
+#    state: present
+#  tags: 
+#    - psql_install
+
+#==================== Config for Standalone ===================
+
+
+#=================== Config for Replication ===================
+- name: Creates directory for archiving purposes
+  file:
+    path: /var/lib/pgsql/{{ postgresql_version }}/archive
+    state: directory
+    owner: postgres
+    group: postgres
+    mode: 0700
+  when: roles == "master"    
+  tags: 
+    - psql_repl
+
+- name: Configure PostgreSQL for MASTER
+  template:
+    src: postgresql.conf_master.j2
+    dest: "/var/lib/pgsql/{{ postgresql_version }}/data/postgresql.conf"
+    owner: postgres
+    group: postgres
+    mode: 0640
+  when: roles == "master"    
+  tags: 
+    - psql_repl
+
+- name: Configure pg_hba.conf for MASTER
+  template:
+    src: pg_hba.conf.j2
+    dest: "{{ postgresql_conf_dir }}/pg_hba.conf"
+    owner: postgres
+    group: postgres
+    mode: 0640
+  when: roles == "master"    
+  tags: 
+    - psql_repl
+
+- name: Configure PostgreSQL for SLAVE
+  template:
+    src: postgresql.conf_slave.j2
+    dest: "/var/lib/pgsql/{{ postgresql_version }}/data/postgresql.conf"
+    owner: postgres
+    group: postgres
+    mode: 0640
+  when: roles == "slave"    
+  tags: 
+    - psql_repl    
+
+- name: Configure pg_hba.conf for SLAVE
+  template:
+    src: pg_hba.conf.j2
+    dest: "{{ postgresql_conf_dir }}/pg_hba.conf"
+    owner: postgres
+    group: postgres
+    mode: 0640
+  when: roles == "slave"    
+  tags: 
+    - psql_repl
+
+- name: Restart Postgres Service
+  service:
+    name: postgresql-{{ postgresql_version }}
+    state: restarted
+  when: roles == "master"    
+  tags: 
+    - psql_repl
+
+- name: Create replication user account
+  become: yes
+  become_user: "{{ postgresql_admin_user }}"
+  postgresql_user:
+    name: "{{ postgresql_replication_user.name }}"
+    password: "{{ postgresql_replication_user.pass }}"
+    role_attr_flags: "{{ role_attr_flags_replication }}"
+  when: roles == "master"    
+  tags: 
+    - psql_repl
+
+#=================== Config for Replication ===================

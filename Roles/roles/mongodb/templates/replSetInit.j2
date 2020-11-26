@@ -1,0 +1,23 @@
+rs.initiate( { 
+_id: "{{ replicaSetName }}",
+members: [ { 
+	_id: {{ hostvars[groups['mongodb'][0]].id }}, 
+	host: "{{ hostvars[groups['mongodb'][0]]['ansible_hostname'] }}:{{ mongodb_port }}", 
+	priority: {{ hostvars[groups['mongodb'][0]].priority }}
+	} ]
+} )
+
+rs.slaveOk()
+
+sleep(30)
+
+{% for host in groups['mongodb_slave'] %}
+rs.add({ 
+	_id: {{ hostvars[host].id }},
+	host: "{{ hostvars[host]['ansible_hostname'] }}:{{ mongodb_port }}", 
+	priority: {{ hostvars[host].priority }}
+})
+sleep(30)
+{% endfor %}
+
+printjson(rs.status())

@@ -1,0 +1,26 @@
+---
+- name: install cinder controller packages
+  package:
+    name: "{{ item }}"
+    state: latest
+  register: packages_install
+  until: packages_install is success
+  retries: 5
+  delay: 2
+  with_items: "{{ cinder_controller_packages }}"
+
+- name: install cinder configuration
+  template: src=cinder.conf.j2 dest=/etc/cinder/cinder.conf
+
+- name: restart cinder services on controller node(s)
+  systemd:
+    name: "{{ item }}"
+    state: restarted
+    enabled: yes
+  register: service_restart
+  until: service_restart issuccess
+  retries: 5
+  delay: 2
+  with_items:
+    - openstack-cinder-api.service
+    - openstack-cinder-scheduler.service

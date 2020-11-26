@@ -1,0 +1,12 @@
+- type: log
+  enabled: true
+  paths:
+   - /data/www/{{ item.name }}/src/storage/logs/*.log
+  fields:
+    domain: {{ item.name }}
+    log_type: php-framework
+  fields_under_root: true
+  multiline:
+   pattern: '^\['
+   negate: true
+   match: after

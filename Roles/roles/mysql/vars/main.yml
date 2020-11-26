@@ -1,0 +1,37 @@
+---
+
+xtrabackup_version: 24  # 2.4
+#xtrabackup_version: 80  # 8.0
+
+master_ip: 192.168.10.81
+slave_ip: 192.168.10.82
+user_root: 
+  name: root
+  pass:
+
+db_name: hanhnn
+collation: utf8_general_ci
+encoding: utf8
+
+hanhnn_user: hanhnn
+hanhnn_pass: 123@hanhsu
+
+config_file_path: /etc/my.cnf.d/server.cnf
+
+replication_user:
+  name: repl
+  pass: repl123@
+
+# Replication settings (replication is only enabled if master/user have values).
+mysql_server_id: "1"
+mysql_max_binlog_size: "100M"
+mysql_binlog_format: "ROW"
+mysql_expire_logs_days: "10"
+mysql_replication_role: ''
+mysql_replication_master: ''
+# Same keys as `mysql_users` above.
+
+
+
+mysql_replication_user: replica
+mysql_replication_password: replica123@

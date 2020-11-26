@@ -1,0 +1,22 @@
+---
+
+# Var for DNS config
+lan_ip_range: "192.168.35.0/24"
+domain_local: "ewallet.inside"
+
+# Var for keepalived
+wan_instance_name: VIP_WAN_GW_PAY
+wan_interface: ens192
+wan_vid_router: 215
+wan_pass: wangwpay@
+wan_ip_master: "172.16.121.215"
+wan_ip_backup: "172.16.121.216"
+wan_vip: "43.239.223.234"
+
+lan_instance_name: VIP_LAN_GW_PAY 
+lan_interface: ens224
+lan_vid_router: 216
+lan_pass: langwpay@
+lan_ip_master: "192.168.35.215"
+lan_ip_backup: "192.168.35.216"
+lan_vip: "43.239.223.234"

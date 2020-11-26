@@ -1,0 +1,11 @@
+---
+- name: Find enabled sites
+  shell: ls -1 {{ nginx_conf_dir }}/conf.d/sites-enabled || true
+  register: enabled_sites
+  changed_when: False
+  tags: [remove-site,nginx]
+
+- name: Disable unmanaged sites
+  file: path={{nginx_conf_dir}}/conf.d/sites-enabled/{{ item.value.server_name }}.conf state=absent
+  with_dict: "{{ nginx_unmanaged_sites | default({}) }}"
+  tags: [remove-site,nginx]

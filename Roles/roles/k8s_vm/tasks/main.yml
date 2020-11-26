@@ -1,0 +1,122 @@
+---
+
+#======== Firewalld
+- name: Be sure firewalld is disabled
+  systemd: 
+    name: firewalld
+    state: stopped
+    enabled: no
+  ignore_errors: yes
+  tags:
+    - k8s_vm
+
+
+#======== ntpd/ntpdate
+- name: Stop service ntp
+  systemd:
+    name: ntpd
+    state: stopped
+    enabled: no    
+  tags:
+    - k8s_vm
+
+- name: Install ntpdate
+  yum: 
+    name: ntpdate
+    state: latest
+  become: yes
+  tags:
+    - k8s_vm
+
+- name: Remove localtime
+  command: rm -f /etc/localtime
+  become: yes
+  tags:
+    - k8s_vm
+
+- name: Link Timezone +7
+  command: ln -sf /usr/share/zoneinfo/Asia/Ho_Chi_Minh /etc/localtime
+  become: yes
+  tags:
+    - k8s_vm
+
+- name: Update Time
+  command: ntpdate pool.ntp.org
+  become: yes
+  tags:
+    - k8s_vm
+
+- name: Start ntpdate
+  service: 
+    name: ntpdate
+    state: started
+    enabled: yes
+  tags:
+    - k8s_vm
+
+
+#======== Change hostname
+#- name: Change hostname
+#  hostname:
+#    name: "{{ hostname }}"
+#  tags:
+#    - k8s_vm
+
+
+#======== Update OS
+- name: Upgrade all packages
+  yum:
+    name: '*'
+    state: latest
+  tags:
+    - k8s_vm
+
+
+#======== Install docker
+- name: Uninstall Docker Old
+  yum:
+    name:
+      - docker
+      - docker-client
+      - docker-client-latest
+      - docker-common
+      - docker-latest
+      - docker-latest-logrotate
+      - docker-logrotate
+      - docker-engine  
+    state: absent
+  tags:
+    - k8s_vm
+
+- name: Install Docker version {{ docker_version }}
+  yum:
+    name:
+      - https://download.docker.com/linux/centos/7/x86_64/stable/Packages/docker-ce-{{ docker_version }}-3.el7.x86_64.rpm
+      - https://download.docker.com/linux/centos/7/x86_64/stable/Packages/docker-ce-cli-{{ docker_version }}-3.el7.x86_64.rpm
+      - https://download.docker.com/linux/centos/7/x86_64/stable/Packages/containerd.io-1.2.6-3.3.el7.x86_64.rpm
+    state: present
+  tags:
+    - k8s_vm
+
+- name: Start Docker service
+  service:
+    name: docker
+    state: started
+    enabled: yes
+  tags:
+    - k8s_vm
+
+
+#======== Clear if join cluster failed =======
+- name: Transfer the script
+  copy:
+    src: clear.sh
+    dest: /home
+    mode: 0777
+  tags:
+    - clear
+
+- name: Execute the script
+  command: sh /home/clear.sh
+  tags:
+    - clear

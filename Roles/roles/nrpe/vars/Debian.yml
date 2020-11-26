@@ -1,0 +1,15 @@
+---
+# nrpe_user
+nrpe_user: nagios
+# nrpe_group
+nrpe_group: nagios
+# plugin
+nrpe_plugin_path: /usr/lib/nagios/plugins
+# service name
+nagios_service_name: nagios-nrpe-server
+
+nrpe_sudoers_d_path: /etc/sudoers.d
+nrpe_sudoers_d_path_name: nrpe-sudoers
+nrpe_config_d_path: /etc/nagios/nrpe.d
+#template nrpe.cfg
+nrpe_pid_file: /var/run/nagios/nrpe.pid

@@ -1,0 +1,88 @@
+---
+# tasks file for ansible-openstack-mariadb
+- name: Add galera repo
+  yum_repository:
+    name: "{{ galera_repo.name }}"
+    description: "{{ galera_repo.description }}"
+    baseurl: "{{ galera_repo.baseurl }}"
+    gpgkey: "{{ galera_repo.gpgkey | default(omit) }}"
+    gpgcheck: yes
+    enabled: yes
+  register: add_repos
+  until: add_repos is success
+  retries: 5
+  delay: 2
+
+- name: Install OpenStack mariadb packages
+  package:
+    name: "{{ item }}"
+    state: "latest"
+  with_items:
+    - mariadb 
+    - mariadb-server 
+    - python2-PyMySQL
+    - MySQL-python
+  register: install_package
+  until: install_package is success
+  retries: 5
+  delay: 2
+
+- name: remove mailformed ip address
+  lineinfile:
+    regexp: (?<!{{ hostvars[item].ansible_host }})\s+{{ item }}
+    state: absent
+    dest: "/etc/hosts"
+  with_items: "{{ groups['databases'] }}"
+  become: true
+
+- name: remove mailformed hostname
+  lineinfile:
+    regexp: '^{{ hostvars[item].ansible_host }}\s+(?!{{ item }})'
+    state: absent
+    dest: "/etc/hosts"
+  with_items: "{{ groups['databases'] }}"
+  become: true
+
+- name: add appropriate ip <=> hostname mapping
+  lineinfile:
+    line: "{{ hostvars[item].ansible_host }} {{ item }}"
+    dest: "/etc/hosts"
+  with_items: "{{ groups['databases'] }}"
+  become: true
+- name: Creates directory
+  file:
+    path: /data/log/{{item}}
+    state: directory
+    owner: mysql
+    group: mysql
+    mode: 0775
+  with_items:
+    - mysql
+    - mysqld
+    - mysqld/tmpdir/
+  register: create_directory
+  until: create_directory is success
+  retries: 5
+  delay: 2
+- name: Creates directory
+  file:
+    path: /data/lib/mysql
+    state: directory
+    owner: mysql
+    group: mysql
+    mode: 0775
+  register: create_directory
+  until: create_directory is success
+  retries: 5
+  delay: 2
+
+- name: copy config mariadb
+  template:
+    src: server.cnf.j2
+    dest: /etc/my.cnf.d/server.cnf
+  tags: test
+- name: Ensure mariabd started and enabled
+  systemd:
+    name: mariadb
+    state: started
+    enabled: true

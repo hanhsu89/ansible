@@ -1,0 +1,9 @@
+[DEFAULT]
+
+nova_metadata_host = {{ internal_vip_address | default(groups['controller'][0]) }}
+metadata_proxy_shared_secret = {{ metadata_secret }}
+
+[agent]
+
+[cache]
+memcached_servers = {% for host in groups['controller'] %}{{ hostvars[host]['inventory_hostname'] }}:11211{% if not loop.last %},{% endif %}{% endfor %}

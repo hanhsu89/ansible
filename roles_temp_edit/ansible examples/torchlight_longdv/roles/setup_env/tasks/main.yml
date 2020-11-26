@@ -1,0 +1,67 @@
+---
+- name: Check for EPEL repo
+  yum: name={{ item }} state=present
+  with_items:
+    - https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
+    - https://mirror.its.sfu.ca/mirror/CentOS-Third-Party/NSG/common/x86_64/jdk-7u80-linux-x64.rpm
+
+- name: "iptables vs rsync"
+  yum:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - iptables
+    - libselinux-python
+    - rsync
+    - nrpe
+    - atop
+    - htop
+    - vim
+
+- name: restart iptables vs rsync
+  service: name={{ item }} state=restarted
+  with_items:
+    - iptables
+    - nrpe
+
+- name: add user
+  user: name="{{ item }}"
+  with_items:
+    - web
+    - light1
+
+- name: Add ssh pub keys
+  authorized_key: user="{{ item.name }}" key="{{ item.key }}"
+  with_items:
+    - name: web
+      key: "{{ lookup('file', 'web') }}"
+  #  - name: root
+  #    key: "{{ lookup('file', 'root') }}"
+
+
+- name: mkdir
+  shell: name=`mkdir -p `
+
+- name: "add file"
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: "{{ item.mode }}"
+    owner: root
+    group: root
+  with_items:
+    - { src: 'iptables', dest: '/etc/sysconfig/iptables', mode: '600'}
+    - { src: 'backup.sh', dest: '/usr/local/bin/backup.sh', mode: '755'}
+    - { src: 'close_iptables', dest: '/usr/local/bin/close_iptables', mode: '644'}
+    - { src: 'clear_data.sh', dest: '/usr/local/bin/clear_data.sh', mode: '755'}
+    - { src: 'setup_server.sh', dest: '/usr/local/bin/setup_server.sh', mode: '755'}
+    - { src: 'update.sh', dest: '/usr/local/bin/update.sh', mode: '755'}
+    - { src: 'key_system', dest: '/root/.ssh/authorized_keys', mode: '600'}
+
+- name: "crontab"
+  cron:
+    name: "backup"
+    minute: "30"
+    hour: "3"
+    job: /usr/local/bin/backup.sh
+    user: root

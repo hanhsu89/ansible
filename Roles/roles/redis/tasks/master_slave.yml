@@ -1,0 +1,113 @@
+---
+
+- name: Update the /etc/hosts file with node name
+  lineinfile:
+    dest: "/etc/hosts"
+    regexp: ".*\t{{ hostvars[item]['ansible_hostname']}}\t{{ hostvars[item]['ansible_hostname']}}"
+    line: "{{ hostvars[item]['ansible_default_ipv4']['address'] }}\t{{ hostvars[item]['ansible_hostname']}}"
+    state: present
+    backup: yes
+  with_items: "{{groups['redis']}}"
+
+- name: Install Necessary Packages
+  apt:
+    name:
+      - make
+      - gcc
+      - libc6-dev
+      - tcl
+      - build-essential
+      - pkg-config
+    state: present         
+    update_cache: yes
+    force_apt_get: yes
+
+- name: Create redis user and group
+  block:
+    - group:
+        name: redis
+        state: present
+        system: yes
+    - user:
+        name: redis
+        comment: 'Redis'
+        shell: /bin/false
+        group: redis
+        system: yes
+        state: present
+        create_home: no
+
+- name: Download and build redis stable from source
+  block:
+    - unarchive:
+        src: "{{ redis_url }}"
+        remote_src: yes
+        dest: /tmp
+        mode: 0755
+        owner: root
+        creates: /tmp/redis-stable
+    - command: make -C /tmp/redis-stable MALLOC=libc
+    - command: cp /tmp/redis-stable/src/{{ item }} /usr/local/bin/
+      loop:
+        - redis-server
+        - redis-sentinel
+        - redis-cli
+        - redis-check-aof
+        - redis-benchmark
+        - redis-check-rdb
+
+- name: Create neccessary directory
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: redis
+    group: redis
+    mode: 0755
+    recurse: Yes
+  loop:
+    - /var/log/redis_cluster/master
+    - /var/log/redis_cluster/slave
+    - /var/lib/redis_cluster/master
+    - /var/lib/redis_cluster/slave
+    - /var/run/redis_cluster
+    - /etc/redis
+
+- name: Create redis-server-master service
+  template:
+    src: redis-server-master.service.j2
+    dest: /etc/systemd/system/redis-server-master.service
+
+- name: Create redis-server-slave service
+  template:
+    src: redis-server-slave.service.j2
+    dest: /etc/systemd/system/redis-server-slave.service
+
+- name: Create redis-server-master config file
+  template:
+    src: redis-master.conf.j2
+    dest: /etc/redis/redis-server-master.conf
+    mode: 0644
+    owner: redis
+    group: redis
+
+- name: Create redis-server-slave config file
+  template:
+    src: redis-slave.conf.j2
+    dest: /etc/redis/redis-server-slave.conf
+    mode: 0644
+    owner: redis
+    group: redis
+
+- name: Ensure redis-server-master is running and enabled
+  systemd:
+    name: redis-server-master
+    state: started
+    enabled: yes
+    daemon_reload: yes
+
+- name: Ensure redis-server-slave is running and enabled
+  systemd:
+    name: redis-server-slave
+    state: started
+    enabled: yes
+    daemon_reload: yes

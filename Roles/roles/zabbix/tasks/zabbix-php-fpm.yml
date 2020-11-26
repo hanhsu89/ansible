@@ -1,0 +1,13 @@
+---
+
+- name: Copy config check php-fpm
+  template:
+    src=userparameters_php_fpm.j2
+    dest=/etc/zabbix/zabbix_agentd.d/userparameters_php_fpm.conf
+    mode=0644
+
+- name: Copy script check PHP-FPM
+  template:
+    src=php-fpm.xml.j2
+    dest=/etc/zabbix/scripts/php-fpm.xml.sh
+    mode=0755

@@ -1,0 +1,6 @@
+---
+
+- copy:
+    src: /tmp/abc_key
+    dest: /var/tmp/abc_key
+  when: not primary and primary is defined    

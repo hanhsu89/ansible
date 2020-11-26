@@ -1,0 +1,48 @@
+---
+- name: Be sure configure bind to interface
+  lineinfile:
+    path: /etc/redis/redis-sentinel.conf
+    regexp: '^bind'
+    line: "bind {{ ansible_all_ipv4_addresses | ipaddr('172.16.0.0/16') | first }}"
+    backrefs: yes
+  tags: redis-master-slave
+
+- name: Configure sentinel monitor cluster
+  lineinfile:
+    path: /etc/redis/redis-sentinel.conf
+    regexp: '^sentinel monitor'
+    line: "sentinel monitor {{ cluster_name }} {{ master_nodes }} {{ redis_port }} {{ total_slave_nodes }}"
+    backrefs: yes
+  tags: redis-master-slave
+
+- name: Configure sentinel auth pass
+  lineinfile:
+    path: /etc/redis/redis-sentinel.conf
+    regexp: '^# sentinel auth-pass'
+    line: "sentinel auth-pass {{ cluster_name }} {{ auth_pass }}"
+    backrefs: yes
+  tags: redis-master-slave
+
+- name: Configure sentinel time detect status of master nodes
+  lineinfile:
+    path: /etc/redis/redis-sentinel.conf
+    regexp: '^sentinel down\-after\-milliseconds'
+    line: "sentinel down-after-milliseconds {{ cluster_name }} 5000"
+    backrefs: yes
+  tags: redis-master-slave
+
+- name: Configure sentinel slave nodes parallel sync
+  lineinfile:
+    path: /etc/redis/redis-sentinel.conf
+    regexp: '^sentinel parallel\-syncs'
+    line: "sentinel parallel-syncs {{ cluster_name }} 1"
+    backrefs: yes
+  tags: redis-master-slave
+
+- name: Configure sentinel failover timeout
+  lineinfile:
+    path: /etc/redis/redis-sentinel.conf
+    regexp: '^sentinel failover-timeout'
+    line: "sentinel failover-timeout {{ cluster_name }} 30000"
+    backrefs: yes
+  tags: redis-master-slave

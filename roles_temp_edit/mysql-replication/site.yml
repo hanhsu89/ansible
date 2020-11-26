@@ -1,0 +1,6 @@
+---
+- name: prepare common environment
+  hosts: databases
+  become: true
+  roles:
+      - mariadb-replication

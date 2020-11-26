@@ -1,0 +1,24 @@
+#jinja2: lstrip_blocks: True, trim_blocks: True
+# Common settings
+{% if role == "master" %}
+port 6379
+requirepass {{ redis.password | hash('sha1') }}
+{% else %}
+port 9736
+masterauth {{ redis.password | hash('sha1') }}
+{% endif %}
+logfile "/var/log/redis/redis_cluster/{{ role }}/redis-server.log"
+dir "/var/lib/redis_cluster/{{ role }}"
+pidfile "/var/run/redis/redis_cluster/{{ role }}.pid"
+daemonize yes
+supervised no
+loglevel notice
+maxmemory 0
+maxmemory-policy volatile-lru
+appendonly yes
+protected-mode yes
+
+# Cluster settings
+cluster-enabled yes
+cluster-config-file nodes.conf
+cluster-node-timeout 5000

@@ -1,0 +1,6 @@
+# - name: Install and configure haproxy
+#   include: haproxy.yml
+
+- name: Install and configure keepalived
+  include: keepalived.yml
+  tags: keepalived

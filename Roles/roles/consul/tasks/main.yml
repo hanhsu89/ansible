@@ -1,0 +1,120 @@
+---
+
+- name: Update the /etc/hosts file with nodes name
+  lineinfile:
+    dest: "/etc/hosts"
+    regexp: ".*\t{{ hostvars[item]['ansible_hostname']}}\t{{ hostvars[item]['ansible_hostname']}}"
+    line: "{{ hostvars[item]['ansible_default_ipv4']['address'] }}\t{{ hostvars[item]['ansible_hostname']}}"
+    state: present
+    backup: yes
+  with_items: "{{groups['consul']}}"
+
+- name: Add Consul group
+  group: 
+    name: "{{ consul_group }}"
+    state: present
+
+- name: Add Consul user
+  user: 
+    name: "{{ consul_user }}"
+    group: "{{ consul_group }}"
+    state: present
+    shell: /usr/sbin/nologin
+    create_home: false
+
+- name: Setup Consul folders
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ consul_user }}"
+    group: "{{ consul_group }}"
+  with_items:
+    - /opt/consul
+    - /var/consul
+    - /etc/consul.d
+    - /var/lib/consul
+    - /var/log/consul
+
+- name: Install unzip command
+  apt: 
+    name: 
+      - unzip
+    state: present
+    update_cache: yes
+    force_apt_get: yes    
+
+- name: Download & Unpack Consul v{{CONSUL_VERSION}}
+  unarchive:
+    remote_src: Yes
+    src: "https://releases.hashicorp.com/consul/{{CONSUL_VERSION}}/consul_{{CONSUL_VERSION}}_linux_{{ go_arch }}.zip"
+    dest: /usr/local/bin/
+    owner: "{{ consul_user }}"
+    group: "{{ consul_group }}"
+    mode: '0755'
+
+- name: Create consul service file
+  template:
+    src: consul.service.j2
+    dest: /etc/systemd/system/consul.service
+
+- name: Copy logrotate conf
+  template:
+    src: logrotate.j2
+    dest: /etc/logrotate.d/consul
+    mode: 0644
+
+- name: Start consul service
+  service:
+    name: consul
+    state: started
+    enabled: yes
+    daemon_reload: yes
+
+- name: Create consul encryption key
+  command: 'consul keygen'
+  register: keygen
+  run_once: true
+
+- name: Get consul encryption key
+  set_fact:
+    key: "{{ keygen.stdout }}"
+    cacheable: Yes
+
+- name: Create consul config file
+  template:
+    src: consul.json.j2
+    dest: "/etc/consul.d/consul.json"
+    owner: "{{ consul_user }}"
+    group: "{{ consul_group }}"
+    mode: 0644
+
+- name: Restart consul service
+  service:
+    name: consul
+    state: restarted
+    enabled: yes
+    daemon_reload: yes
+
+# - name: Allow intra net access to Consul TCP
+#   iptables:
+#     chain: INPUT
+#     protocol: tcp
+#     source: 10.0.0.0/8
+#     destination_port: '8300'
+#     jump: ACCEPT
+
+# - name: Allow intra net access to Consul HTTP API
+#   iptables:
+#     chain: INPUT
+#     protocol: tcp
+#     source: 10.0.0.0/8
+#     destination_port: '8500'
+#     jump: ACCEPT
+
+# - name: Allow intra net access to Consul DNS
+#   iptables:
+#     chain: INPUT
+#     protocol: tcp
+#     source: 10.0.0.0/8
+#     destination_port: '8600'
+#     jump: ACCEPT

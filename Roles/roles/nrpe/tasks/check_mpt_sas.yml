@@ -1,0 +1,64 @@
+---
+- name: check_mpt_sas | copy rpm file to server
+  become: yes
+  copy: >
+    src="{{ mpt_status_rpm_file }}"
+    dest="/tmp/{{ mpt_status_rpm_file }}"
+    mode=0644
+    owner=root
+    group=root
+  when: ansible_os_family == "RedHat" or ansible_os_family == "Debian"
+
+- name: check_mpt_sas | install mpt-status
+  become: yes
+  yum: name="/tmp/{{ mpt_status_rpm_file }}" state=present
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "6"
+
+- name: check_mpt_sas | remove rpm file after install
+  become: yes
+  file: >
+    path="/tmp/{{ mpt_status_rpm_file }}"
+    state=absent
+  when: ansible_os_family == "RedHat"
+
+- name: check_mpt_sas | modprobe mptctl
+  become: yes
+  command: modprobe mptctl
+  when: ansible_os_family == "RedHat"
+
+- name: check_mpt_sas | depmod -a
+  become: yes
+  command: depmod -a
+  when: ansible_os_family == "RedHat"
+
+- name: check_mpt_sas | find id of SCSI
+  become: yes
+  shell: /usr/sbin/mpt-status -p | grep Found | cut -c15
+  register: scsi_id_result
+
+- name: check_mpt_sas | set the fact for the other scripts to use
+  become: yes
+  set_fact: scsi_id="{{ scsi_id_result.stdout }}"
+
+- name: check_mpt_sas | copy check_mpt script
+  become: yes
+  template: >
+    src=check_mpt.j2
+    dest="{{ mpt_sas_plugin_path }}"
+    mode=0755
+    owner=root
+    group=root
+  when: ansible_os_family == "RedHat"
+
+- name: check_mpt_sas | edit sudoers file with Fusion-MPT SAS
+  become: yes
+  lineinfile: >
+    dest=/etc/sudoers
+    line="{{ item }}"
+    validate='visudo -cf %s'
+  with_items:
+    - "Defaults:{{ nrpe_user }} !requiretty"
+    - "Defaults:{{ nrpe_user }} !syslog"
+    - "{{ nrpe_user }} ALL=(ALL) NOPASSWD:{{ mpt_status_path }}"
+  notify: restart nrpe
+  when: ansible_os_family == "RedHat"

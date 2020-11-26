@@ -1,0 +1,106 @@
+#jinja2: lstrip_blocks: True, trim_blocks: True
+#---------------------------------------------------------------------
+# Global settings
+#---------------------------------------------------------------------
+global
+  log         {{ haproxy.log_setting }}
+  chroot      /var/lib/haproxy
+  pidfile     /var/run/haproxy.pid
+  user        haproxy
+  group       haproxy
+  daemon
+  cpu-map 1-{{ ansible_processor_count // 2 }} 0-{{ (ansible_processor_count // 2) - 1 }}
+  nbproc {{ ansible_processor_count // 2 }}
+
+#---------------------------------------------------------------------
+# Default settings
+#---------------------------------------------------------------------
+defaults
+  mode                    tcp
+  log                     global
+  option                  tcp-smart-accept
+  option                  tcp-smart-connect
+  option                  tcplog
+  option                  dontlognull
+  option                  log-health-checks
+  option                  tcp-check
+  retries                 3
+  timeout queue           1m
+  timeout connect         10s
+  timeout client          1m
+  timeout server          1m
+  timeout check           10s
+
+#---------------------------------------------------------------------
+# HAProxy Exporter for Prometheus
+#---------------------------------------------------------------------
+frontend stats
+  bind-process 2
+  bind :8404
+  mode http
+  option http-use-htx
+  http-request use-service prometheus-exporter if { path /metrics }
+  stats enable
+  stats uri /stats
+  stats refresh 10s
+
+#---------------------------------------------------------------------
+# Nginx Ingress HTTP frontend
+#---------------------------------------------------------------------
+frontend http
+  bind :80
+  mode tcp
+  option tcplog
+  use_backend http
+
+#---------------------------------------------------------------------
+# Nginx Ingress HTTPS frontend
+#---------------------------------------------------------------------
+frontend https
+  bind :443
+  mode tcp
+  option tcplog
+  use_backend https
+
+#---------------------------------------------------------------------
+# Kubernetes APIs frontend
+#---------------------------------------------------------------------
+frontend k8s_apis
+  bind :6443
+  mode tcp
+  option tcplog
+  use_backend k8s_apis
+  default_backend k8s_apis
+
+#---------------------------------------------------------------------
+# Nginx Ingress HTTP backend
+#---------------------------------------------------------------------
+backend http
+  balance source
+  mode    tcp
+  option tcp-check
+  {% for host in groups['worker'] -%}
+  server {{ host }} {{ hostvars[host]['ansible_default_ipv4']['address'] }}:30080 check inter 5 rise 3 fall 2 send-proxy check-send-proxy
+  {% endfor -%}
+
+#---------------------------------------------------------------------
+# Nginx Ingress HTTPS backend
+#---------------------------------------------------------------------
+backend https
+  balance source
+  mode    tcp
+  option tcp-check
+  {% for host in groups['worker'] -%}
+  server {{ host }} {{ hostvars[host]['ansible_default_ipv4']['address'] }}:30443 check inter 5 rise 3 fall 2 send-proxy check-send-proxy
+  {% endfor -%}
+
+#---------------------------------------------------------------------
+# Kubernetes APIs backend
+#---------------------------------------------------------------------
+backend k8s_apis
+  balance source
+  mode    tcp
+  option  tcp-check
+  {% for host in groups['master'] -%}
+  server {{ host }} {{ hostvars[host]['ansible_default_ipv4']['address'] }}:6443 check inter 5 rise 3 fall 2
+  {% endfor -%}

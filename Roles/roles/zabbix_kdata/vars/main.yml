@@ -1,0 +1,8 @@
+zabbix_server_sql_path    : "/usr/share/doc/zabbix-server-mysql-{{ zabbix_server_major }}.{{ zabbix_server_minor }}.{{ zabbix_server_revision }}"
+zabbix_server_sql_files   :
+         - "{{ zabbix_server_sql_path }}/images.sql"
+         - "{{ zabbix_server_sql_path }}/data.sql"
+zabbix_proxy_sql_path     : "/usr/share/doc/zabbix-proxy-mysql-{{ zabbix_server_major }}.{{ zabbix_server_minor }}.{{ zabbix_server_revision }}"
+zabbix_proxy_sql_file     : "{{ zabbix_proxy_sql_path }}/schema.sql.gz"
+
+zabbix_external_scrpits   : "/usr/lib/zabbix/externalscripts"

@@ -1,0 +1,38 @@
+---
+
+- name: Disable selinux temporary
+  command: setenforce 0
+  ignore_errors: True
+
+- name: Disable selinux after reboot
+  selinux:
+    state: disabled
+
+- name: Install Epel Repo
+  yum:
+    name: epel-release
+    state: present
+
+- name: install required yum packages
+  yum:
+    name:
+      - wget
+      - gcc
+      - gcc-c++
+      - make
+      - perl
+      - perl-devel
+      - perl-ExtUtils-Embed
+      - GeoIP
+      - GeoIP-devel
+      - pcre
+      - pcre-devel
+      - zlib
+      - zlib-devel
+      - openssl
+      - openssl-devel
+      - git
+      - net-tools
+      - vim
+      - bind-utils
+    state: present

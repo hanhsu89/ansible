@@ -1,0 +1,20 @@
+---
+- hosts: login
+  roles:
+    - role: ansible-role-nginx
+      nginx_unmanaged_sites:
+        khanh-dantri-com-69690751484.kdatacdn.net:
+            server_name: khanh-dantri-com-69690751484.kdatacdn.net
+        lvtc.cdn.gamota.net:
+            server_name: lvtc.cdn.gamota.net
+            user: 'kdatacdn'
+            group: 'kdatacdn'
+            admin_email: 'lvtc@kdata.vn'
+            disabled_site: True
+
+        touch.cdn.gamota.net:
+            server_name: touch.cdn.gamota.net
+            user: 'kdatacdn'
+            group: 'kdatacdn'
+            admin_email: 'touch@kdata.vn'
+            disabled: True

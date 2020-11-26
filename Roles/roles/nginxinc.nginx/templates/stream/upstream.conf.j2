@@ -1,0 +1,19 @@
+{% if item.value.upstreams is defined and item.value.upstreams %}
+{% for upstream in item.value.upstreams %}
+upstream {{ item.value.upstreams[upstream].name }} {
+{% if item.value.upstreams[upstream].server1 is defined %}
+    server {{ item.value.upstreams[upstream].server1 }};
+{% endif %}
+{% if item.value.upstreams[upstream].server2 is defined %}
+    server {{ item.value.upstreams[upstream].server2 }};
+{% endif %}
+{% if item.value.upstreams[upstream].keepalive is defined %}
+    keepalive {{ item.value.upstreams[upstream].keepalive }};
+{% endif %}
+{% if item.value.upstreams[upstream].ip_hash is sameas true %}
+    ip_hash;
+{% endif %}
+}
+{% endfor %}
+{% endif %}
+

@@ -1,0 +1,43 @@
+---
+os_controller_primary_node: "{{ groups['controller'][0] }}"
+
+# install controller
+cinder_controller_packages: 
+  - openstack-cinder
+# cinder.conf
+##RabbitMQ RPC
+cinder_rpc_executor_thread_pool_size: 64
+cinder_rpc_response_timeout: 60
+rabbitmq_auth_password: Jd0Hs5XHmFrJzPTW
+
+## Quota
+cinder_quota_volumes: 10
+cinder_quota_snapshots: 10
+cinder_quota_consistencygroups: 10
+cinder_quota_gigabytes: 10
+cinder_quota_backups: 10
+cinder_quota_backup_gigabytes: 10
+##databases
+cinder_user_password: Jd0Hs5XHmFrJzPTW
+cinder_lock_path: /var/lib/cinder/tmp
+#service_setup
+internal_vip_address: controller1
+
+#databases-setup
+galera_root_user: root  
+galera_root_password: Jd0Hs5XHmFrJzPTW
+glance_galera_address: "{{ galera_address | default('controller1') }}"
+cinder_galera_database: cinder
+cinder_galera_user: cinder
+cinder_controller_setup_host: "{{ ('controller' in groups) | ternary(groups['controller'][0], 'controller') }}"
+
+# Install block-node
+cinder_block_packages:
+  - openstack-cinder 
+  - targetcli 
+  - python-keystone
+## volume_type
+cinder_volume_type: scaleio
+scaleio_san_ip: 10.0.0.101
+scaleio_san_password: 'Kdata@@123'
+scaleio_san_login: admin

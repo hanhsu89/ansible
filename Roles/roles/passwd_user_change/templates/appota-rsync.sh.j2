@@ -1,0 +1,14 @@
+#!/bin/bash
+#IP=$(/sbin/ifconfig | grep 192.168.15 | awk -F':' '{print $2}' | awk '{print $1}')
+#rsync -Pav --delete /data/dbbackup/* root@192.168.15.8:/data/$IP/
+#echo $(date) IP is $IP >> /root/log.txt
+
+##########################update thucnk########################
+#!/bin/bash
+#IP=$(/sbin/ifconfig | grep 192.168.15 | awk -F':' '{print $2}' | awk '{print $1}')
+#rsync -Pav --delete /data/dbbackup/* root@192.168.15.8:/data/$IP/
+#echo $(date) IP is $IP >> /root/log.txt
+
+#!/bin/bash
+IP=$(/sbin/ifconfig | grep 192.168.15 | awk -F':' '{print $2}' | awk '{print $1}')
+rsync -rvz -e ssh --delete /data/dbbackup root@192.168.15.8:/data/$IP/

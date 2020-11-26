@@ -1,0 +1,5 @@
+php-fpm_user              : "nginx"
+php-fpm_group             : "nginx"
+nginx_www_dir             : "/usr/local/nginx/html"
+# PHP-FPM Config for Nginx
+php_socket                : "/var/run/php-fpm.socket"

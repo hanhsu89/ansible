@@ -1,0 +1,51 @@
+# mongod.conf
+
+# for documentation of all options, see:
+#   http://docs.mongodb.org/manual/reference/configuration-options/
+
+# where to write logging data.
+systemLog:
+  destination: file
+  logAppend: true
+  path: {{ path_systemlog }}
+
+# Where and how to store data.
+storage:
+  dbPath: {{ path_storage_db }}
+  journal:
+    enabled: true
+  directoryPerDB: true
+    
+#  engine:
+#  mmapv1:
+#  wiredTiger:
+
+# how the process runs
+processManagement:
+  fork: true  # fork and run in background
+  pidFilePath: {{ path_pidfile }}  # location of pidfile
+
+# network interfaces
+net:
+  port: {{ mongodb_port }}
+  bindIp: 0.0.0.0  # Listen to local interface only, comment to listen on all interfaces.
+
+operationProfiling:
+  slowOpThresholdMs: 200
+  mode: slowOp
+  slowOpSampleRate: 100
+  
+#security:
+#  authorization: "enabled"
+#  keyFile: /data/mongodb.key
+
+#replication:
+#  replSetName: mongodb-rs
+
+#sharding:
+
+## Enterprise-Only Options
+
+#auditLog:
+
+#snmp:

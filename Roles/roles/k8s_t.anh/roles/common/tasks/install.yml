@@ -1,0 +1,14 @@
+---
+- name: Install common packages
+  apt:
+    name:
+      - htop
+      - tree
+      - tmux
+      - iftop
+      - iotop
+    state: present
+    update_cache: yes
+    install_recommends: no
+    force_apt_get: Yes
+  when: dns is succeeded

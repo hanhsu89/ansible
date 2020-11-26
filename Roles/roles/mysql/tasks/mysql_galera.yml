@@ -1,0 +1,142 @@
+---
+
+- name: Disable selinux temporary
+  command: setenforce 0
+  ignore_errors: True
+  tags: 
+    - mysql
+    - mysql_repl
+    - mysql_galera
+
+- name: Disable selinux after reboot
+  selinux:
+    state: disabled
+  tags: 
+    - mysql
+    - mysql_repl
+    - mysql_galera
+
+- name: Repo MariaDB CentOS 7
+  template:
+    src: MariaDB-CentOS.repo.j2
+    dest: /etc/yum.repos.d/MariaDB.repo
+    mode: 0644
+  tags: 
+    - mysql
+    - mysql_repl
+    - mysql_galera
+
+- name: Install MariaDB
+  yum:
+    name:
+      - MariaDB-server
+      - MariaDB-client
+      - galera
+    state: present
+  when: ansible_os_family == 'RedHat'
+  tags: 
+    - mysql
+    - mysql_repl
+    - mysql_galera
+
+- name: Create log directory
+  file: 
+    path: "{{ item }}"
+    state: directory
+    owner: mysql
+    group: mysql
+  with_items:
+    - /var/log/mysql
+    - /var/log/mysqld
+    - /var/log/mysqld/tmpdir
+  tags: 
+    - mysql
+    - mysql_repl
+    - mysql_galera
+
+- name: Start MariaDB service
+  service:
+    name: mariadb
+    state: started
+    enabled: yes    
+  tags: 
+    - mysql
+
+#===== Percona_XtraBackup
+- name: Install Packages
+  yum:
+    name:
+      - libev
+    state: present
+
+- name: CentOS | Install the Percona repository
+  yum:
+    name:
+      - https://repo.percona.com/yum/percona-release-latest.noarch.rpm
+    state: present
+  when: ansible_os_family == 'RedHat'
+
+- name: CentOS | Install Percona XtraBackup
+  yum:
+    name:
+      - percona-xtrabackup-{{ xtrabackup_version }}
+    state: present
+  when: ansible_os_family == 'RedHat'
+
+
+#======== Config for Replication =======
+- name: MariaDB_Master Config
+  template:
+    src: server.cnf.j2
+    dest: /etc/my.cnf.d/server.cnf
+    mode: 0644
+  notify:
+    - restart mariadb 
+  tags: 
+    - mysql_repl
+
+- name: Create replication user
+  mysql_user:
+    name: "replica"
+    password: "replica123@"
+    host: "{{ hostvars[groups['mysql_repl'][1]].node_host }}"
+    #priv: "*.*:SUPER,REPLICATION CLIENT"
+    priv: "*.*:REPLICATION SLAVE"
+    state: present    
+  tags: 
+    - mysql_repl  
+
+
+#======== Config for Galera =======
+- name: MariaDB_Galera Config for DB01_{{ hostvars[groups['mysql_galera'][0]].node_host }}
+  template:
+    src: server.cnf_galera_db1.j2
+    dest: /etc/my.cnf.d/server.cnf
+    mode: 0644
+  when: roles == "db01"
+  notify:
+    - restart mariadb 
+  tags: 
+    - mysql_galera
+
+- name: MariaDB_Galera Config for DB02_{{ hostvars[groups['mysql_galera'][1]].node_host }}
+  template:
+    src: server.cnf_galera_db2.j2
+    dest: /etc/my.cnf.d/server.cnf
+    mode: 0644
+  when: roles == "db02"
+  notify:
+    - restart mariadb 
+  tags: 
+    - mysql_galera
+
+- name: MariaDB_Galera Config for DB03_{{ hostvars[groups['mysql_galera'][2]].node_host }}
+  template:
+    src: server.cnf_galera_db3.j2
+    dest: /etc/my.cnf.d/server.cnf
+    mode: 0644
+  when: roles == "db03"
+  notify:
+    - restart mariadb 
+  tags: 
+    - mysql_galera

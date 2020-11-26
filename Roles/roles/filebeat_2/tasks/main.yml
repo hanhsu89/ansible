@@ -1,0 +1,13 @@
+---
+
+- include: filebeat_install.yml
+  tags:
+  - filebeat_install
+
+- include: filebeat_add_logs.yml
+  tags:
+  - filebeat_new_log
+
+- include: filebeat_logstash.yml
+  tags:
+  - filebeat_logstash

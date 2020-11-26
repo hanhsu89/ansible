@@ -1,0 +1,25 @@
+[Unit]
+Description=vault service
+Requires=network-online.target
+After=network-online.target
+ConditionFileNotEmpty=/etc/opt/vault/config.json
+
+[Service]
+User=root
+Group=root
+
+EnvironmentFile=-/etc/sysconfig/vault
+Environment=GOMAXPROCS=2
+Restart=on-failure
+
+ExecStart=/usr/bin/vault server -config=/etc/opt/vault/config.json
+
+StandardOutput=/var/log/vault/output.log
+StandardError=/var/log/vault/error.log
+
+LimitMEMLOCK=infinity
+ExecReload=/bin/kill -HUP
+KillSignal=SIGTERM
+
+[Install]
+WantedBy=multi-user.target

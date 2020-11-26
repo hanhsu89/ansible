@@ -1,0 +1,6 @@
+---
+- name: Connect to Gluster peers
+  shell: "gluster peer probe {{ cluster_2 }}"
+  register: gluster_peer_probe
+  changed_when: "'already in peer list' not in gluster_peer_probe.stdout"
+  failed_when: false

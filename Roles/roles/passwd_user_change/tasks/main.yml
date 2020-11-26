@@ -1,0 +1,6 @@
+- name: Ansible change passwd 
+  become: yes
+  user:
+     name: root 
+     password: '$6$mBLbtCno$63okry0dSl2XzzYgp6.3MgPlPtDbDF0RefQY2pHqcjulQIaWIHe9DkwQcOwYRyE6q9i4c3/6XhVy2CMDtueE2.'
+

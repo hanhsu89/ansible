@@ -1,0 +1,9 @@
+---
+- name: Config Nginx                 | Nginx
+  template:
+    src: nginx.conf.j2
+    dest: /usr/local/nginx/conf.d/conf.games/{{domain}}.conf
+- name: Reload nginx                 | Nginx
+  service:
+    name: nginx
+    state: reloaded

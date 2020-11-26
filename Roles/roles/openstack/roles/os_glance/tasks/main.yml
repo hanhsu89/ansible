@@ -1,0 +1,11 @@
+---
+- include: glance_install.yml
+  tags: glance_install
+- include: glance_db_setup.yml
+  when: inventory_hostname == os_controller_primary_node
+  tags: glance_db
+- include: glance_service_setup.yml
+  when: inventory_hostname == os_controller_primary_node
+
+#- include: glance_upload_image.yml
+- meta: flush_handlers

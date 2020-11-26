@@ -1,0 +1,9 @@
+---
+#- name: "Include {{ ansible_os_family }}.yml"
+#  include_tasks: "{{ ansible_os_family }}.yml"
+#  args:
+#    apply:
+#      tags: common
+#  tags: always
+
+- include: "{{ ansible_os_family }}.yml"

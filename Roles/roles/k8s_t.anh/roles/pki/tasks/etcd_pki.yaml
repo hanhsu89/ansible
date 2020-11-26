@@ -1,0 +1,102 @@
+- name: Generate etcd private key
+  openssl_privatekey:
+    path: '{{ pki_etcd_path }}/etcd-key.pem'
+
+- name: Generate etcd CSR
+  openssl_csr:
+    path: '{{ pki_etcd_path }}/etcd.csr'
+    privatekey_path: '{{ pki_etcd_path }}/etcd-key.pem'
+    basic_constraints: "CA:FALSE"
+    basic_constraints_critical: True
+    key_usage:
+      - digitalSignature
+      - keyEncipherment
+    key_usage_critical: True
+    extended_key_usage:
+      - serverAuth
+    common_name: 'etcd'
+    country_name: '{{ country }}'
+    locality_name: '{{ location }}'
+    organization_name: '{{ organization }}'
+    organizational_unit_name: '{{ organization_unit }}'
+    subject_alt_name:
+      - DNS:*.{{ root_dns }}
+      - DNS:localhost
+      - IP:127.0.0.1
+
+- name: Generate etcd certificate
+  openssl_certificate:
+    path: '{{ pki_etcd_path }}/etcd.pem'
+    csr_path: '{{ pki_etcd_path }}/etcd.csr'
+    ownca_path: '{{ pki_path }}/ca.pem'
+    ownca_privatekey_path: '{{ pki_path }}/ca-key.pem'
+    provider: ownca
+    ownca_not_after: +{{ expire_days }}
+
+- name: Generate etcd-peer private key
+  openssl_privatekey:
+    path: '{{ pki_etcd_path }}/etcd-peer-key.pem'
+
+- name: Generate etcd-peer CSR
+  openssl_csr:
+    path: '{{ pki_etcd_path }}/etcd-peer.csr'
+    privatekey_path: '{{ pki_etcd_path }}/etcd-peer-key.pem'
+    basic_constraints: "CA:FALSE"
+    basic_constraints_critical: True
+    key_usage:
+      - digitalSignature
+      - keyEncipherment
+    key_usage_critical: True
+    extended_key_usage:
+      - serverAuth
+      - clientAuth
+    common_name: 'etcd-peer'
+    country_name: '{{ country }}'
+    locality_name: '{{ location }}'
+    organization_name: '{{ organization }}'
+    organizational_unit_name: '{{ organization_unit }}'
+    subject_alt_name:
+      - DNS:*.{{ root_dns }}
+      - DNS:localhost
+      - IP:127.0.0.1
+
+- name: Generate etcd-peer certificate
+  openssl_certificate:
+    path: '{{ pki_etcd_path }}/etcd-peer.pem'
+    csr_path: '{{ pki_etcd_path }}/etcd-peer.csr'
+    ownca_path: '{{ pki_path }}/ca.pem'
+    ownca_privatekey_path: '{{ pki_path }}/ca-key.pem'
+    provider: ownca
+    ownca_not_after: +{{ expire_days }}
+
+- name: Generate etcd-healthcheck-client private key
+  openssl_privatekey:
+    path: '{{ pki_etcd_path }}/etcd-healthcheck-client-key.pem'
+
+- name: Generate etcd-healthcheck-client CSR
+  openssl_csr:
+    path: '{{ pki_etcd_path }}/etcd-healthcheck-client.csr'
+    privatekey_path: '{{ pki_etcd_path }}/etcd-healthcheck-client-key.pem'
+    basic_constraints: "CA:FALSE"
+    basic_constraints_critical: True
+    key_usage:
+      - digitalSignature
+      - keyEncipherment
+    key_usage_critical: True
+    extended_key_usage:
+      - serverAuth
+      - clientAuth
+    common_name: 'etcd-healthcheck-client'
+    country_name: '{{ country }}'
+    locality_name: '{{ location }}'
+    organization_name: '{{ organization }}'
+    organizational_unit_name: '{{ organization_unit }}'
+
+- name: Generate etcd-healthcheck-client certificate
+  openssl_certificate:
+    path: '{{ pki_etcd_path }}/etcd-healthcheck-client.pem'
+    csr_path: '{{ pki_etcd_path }}/etcd-healthcheck-client.csr'
+    ownca_path: '{{ pki_path }}/ca.pem'
+    ownca_privatekey_path: '{{ pki_path }}/ca-key.pem'
+    provider: ownca
+    ownca_not_after: +{{ expire_days }}

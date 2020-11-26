@@ -1,0 +1,68 @@
+---
+- name: Repo MariaDB v10
+  template:
+    src: MariaDB-CentOS.repo.j2
+    dest: /etc/yum.repos.d/MariaDB.repo
+    mode: 0644
+
+- name: Install MySQL v5.7
+  yum:
+    name:
+      - MariaDB-server
+      - MariaDB-client
+    state: present    
+
+- name: Create log directory
+  file: 
+    path: "{{ item }}"
+    state: directory
+    owner: mysql
+    group: mysql
+  with_items:
+    - /var/log/mysql
+    - /var/log/mysqld
+    - /var/log/mysqld/tmpdir
+
+- name: Start MySQL Service
+  service:
+    name: mariadb
+    state: started
+    enabled: yes    
+
+#== Config Master
+- name: MySQL_Master Config
+  template:
+    src: server.cnf.j2
+    dest: /etc/my.cnf.d/server.cnf
+    mode: 0644
+
+- name: Restart MySQL Service
+  service:
+    name: mariadb
+    state: restarted
+
+#==
+#- name: Create a database
+#  sudo: yes
+#  mysql_db: 
+#    name: "{{ db_name }}"
+#    collation: "{{ collation }}"
+#    encoding: "{{ encoding }}"
+#    state: present
+
+- name: Create user_hanhnn
+  mysql_user:
+    name: "{{ hanhnn_user }}"
+    password: "{{ hanhnn_pass }}"
+    host: "%"
+    priv: "*.*:All,GRANT"
+    state: present
+
+- name: Create replication user
+  mysql_user:
+    name: "{{ replication_user.name }}"
+    password: "{{ replication_user.pass }}"
+    host: "{{ slave_ip }}"
+    #priv: "*.*:SUPER,REPLICATION CLIENT"
+    priv: "*.*:REPLICATION SLAVE"
+    state: present    

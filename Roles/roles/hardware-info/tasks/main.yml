@@ -1,0 +1,62 @@
+---
+- name: check dmidecode command exist
+  become: yes
+  stat: path=/usr/sbin/dmidecode
+  register: dmidecode_command
+  when: ansible_os_family == "RedHat"
+
+- name: check MegaCli64 command exist
+  become: yes
+  stat: path=/opt/MegaRAID/MegaCli/MegaCli64
+  register: megacli64_command
+  when: ansible_os_family == "RedHat"
+
+- name: install dmidecode command
+  become: yes
+  yum: name=dmidecode state=latest
+  when: ansible_os_family == "RedHat" and dmidecode_command.stat.exists == False
+
+- name: get RAM info
+  become: yes
+  shell: dmidecode -t memory | egrep "Serial Number|Size" | egrep -v "SerNum|No Module"
+  register: ram_info
+  when: ansible_os_family == "RedHat"
+
+- name: get Baseboard info
+  become: yes
+  shell: dmidecode -t baseboard | grep -A 1 "Manufacturer"
+  register: baseboard_info
+  when: ansible_os_family == "RedHat"
+
+- name: get Inquiry Data
+  become: yes
+  shell: /opt/MegaRAID/MegaCli/MegaCli64 -PDList -aALL -NoLog | grep "Inquiry Data"
+  register: disk_info
+  when: ansible_os_family == "RedHat"
+
+- name: get RAID card info
+  become: yes
+  shell: /opt/MegaRAID/MegaCli/MegaCli64 -AdpAllInfo -aALL -NoLog | grep -A 1 "Product Name"
+  register: raid_card_info
+  when: ansible_os_family == "RedHat"
+
+- name: get CPU info
+  become: yes
+  shell: grep 'model name' /proc/cpuinfo | uniq -c
+  register: cpu_info
+  when: ansible_os_family == "RedHat"
+
+- name: copy content of RAM info
+  local_action: copy content="{{ ram_info.stdout }}" dest="~/Desktop/{{ ansible_default_ipv4.address }}_ram_info.txt"
+
+- name: copy content of Baseboard info
+  local_action: copy content="{{ baseboard_info.stdout }}" dest="~/Desktop/{{ ansible_default_ipv4.address }}_baseboard_info.txt"
+
+- name: copy content of Disk info
+  local_action: copy content="{{ disk_info.stdout }}" dest="~/Desktop/{{ ansible_default_ipv4.address }}_disk_info.txt"
+
+- name: copy content of RAID card info
+  local_action: copy content="{{ raid_card_info.stdout }}" dest="~/Desktop/{{ ansible_default_ipv4.address }}_raid_card_info.txt"
+
+- name: copy content of CPU info
+  local_action: copy content="{{ cpu_info.stdout }}" dest="~/Desktop/{{ ansible_default_ipv4.address }}_cpu_info.txt"

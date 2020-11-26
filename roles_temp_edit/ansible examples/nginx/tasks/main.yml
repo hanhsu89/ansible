@@ -1,0 +1,17 @@
+---
+
+- import_tasks: nginx_debian.yml
+  when: ansible_os_family == "Debian"
+  tags: nginx_install
+
+- import_tasks: nginx_redhat.yml
+  when: ansible_os_family == "RedHat"
+  tags: nginx_install
+
+- include: nginx_install.yml
+  tags: nginx_install
+
+- include: nginx_vhost.yml
+  with_items:
+    - "{{ nginx_vhost_domain }}"
+  tags: nginx_vhost

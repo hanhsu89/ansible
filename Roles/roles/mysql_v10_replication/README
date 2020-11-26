@@ -1,0 +1,35 @@
+Install MySQL_MariaDB Replication
+=========
+
+1. Change host: vars > main.yml
+	master_ip: 192.168.10.81
+	slave_ip: 192.168.10.82
+------------
+
+2. Change hosts in hosts file
+	[srv_master]
+	192.168.10.81
+
+	[srv_slave]
+	192.168.10.82
+------------
+
+3. Change server_id in Templates
+	server.cnf.j2 			// Master
+	server.cnf.j2_slave  	// Slave
+--------------
+
+4. Install:
+	Master:
+		ansible-playbook -i hosts site.yml --limit='srv_master' --tags master_install
+	Slave:
+		ansible-playbook -i hosts site.yml --limit='srv_slave' --tags slave_install
+--------------
+
+5. Check
+	* Master:
+		MariaDB [(none)]> SHOW MASTER STATUS\G
+	* Slave
+		MariaDB [(none)]> SHOW SLAVE STATUS\G	
+
+	* Create DB in Master => check in Slave

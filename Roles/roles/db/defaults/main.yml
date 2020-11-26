@@ -1,0 +1,5 @@
+mongo:
+  keyfile: "/etc/mongod/keyFile"
+  user: "fwork"
+  password: "FWork@123"
+  replset: "rs0"

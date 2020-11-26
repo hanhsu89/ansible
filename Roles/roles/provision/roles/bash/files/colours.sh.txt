@@ -1,0 +1,8 @@
+#!/bin/bash
+# If id command returns zero, you’ve root access.
+if [ $(id -u) -eq 0 ];
+then # you are root, set red colour prompt
+  PS1="\[\e[31;1m\][\u@\[\e[31;1m\]\h \W]# \[\e[0m\]"
+else # normal
+  PS1="[\u@\h \W]\$ "
+fi

@@ -1,0 +1,50 @@
+---
+os_controller_primary_node: "{{ groups['controller'][0] }}"
+
+# install neutron
+neutron_server_packages:
+  - openstack-neutron
+  - openstack-neutron-ml2
+  - ebtables
+neutron_node_packages:
+  - openstack-neutron  
+  - openstack-neutron-ml2
+  - openstack-neutron-openvswitch
+
+# config template. 
+# config databases
+galera_root_user: root  
+galera_root_password: Jd0Hs5XHmFrJzPTW
+#neutron_galera_address: "{{ neutron_galera_address | default(groups['controller'][0])  }}"
+neutron_galera_user: neutron
+neutron_galera_database: neutron
+neutron_db_setup_host: "{{ ('database' in groups) | ternary(groups['database'][0], groups['controller'][0]) }}"
+neutron_user_password: Jd0Hs5XHmFrJzPTW
+
+
+## neutron.conf
+neutron_network_options: provider
+internal_vip_address: controller1
+nova_password: Jd0Hs5XHmFrJzPTW
+rabbitmq_password: Jd0Hs5XHmFrJzPTW
+neutron_api_workers: 24
+neutron_rpc_workers: 6
+## metadata_agent
+metadata_secret: Jd0Hs5XHmFrJzPTW
+## ml2
+neutron_selfservice_networks:
+  mechanism_drivers: openvswitch,l2population
+  type_drivers: flat,vlan,vxlan
+  service_plugins: router
+  type: vxlan
+  vxlan_vni_ranges: 100:1000
+
+neutron_provider_networks:
+  mechanism_drivers: openvswitch
+  type_drivers: flat,vlan
+  neutron_flat_networks: "provider"
+  neutron_vlan_ranges: "provider"
+neutron_self_service_l3_agent_package: neutron-l3-agent
+
+neutron_compute_node_apt_packages:
+  - neutron-linuxbridge-agent

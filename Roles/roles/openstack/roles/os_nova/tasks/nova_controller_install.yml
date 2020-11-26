@@ -1,0 +1,23 @@
+---
+- name: install nova controller server packages
+  package:
+    name: "{{ item }}"
+    state: latest
+  register: packages_install
+  until: packages_install is success
+  retries: 5
+  delay: 2
+  with_items:
+    - "{{ nova_server_packages }}"
+  when: inventory_hostname in groups['controller']
+
+- name: Place nova.conf 
+  template:
+    src: "nova.conf.j2"
+    dest: "/etc/nova/nova.conf"
+
+- name: Place 00-nova-placement-api.conf
+  template:
+    src: "nova.conf.j2"
+    dest: "/etc/nova/nova.conf"
+  when: inventory_hostname in groups['controller']

@@ -1,0 +1,89 @@
+---
+
+- name: Install vhost Nginx Config File for backend
+  template:
+    src: vhost-backend.j2
+    dest: "{{ nginx_nossl_dir }}/{{ item.name }}.conf"
+    mode: 0644
+  notify: reload nginx
+  when:
+    - inventory_hostname in item.backend
+    - roles == "backend"
+
+- name: Install vhost Nginx Config File HTTP for Loadbalancer
+  template:
+    src: vhost-nossl-lb.j2
+    dest: "{{ nginx_nossl_dir }}/{{ item.name }}.conf"
+    mode: 0644
+  notify:
+    - reload nginx
+  when:
+    - item.ssl == "http"
+    - roles == "loadbalancer"
+
+- name: Install vhost Nginx Config File HTTP CloudFlare for Loadbalancer
+  template:
+    src: vhost-nossl-lb.j2
+    dest: "{{ nginx_nossl_dir }}/{{ item.name }}.conf"
+    mode: 0644
+  notify:
+    - update cloudflare ip
+    - reload nginx
+  when:
+    - item.ssl == "cloudflare"
+    - roles == "loadbalancer"
+
+- name: Copy certificate for vhosts with SSL not use Let's Encrypt
+  copy:
+    src: "{{ item.name }}"
+    dest: "{{ nginx_certs_dir }}"
+    mode: 0644
+  when:
+    - item.ssl == "https"                                         
+    - roles == "loadbalancer"
+
+- name: Install vhost Nginx Config File with SSL Certificate non-Let's Encrypt
+  template:
+    src: vhost-ssl-lb.j2
+    dest: "{{ nginx_ssl_dir }}/{{ item.name }}.conf"
+    mode: 0644
+  notify: reload nginx
+  when:
+    - item.ssl == "https"
+    - roles == "loadbalancer" 
+
+- name: Check if certificate already exists.
+  stat:
+    path: /etc/letsencrypt/live/{{ item.name }}/fullchain.pem
+  register: letsencrypt_cert
+  when: 
+    - item.ssl == "letsencrypt"
+    - inventory_hostname in item.lb_master
+
+- name: Install Temp vhost nginx config file to generate Certificate SSL Certificate Let's Encrypt
+  template:
+    src: letsencrypt-vhost.j2
+    dest: "{{ nginx_ssl_dir }}/{{ item.name }}.conf"
+    mode: 0644
+  when: 
+    - item.ssl == "letsencrypt"
+    - inventory_hostname in item.lb_master
+  notify:
+     - reload nginx - after config check
+
+- name: Generate new certificate if one doesn't exist.
+  shell: "{{ certbot_create_command }}"
+  when: 
+    - item.ssl == "letsencrypt"
+    - inventory_hostname in item.lb_master
+    - not letsencrypt_cert.stat.exists
+
+- name: Update vhost nginx config file to generate Certificate SSL Certificate Let's Encrypts
+  template:
+    src: vhost-ssl-lb.j2
+    dest: "{{ nginx_ssl_dir }}/{{ item.name }}.conf"
+    mode: 0644
+  when: 
+    - item.ssl == "letsencrypt"
+    - roles == "loadbalancer" 
+  notify: reload nginx

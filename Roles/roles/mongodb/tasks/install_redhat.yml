@@ -1,0 +1,168 @@
+---
+- name: Disable selinux temporary
+  command: setenforce 0
+  ignore_errors: True
+  tags: 
+    - mongo
+    - mongo_repl
+
+- name: Disable selinux after reboot
+  selinux:
+    state: disabled
+  tags: 
+    - mongo
+    - mongo_repl
+
+- name: Repo MongoDB v4.0
+  template:
+    src: mongodb-org-4.0.repo.j2
+    dest: /etc/yum.repos.d/mongodb-org-4.0.repo
+    mode: 0644
+  tags: 
+    - mongo
+    - mongo_repl
+
+- name: Install MongoDB v4.0
+  yum:
+    name:
+      - mongodb-org
+      - mongodb-org-server
+      - mongodb-org-shell
+      - mongodb-org-mongos
+      - mongodb-org-tools
+    state: present
+  tags: 
+    - mongo
+    - mongo_repl
+
+- name: Create Data/Log Directory
+  file: 
+    path: "{{ item }}"
+    state: directory
+    owner: mongod
+    group: mongod
+  with_items:
+    - /data
+    - /data/mongodb
+    - /data/log/mongodb       
+    - /var/lib/mongo
+  tags: 
+    - mongo
+    - mongo_repl
+
+- name: Update host to /etc/hosts
+  blockinfile:
+    path: /etc/hosts
+    content: |
+        {{ hostvars[groups['mongodb'][0]].host_mongo }} {{ hostvars[groups['mongodb'][0]].name_mongo }}
+        {{ hostvars[groups['mongodb'][1]].host_mongo }} {{ hostvars[groups['mongodb'][1]].name_mongo }}
+        {{ hostvars[groups['mongodb'][2]].host_mongo }} {{ hostvars[groups['mongodb'][2]].name_mongo }}        
+  tags: 
+    - mongo_repl
+
+- name: deamon-reload
+  systemd:
+    daemon_reload: yes 
+  tags: 
+    - mongo
+    - mongo_repl
+    
+- name: Copy config file to /etc/mongod.conf
+  template:
+    src: mongod.conf.j2
+    dest: /etc/mongod.conf
+    mode: 0644
+  notify:
+    - start service
+  tags: 
+    - mongo
+
+#- name: Create keyfile
+#  shell: openssl rand -base64 756 > /data/mongodb_replicaset.key
+#  args:
+#    creates: mongodb_replicaset.key
+#  tags:
+#    - mongo_repl
+
+#- name: chmod keyfile
+#  file:
+#    path: /data/mongodb_replicaset.key
+#    owner: mongod
+#    group: mongod    
+#    mode: 0600
+#  tags:
+#    - mongo_repl
+
+- name: Copy config file to /etc/mongod.conf
+  template:
+    src: mongod_repl.conf.j2
+    dest: /etc/mongod.conf
+    mode: 0644
+  notify:
+    - start service
+  tags: 
+    - mongo_repl
+
+- name: Copy file initiate replica set to /tmp
+  template: 
+    src: replSetInit.j2
+    dest: /tmp/replSetInit.js
+  when: roles == "master"
+  notify:
+    - start service  
+  tags: 
+    - mongo_repl 
+
+- name: Restart Service
+  service:
+    name: mongod
+    state: restarted
+    enabled: True
+  tags:
+    - mongo
+    - mongo_repl       
+
+- name: Initialize the replica set
+  command: mongo -port {{ hostvars[groups['mongodb'][0]].port_mongo }} /tmp/replSetInit.js
+  when: roles == "master"
+  tags: 
+    - mongo_repl
+
+
+#========== Uninstall MongoDB ========
+- name: Stop Service
+  service:
+    name: mongod
+    state: stopped
+  tags:
+    - mongo_uninstall
+
+- name: Delete folders/files config
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - /data 
+    - /var/lib/mongo
+    - /var/run/mongodb/mongod.pid
+  tags:
+    - mongo_uninstall    
+
+- name: Copy file bash uninstall MongoDB to /tmp
+  template: 
+    src: uninstall.sh.j2
+    dest: /tmp/uninstall.sh
+    mode: 0775
+  tags: 
+    - mongo_uninstall
+
+- name: Run file bash to remove MongoDB
+  shell: /tmp/uninstall.sh
+  tags: 
+    - mongo_uninstall
+
+- name: deamon-reload
+  systemd:
+    daemon_reload: yes 
+  tags: 
+    - mongo_uninstall  

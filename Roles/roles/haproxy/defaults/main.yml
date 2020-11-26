@@ -1,0 +1,9 @@
+---
+# defaults file for haproxy
+# Link: http://www.haproxy.org/download/2.2/src/
+
+haproxy_major: 2.2
+haproxy_version: 2.2.4
+
+haproxy_group: haproxy
+haproxy_user: haproxy

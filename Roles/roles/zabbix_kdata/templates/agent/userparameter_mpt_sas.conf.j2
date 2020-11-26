@@ -1,0 +1,2 @@
+UserParameter=mptstatus.volumestate[*],sudo mpt-status -i $1|grep vol_id|grep -o "state [A-Z]*"
+UserParameter=mptstatus.onlinedevices[*],sudo mpt-status -i $1|grep -c "scsi_id.*state ONLINE"

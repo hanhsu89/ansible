@@ -1,0 +1,42 @@
+
+#====> Result is too long :))) => Not USE
+- name: checking service status
+  command: systemctl status docker
+  register: result
+  ignore_errors: yes
+
+- name: showing report
+  debug:
+    var: result
+
+
+
+
+######################## OK
+- name: Check status of docker service
+  service_facts:
+  register: service_state
+
+- debug:
+    var: service_state.ansible_facts.services["docker.service"].state
+
+===> OUTPUT
+TASK [docker : debug] **************************************************************************************************************************
+ok: [192.168.206.240] => {
+    "service_state.ansible_facts.services[\"docker.service\"].state": "running"
+
+
+
+#======================
+# Active: inactive (dead) since Thu 2020-10-15 16:02:43 +07; 2s ago
+
+    - name: Check if mongod is active
+      command: systemctl status sshd
+      register: deb_check
+      ignore_errors: yes
+      no_log: True
+      failed_when: false
+
+    - name: Raise a flag whenever the service should be stopped
+      notify: stop mongod
+      when: '"dead" in deb_check.stdout'

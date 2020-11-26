@@ -1,0 +1,41 @@
+---
+
+- name: Disable selinux temporary
+  command: setenforce 0
+  ignore_errors: True
+
+- name: Disable selinux after reboot
+  selinux:
+    state: disabled
+
+- name: Repo Mongo CentOS 7
+  template:
+    src=mongod-3.4.repo.j2
+    dest=/etc/yum.repos.d/mongod-3.4.repo
+    mode=0644
+
+- name: Install Mongo-Server
+  yum:
+    name:
+      - mongodb-org-server
+      - mongodb-org-mongos
+      - mongodb-org-tools
+      - mongodb-org-shell
+      - mongodb-org
+    state: present
+
+- name: Create optional datadir
+  file: 
+    path: "{{ item }}"
+    state: directory
+    owner: mongod
+    group: mongod
+  with_items:
+    - /data/lib/mongo
+
+- name: File config mongod
+  template:
+    src=mongod.conf.j2
+    dest=/etc/mongod.conf
+    mode=0644
+    backup=yes

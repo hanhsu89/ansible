@@ -1,0 +1,24 @@
+---
+
+- name: Add galera repo
+  yum_repository:
+    name: "{{ galera_repo.name }}"
+    description: "{{ galera_repo.description }}"
+    baseurl: "{{ galera_repo.baseurl }}"
+    gpgkey: "{{ galera_repo.gpgkey | default(omit) }}"
+    gpgcheck: yes
+    enabled: yes
+  register: add_repos
+  until: add_repos is success
+  retries: 5
+  delay: 2
+
+
+- name: Install galera_server role remote packages
+  package:
+    name: "{{ galera_packages_list }}"
+    state: "present"
+  register: install_remote_packages
+  until: install_remote_packages is success
+  retries: 5
+  delay: 2

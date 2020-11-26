@@ -1,0 +1,5 @@
+---
+- name: yum | install remi repo
+  become: yes
+  yum: name="{{ remi_url }}" state=present
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"

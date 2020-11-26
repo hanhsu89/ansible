@@ -1,0 +1,118 @@
+- name: Create the installation directories
+  file:
+    path: '{{ item }}'
+    state: directory
+    recurse: Yes
+  loop:
+    - /etc/cni/net.d
+    - /etc/containerd
+    - /opt/cni/bin
+    - /var/lib/kubelet
+    - /var/run/kubernetes
+    - /etc/kubernetes/config
+
+- name: Install neccessary packages
+  apt:
+    name:
+      - socat
+      - conntrack
+      - ipset
+    state: present
+    update_cache: Yes
+    install_recommends: no
+
+- name: Download kubelet binaries
+  get_url:
+    url: https://storage.googleapis.com/kubernetes-release/release/v{{ k8s_version }}/bin/linux/amd64/kubelet
+    dest: /usr/local/bin/
+    mode: 0755
+
+- name: Download CNI and CRI plugins
+  get_url:
+    url: '{{ item }}'
+    dest: /tmp/
+  loop:
+    - https://github.com/containernetworking/plugins/releases/download/v{{ cni_version }}/cni-plugins-linux-amd64-v{{ cni_version }}.tgz
+    - https://storage.googleapis.com/cri-containerd-release/cri-containerd-{{ cri_version }}.linux-amd64.tar.gz
+
+- name: Install CNI plugins
+  unarchive:
+    remote_src: Yes
+    src: /tmp/cni-plugins-linux-amd64-v{{ cni_version }}.tgz
+    dest: /opt/cni/bin/
+
+- name: Install CRI plugins
+  unarchive:
+    remote_src: Yes
+    src: /tmp/cri-containerd-{{ cri_version }}.linux-amd64.tar.gz
+    dest: /
+    mode: 0755
+    extra_opts:
+      - --no-overwrite-dir
+      - ./usr/local/bin/crictl
+      - ./usr/local/bin/containerd
+      - ./usr/local/bin/containerd-shim
+      - ./usr/local/sbin/runc
+      - ./etc/crictl.yaml
+
+- name: Remove CNI and CRI plugins tar.gz file
+  file:
+    path: '/tmp/{{ item }}'
+    state: absent
+  loop:
+    - cni-plugins-linux-amd64-v{{ cni_version }}.tgz
+    - cri-containerd-{{ cri_version }}.linux-amd64.tar.gz
+
+- name: Create the containerd configuration file
+  copy:
+    src: config.toml
+    dest: /etc/containerd
+
+- name: Copy CA certificate to worker servers
+  copy:
+    src: '{{ pki_path }}/ca.pem'
+    dest: '/etc/kubernetes/certs/'
+
+- name: Create the kubelet-config.yaml configuration file
+  template:
+    src: kubelet-config.yaml.j2
+    dest: /etc/kubernetes/config/kubelet-config.yaml
+
+- name: Create kubeconfig file for kubelet
+  template:
+    src: '{{ kubeconfig_dir }}/{{ item }}.conf'
+    dest: '/etc/kubernetes/config/kubelet.conf'
+  loop: "{{ groups['worker'] }}"
+
+- name: Create worker services
+  template:
+    src: '{{ item.src }}'
+    dest: '{{ item.dest }}'
+  loop:
+    - { src: containerd.service.j2, dest: /etc/systemd/system/containerd.service }
+    - { src: kubelet.service.j2, dest: /etc/systemd/system/kubelet.service }
+
+- name: Config sysctl for containerd
+  copy:
+    src: 99-kubernetes-cri.conf
+    dest: /etc/sysctl.d/99-kubernetes-cri.conf
+  notify:
+    - reload sysctl
+
+- name: Be sure worker services is running and enabled
+  systemd:
+    name: '{{ item }}'
+    state: started
+    enabled: Yes
+    daemon_reload: Yes
+  loop:
+    - containerd
+    - kubelet
+
+- name: Deploy kube-proxy component on worker servers
+  include: kube-proxy.yml
+  when: kube_router is not defined
+
+- name: Deploy kube-router component on worker servers
+  include: kube-router.yml
+  when: kube_router is defined

@@ -1,0 +1,64 @@
+---
+- name: Install Logstash
+  yum: 
+    name: logstash
+    state: installed
+
+# Creating certs directories for SSL
+#- name: Creates SSL directories
+#  file:
+#    path: 
+#      - /etc/pki/tls/certs
+#      - /etc/pki/tls/private
+#    state: directory
+
+# Update SSL to restrict outside access
+#- name: Updating the config file to restrict outside access
+#  template:
+#    src: openssl.cnf.j2
+#    dest: /etc/pki/tls/openssl.cnf
+#    owner: root
+#    group: root
+#    mode: 0644
+
+# Generate SSL Certificates
+#- name: Generate SSL certificates
+#  shell: "openssl req -config /etc/pki/tls/openssl.cnf -x509 -days 3650 -batch -nodes -newkey rsa:2048 -keyout /etc/pki/tls/private/logstash-forwarder.key -out /etc/pki/tls/certs/logstash-forwarder.crt"
+
+# Configure Beats config file
+- name: Configure Beats config file
+  template:
+    src: filebeat-input.conf.j2
+    dest: /etc/logstash/conf.d/filebeat-input.conf
+    owner: root
+    group: root
+    mode: 0644
+
+# Configure Logstash 10-syslog-filter.conf config file
+- name: Configure Syslog Filter
+  template:
+    src: syslog-filter.conf.j2
+    dest: /etc/logstash/conf.d/syslog-filter.conf
+    owner: root
+    group: root
+    mode: 0644  
+
+# Configure Elasticsearch output file 30-elasticsearch-output.conf
+- name: Configure Elasticsearch output file
+  template:
+    src: elasticsearch-output.conf.j2
+    dest: /etc/logstash/conf.d/elasticsearch-output.conf
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Enable Logstash service
+  systemd:
+    name: logstash
+    enabled: yes    
+    
+- name: Start Logstash service
+  systemd:
+    name: logstash
+    state: started
+    daemon_reload: yes

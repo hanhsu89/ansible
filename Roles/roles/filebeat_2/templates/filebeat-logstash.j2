@@ -1,0 +1,20 @@
+path.home: /usr/share/filebeat
+path.config: /etc/filebeat
+path.data: /var/lib/filebeat
+path.logs: /var/log/filebeat
+
+filebeat.registry_file: /var/lib/filebeat/registry
+
+filebeat.config.prospectors:
+  enabled: true
+  path: ${path.config}/conf.d/*.yml
+
+output.logstash:
+  hosts: ["logstash.appotapay.com:5054"]
+  ssl:
+    certificate_authorities: ["/etc/filebeat/ssl/ca.crt"]
+    certificate: "/etc/filebeat/ssl/beat.crt"
+    key: "/etc/filebeat/ssl/beat.key"
+
+setup.template:
+  enabled: false

@@ -1,0 +1,53 @@
+---
+
+postgresql_version: 10
+
+postgres_user: postgres
+postgres_password: psql123@
+role_attr_flags_user_postgres: SUPERUSER,CREATEROLE,CREATEDB,REPLICATION,BYPASSRLS
+
+
+db_name: hanhnn_test
+db_user: hanhsu
+db_password: 123@hanhsu
+
+postgresql_service_name: postgresql-10
+
+role_attr_flags: SUPERUSER
+role_attr_flags_replication: replication
+
+postgresql_data_dir: /var/lib/pgsql/10/data
+postgresql_conf_dir: /var/lib/pgsql/10/data
+postgresql_exec_dir: /usr/pgsql-10/bin
+
+password_pg_basebackup: replication123@
+
+
+#=============== For Replication
+
+synchronous_standby_names: pgslave01
+
+postgresql_streaming_master: 192.168.10.82
+postgresql_streaming_slaves: 192.168.10.83
+
+
+
+# Config
+postgresql_conf_default_values_master:
+  - { regexp: "^#?listen_addresses = .*$", value: "listen_addresses = '*'" }
+  - { regexp: "^#?wal_level = .*$", value: "wal_level = hot_standby" }
+  - { regexp: "^#?synchronous_commit = .*$", value: "synchronous_commit = {{'local'}}"}
+  - { regexp: "^#?archive_mode = .*$", value: "archive_mode = {{ 'on' }}" }
+  - { regexp: "^#?archive_command = .*$", value: "archive_command = '{{ 'cp %p /var/lib/pgsql/10/archive/%f' }}'" }
+  - { regexp: "^#?max_wal_senders = .*$", value: "max_wal_senders = {{ '2' }}" }
+  - { regexp: "^#?wal_keep_segments = .*$", value: "wal_keep_segments = {{ 10 }}" }
+  - { regexp: "^#?synchronous_standby_names = .*$", value: "synchronous_standby_names = '{{ 'pgslave01' }}'" }
+
+postgresql_conf_default_values_slave:
+  - { regexp: "^#?listen_addresses = .*$", value: "listen_addresses = '*'" }
+  - { regexp: "^#?hot_standby = .*$", value: "hot_standby = on" }
+
+# Replication 
+postgresql_replication_user:
+  name: replication
+  pass: replication123@

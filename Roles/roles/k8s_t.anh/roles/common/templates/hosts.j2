@@ -1,0 +1,15 @@
+#jinja2: lstrip_blocks: True, trim_blocks: False
+127.0.0.1	{{ inventory_hostname }} localhost
+{% for host in groups['all'] %}
+{%- if host in groups['loadbalancer'] %}
+{%- set dev = hostvars[host]['ansible_interfaces'] | difference(['lo', hostvars[host]['ansible_default_ipv4']['interface']]) %}
+{%- for item in dev %}
+{{ hostvars[host]['ansible_' + item]['ipv4']['address'] }}	{{ host }} {{ k8s.etcd_url }} {{ k8s.apis_url }}
+{%- endfor -%}
+{% else -%}
+{%- set dev = hostvars[host]['ansible_interfaces'] | difference(['lo']) %}
+{%- for item in dev %}
+{{ hostvars[host]['ansible_' + item]['ipv4']['address'] }}	{{ host }} {{ host }}.{{ root_dns }}
+{%- endfor %}
+{%- endif %}
+{% endfor -%}

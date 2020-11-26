@@ -1,0 +1,56 @@
+{
+  "clusters": [
+    {
+      "nodes": [
+        {
+          "node": {
+            "hostnames": {
+              "manage": [
+                "{{ hostvars[groups['glusterfs'][0]].name_gfs }}"
+              ],
+              "storage": [
+                "{{ hostvars[groups['glusterfs'][0]].host_gfs }}"
+              ]
+            },
+            "zone": {{ heketi_zone }}
+          },
+          "devices": [
+            "{{ heketi_topo_device }}"
+          ]
+        },
+        {
+          "node": {
+            "hostnames": {
+              "manage": [
+                "{{ hostvars[groups['glusterfs'][1]].name_gfs }}"
+              ],
+              "storage": [
+                "{{ hostvars[groups['glusterfs'][1]].host_gfs }}"
+              ]
+            },
+            "zone": {{ heketi_zone }}
+          },
+          "devices": [
+            "{{ heketi_topo_device }}"
+          ]
+        },
+        {
+          "node": {
+            "hostnames": {
+              "manage": [
+                "{{ hostvars[groups['glusterfs'][2]].name_gfs }}"
+              ],
+              "storage": [
+                "{{ hostvars[groups['glusterfs'][2]].host_gfs }}"
+              ]
+            },
+            "zone": {{ heketi_zone }}
+          },
+          "devices": [
+            "{{ heketi_topo_device }}"
+          ]
+        }
+      ]
+    }
+  ]
+}

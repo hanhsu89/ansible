@@ -1,0 +1,16 @@
+
+#- name: Create keyfile
+#  shell: openssl rand -base64 756 > /data/mongodb_replicaset.key
+#  args:
+#    creates: mongodb_replicaset.key
+#  tags:
+#    - mongo_repl
+
+#- name: chmod keyfile
+#  file:
+#    path: /data/mongodb_replicaset.key
+#    owner: mongod
+#    group: mongod    
+#    mode: 0600
+#  tags:
+#    - mongo_repl

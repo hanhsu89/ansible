@@ -1,0 +1,33 @@
+---
+- name: common | Add zabbix.com repository key
+  become: yes
+  yum: name={{ zabbix_release_centos7 }} state=present
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"
+
+- name: common | Add zabbix.com repository key
+  become: yes
+  yum: name={{ zabbix_release_centos6 }} state=present
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "6"
+
+- name: common | Add zabbix.com repository key
+  become: yes
+  apt: deb={{ zabbix_release_ubuntu18 }} state=present
+  when: ansible_distribution == "Ubuntu18" and ansible_distribution_major_version == "18"
+
+- name: common | Add zabbix.com repository key
+  become: yes
+  apt: deb={{ zabbix_release_ubuntu16 }} state=present
+  when: ansible_distribution == "Ubuntu16" and ansible_distribution_major_version == "16"
+
+- name: common | Add zabbix.com repository key
+  become: yes
+  apt: deb={{ zabbix_release_ubuntu14 }} state=present
+  when: ansible_distribution == "Ubuntu14" and ansible_distribution_major_version == "14"
+
+- name: common | Disable GPG check of Zabbix repo
+  become: yes
+  replace: >
+    dest=/etc/yum.repos.d/zabbix.repo
+    regexp='^gpgcheck=1'
+    replace='gpgcheck=0'
+  when: ansible_os_family == "RedHat"

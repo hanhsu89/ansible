@@ -1,0 +1,48 @@
+---
+
+- name: Disable selinux temporary
+  command: setenforce 0
+  ignore_errors: True
+
+- name: Disable selinux after reboot
+  selinux:
+    state: disabled
+
+- name: Repo MariaDB CentOS 7
+  template:
+    src: MariaDB-CentOS.repo.j2
+    dest: /etc/yum.repos.d/MariaDB.repo
+    mode: 0644
+
+- name: Install MariaDB
+  yum:
+    name:
+      - MariaDB-server
+      - MariaDB-client
+      - rsync
+      - galera
+      - socat
+    state: present
+
+- name: Create log directory
+  file: 
+    path: "{{ item }}"
+    state: directory
+    owner: mysql
+    group: mysql
+  with_items:
+    - /var/log/mysql
+    - /var/log/mysqld
+    - /var/log/mysqld/tmpdir
+
+- name: Start MariaDB service
+  service:
+    name: mariadb
+    state: started
+ 
+#- name: Copy file server.cnf
+#  template:
+#    src=server.cnf.j2
+#    dest=/etc/my.cnf.d/server.cnf
+#    mode=0644
+#    backup=yes

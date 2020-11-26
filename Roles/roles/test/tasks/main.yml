@@ -1,0 +1,9 @@
+---
+
+- name: Gen key
+  include: genkey.yml
+
+#   delay: 5
+
+# - name: Push key
+#   include: pushkey.yml

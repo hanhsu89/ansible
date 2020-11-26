@@ -1,0 +1,6 @@
+---
+
+- name: RKE nodes || Get content of public-key to deploy with rke
+  shell: "cat /home/{{ rke_ssh_user }}/{{ k8s_cluster_name }}/id_rsa.pub" 
+  register: ssh_public_key
+  when: roles == "rke-node"

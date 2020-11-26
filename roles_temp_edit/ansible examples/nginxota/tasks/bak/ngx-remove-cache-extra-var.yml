@@ -1,0 +1,3 @@
+- name: remove_nginx_cache_uri_extra-var
+  file: path="{{ remove_cache_uri }}" state=absent
+  when: ansible_extra_var 

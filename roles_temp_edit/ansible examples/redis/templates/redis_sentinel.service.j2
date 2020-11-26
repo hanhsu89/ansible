@@ -1,0 +1,18 @@
+[Unit]
+Description=Redis Sentinel Service
+After=network.target
+PartOf=redis_sentinel.target
+
+[Service]
+Type=simple
+User=redis
+Group=redis
+PrivateTmp=true
+LimitNOFILE=65536
+PIDFile={{ redis_sock_dir }}/redis_sentinel.pid
+ExecStart=/usr/local/bin/redis-sentinel {{ redis_install_dir }}/redis_sentinel.conf
+ExecStop=/bin/kill -15 $MAINPID
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target redis_sentinel.target

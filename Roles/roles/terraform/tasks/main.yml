@@ -1,0 +1,46 @@
+---
+- name: Ensure install directory is available.
+  file:
+    path: "{{ terraform_install_dir }}"
+    mode: 0755
+    state: directory
+
+- name: "Download terraform {{ terraform_version }} binary."
+  get_url:
+    url: "{{ terraform_download_url }}"
+    dest: /tmp
+    mode: 0755
+
+- name: Install Packages | Ubuntu
+  apt: 
+    name:
+      - unzip
+      - wget
+    state: latest
+    force_apt_get: yes    
+  when: ansible_os_family == "Debian"
+
+- name: Install Packages | CentOS
+  yum:
+    name:
+      - unzip
+      - wget
+    state: present
+  when: ansible_os_family == 'RedHat'
+
+- name: "Unarchive terraform {{ terraform_version }} zip."
+  unarchive:
+    copy: no
+    src:  "/tmp/terraform_{{ terraform_version }}_linux_amd64.zip"
+    dest: "{{ terraform_install_dir }}"
+    creates: "{{ terraform_install_dir }}/terraform"
+    mode: 0755
+
+- name: Set symlink to /usr/local/bin/terraform.
+  file:
+    state: link
+    src: "/usr/local/share/terraform/{{ terraform_version }}/terraform"
+    dest: "/usr/local/bin/terraform"
+
+- name: Enable tab completion
+  command: terraform -install-autocomplete    

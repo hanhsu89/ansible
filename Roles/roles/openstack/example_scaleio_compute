@@ -1,0 +1,8 @@
+[compute]
+10.0.0.31 hostname=compute1
+10.0.0.32 hostname=compute2
+[compute:vars]
+wan_interface=bond0
+mdm_address=10.0.0.101
+metadata_secret=Kdata@@123
+

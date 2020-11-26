@@ -1,0 +1,18 @@
+# vars
+root_dns: 'k8s.local'
+
+# pki vars
+pki:
+  path: '{{ playbook_dir }}/certs'
+  etcd_path: '{{ playbook_dir }}/certs/etcd'
+  k8s_path: '{{ playbook_dir }}/certs/kubernetes'
+  front_proxy: '{{ playbook_dir }}/certs/front_proxy'
+
+# kubernetes vars
+k8s:
+  version: 1.14.7
+  kubeconfig_dir: '{{ playbook_dir }}/kubeconfig'
+  cluster_name: 'k8s'
+  cluster_domain: 'cluster.local'
+  apis_url: 'apis.{{ root_dns }}'
+  etcd_url: 'etcd.{{ root_dns }}'

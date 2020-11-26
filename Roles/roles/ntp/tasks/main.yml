@@ -1,0 +1,41 @@
+---
+- name: Install NTP | CentOS
+  yum: 
+    name: ntpdate 
+    state: latest
+  when: ansible_os_family == "RedHat"
+
+- name: Install NTP | Ubuntu
+  apt: 
+    name: ntp
+    state: latest
+    force_apt_get: yes    
+  when: ansible_distribution == "Ubuntu" or ansible_distribution == "Debian"
+
+- name: Remove localtime
+  command: rm -f /etc/localtime
+  args:
+    warn: false
+
+- name: Link TimeZone +7
+  command: ln -sf /usr/share/zoneinfo/Asia/Ho_Chi_Minh /etc/localtime
+  args:
+    warn: false
+
+- name: Update Time | CentOS
+  command: ntpdate pool.ntp.org
+  when: ansible_os_family == "RedHat"
+
+- name: Restart NTP service | CentOS
+  service:
+    name: ntpd
+    state: restarted  
+    enabled: yes
+  when: ansible_os_family == "RedHat"
+
+- name: Restart NTP service | Ubuntu
+  service:
+    name: ntp
+    state: restarted  
+    enabled: yes
+  when: ansible_os_family == "Debian"

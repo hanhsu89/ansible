@@ -1,0 +1,80 @@
+---
+#- name: set hostname
+#  become: yes
+#  hostname:
+#    name: "{{ ptnk_hostname }}"
+
+- name: set bashrc
+  become: yes
+  template:
+    src: bashrc.j2
+    dest: /root/.bashrc
+
+- name: create /root/.ssh folder
+  become: yes
+  file: >
+    path=/root/.ssh
+    state=directory
+    mode=0700
+    owner=root
+    group=root
+
+- name: copy /root/.ssh/authorized_keys
+  become: yes
+  copy: >
+    src=authorized_keys
+    dest=/root/.ssh/authorized_keys
+    mode=0600
+    owner=root
+    group=root
+
+- name: install ntp
+  become: yes
+  yum: name=ntp state=present
+  when: ansible_os_family == "RedHat"
+
+- name: start and enable ntpd service
+  become: yes
+  service: name=ntpd state=started enabled=yes
+  when: ansible_os_family == "RedHat"
+
+- name: update local DNS
+  become: yes
+  lineinfile:
+    dest: /etc/sysconfig/network-scripts/ifcfg-eth0
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  with_items:
+    - { regexp: '^DNS1.*', line: 'DNS1=103.53.170.250' }
+    - { regexp: '^DNS2.*', line: 'DNS2=103.53.170.251' }
+  when: ansible_os_family == "RedHat"
+
+- name: disable ssh login by password
+  become: yes
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: '^PasswordAuthentication.*'
+    line: 'PasswordAuthentication no'
+  notify: restart sshd
+  when: ansible_os_family == "RedHat"
+
+
+- name: Add repository
+  yum:
+    name=https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+    state=present
+
+#- name: Install env packages
+#  yum:
+#    name={{ item }}
+#    state=latest
+#    update_cache=yes
+#  with_items:
+#    - gperftools*
+#    - p7zip
+#    - screen
+#    - gdb
+#    - glibc
+#    - wget
+#    - lrzsz
+#  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"

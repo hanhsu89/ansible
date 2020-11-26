@@ -1,0 +1,82 @@
+---
+- name: Create DB for service
+  mysql_db:
+    login_user: "{{ galera_root_user }}"
+    login_password: "{{ galera_root_password }}"
+    name: "{{ item }}"
+    state: "present"
+  delegate_to: "{{ nova_db_setup_host }}"
+  no_log: True
+  with_items:
+    - "{{ nova_database }}"
+    - "{{ nova_api_database }}"
+    - "{{ nova_cell0_database }}"
+    - "{{ nova_placement_database }}"
+- name: Grant access to DBs for the services
+  mysql_user:
+    login_user: "{{ galera_root_user }}"
+    login_password: "{{ galera_root_password }}"
+    name: "{{ item['name'] }}"
+    password: "{{ item['password'] }}"
+    host: "{{ item['host'] }}"
+    state: "present"
+    priv: "{{ item['database'] }}.*:ALL"
+    append_privs: "{{ item['db_append_privs'] | default(omit) }}"
+  delegate_to: "{{ nova_db_setup_host }}"
+  with_items:
+    - name: "{{ nova_galera_user }}"
+      password: "{{ nova_user_password }}"
+      host: "controller1"
+      database: "{{ nova_database }}"
+      db_append_privs: "yes"
+    - name: "{{ nova_galera_user }}"
+      password: "{{ nova_user_password }}"
+      host: "%"
+      database: "{{ nova_database }}"
+      db_append_privs: "yes"
+    - name: "{{ nova_galera_user }}"
+      password: "{{ nova_user_password }}"
+      host: "controller1"
+      database: "{{ nova_api_database }}"
+      db_append_privs: "yes"
+    - name: "{{ nova_galera_user }}"
+      password: "{{ nova_user_password }}"
+      host: "%"
+      database: "{{ nova_api_database }}"
+      db_append_privs: "yes"
+    - name: "{{ nova_placement_galera_user }}"
+      password: "{{ nova_placement_password }}"
+      host: "controller1"
+      database: "{{ nova_placement_database }}"
+      db_append_privs: "yes"
+    - name: "{{ nova_placement_galera_user }}"
+      password: "{{ nova_placement_password }}"
+      host: "%"
+      database: "{{ nova_placement_database }}"
+      db_append_privs: "yes"
+    - name: "{{ nova_galera_user }}"
+      password: "{{ nova_user_password }}"
+      host: "controller1"
+      database: "{{ nova_cell0_database }}"
+      db_append_privs: "yes"
+    - name: "{{ nova_galera_user }}"
+      password: "{{ nova_user_password }}"
+      host: "%"
+      database: "{{  nova_cell0_database }}"
+      db_append_privs: "yes"
+
+- name: nova db post setup controller
+  block:
+  - name: run nova_api db sync
+    command: "nova-manage api_db sync"  
+  - name: Register the cell0 database
+    command: "nova-manage cell_v2 map_cell0" 
+  - name: Create the cell1 cell
+    command: "nova-manage cell_v2 create_cell --name=cell1 --verbose" 
+    ignore_errors: true 
+  - name: run nova db sync
+    command: "nova-manage db sync" 
+  become: true
+  become_user: nova
+  run_once: true
+  delegate_to: "{{ nova_controller_setup_host }}"

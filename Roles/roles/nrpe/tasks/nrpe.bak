@@ -1,0 +1,61 @@
+---
+- name: nrpe | install packages on CentOS 6
+  become: yes
+  yum: state=latest name={{ item }}
+  with_items:
+      - nrpe
+      - nagios-plugins-all
+      - libselinux-python
+      - perl-Sys-Statistics-Linux
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "6"
+
+- name: Copy perl-Sys-Statistics-Linux-0.66-1.1.noarch.rpm file to Server
+  become: yes
+  copy: >
+    src="{{ perl_file }}"
+    dest="/tmp/{{ perl_file }}"
+    mode=0644
+    owner=root
+    group=root
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"
+
+- name: nrpe | install packages on CentOS 7
+  become: yes
+  yum: state=latest name={{ item }}
+  with_items:
+      - epel-release
+      - nrpe
+      - nagios-plugins-all
+#      - /tmp/perl-Sys-Statistics-Linux-0.66-1.1.noarch.rpm
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"
+
+- name: nrpe | install packages on Debian
+  apt: state=latest name={{ item }}
+  with_items:
+      - sudo
+      - build-essential
+      - libssl-dev
+      - nagios-nrpe-server
+      - nagios-plugins
+      - libsys-statistics-linux-perl
+  when: ansible_os_family == "Debian"
+
+- name: nrpe | configuration /etc/nagios/nrpe.cfg
+  become: yes
+  template: >
+    src=nrpe.cfg.j2
+    dest=/etc/nagios/nrpe.cfg
+    mode=0644
+    owner=root
+    group=root
+  when: ansible_os_family == "RedHat" or ansible_os_family == "Debian"
+  notify: restart nrpe
+
+  #- name: Disbale selinux on CentOS
+  #  selinux:
+  #    state: disabled
+  #  when: ansible_os_family == "RedHat"
+
+  #- name: Disbale selinux until reboot system
+#command: setenforce 0
+#  when: ansible_os_family == "RedHat"

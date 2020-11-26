@@ -1,0 +1,10 @@
+---
+# tasks file for elasticsearch
+
+- include: install.yml
+  tags:
+    - install_elk-7
+
+- include: uninstall.yml
+  tags:
+    - uninstall_elk-7

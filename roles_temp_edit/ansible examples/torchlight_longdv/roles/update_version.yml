@@ -1,0 +1,10 @@
+---
+- hosts: all
+  tasks:
+  - name: Update version CDN
+    shell: /home/longdv/update_version.sh 
+    when: inventory_hostname in groups['origin']
+  - name: Update version server
+    shell: /usr/local/bin/update.sh
+    when: inventory_hostname in groups['servers']
+  

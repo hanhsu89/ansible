@@ -1,0 +1,25 @@
+---
+- name: zabbix_server | install zabbix server
+  become: yes
+  yum:
+     name: "zabbix-server-{{ zabbix_server_db_type }}"
+     state: present
+  when: ansible_os_family == "RedHat"
+
+- name: zabbix_server | zabbix server conf file
+  become: yes
+  template:
+     src: server/zabbix_server.conf.j2
+     dest: /etc/zabbix/zabbix_server.conf
+     mode: 0600
+     owner: zabbix
+     group: zabbix
+  notify: restart zabbix_server
+  when: ansible_os_family == "RedHat"
+
+  #- name: zabbix_server | populate postgres database is populated
+  #  become: yes
+  #  become_user: postgres
+  #  shell: psql "{{ zabbix_server_db_name }}" -h localhost  < "{{item}}" && sleep 3
+  #  with_items: zabbix_server_sql_files
+  #  when: postgres_db.changed and zabbix_server_db_type == 'pgsql' and ansible_os_family == "RedHat"

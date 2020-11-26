@@ -1,0 +1,14 @@
+---
+- hosts: all
+
+  vars:
+    hosts_custom:
+      address: 127.0.0.1
+      hostnames:
+        - test.local
+
+    hosts_whitelist:
+      - www.linkedin.com
+      
+  roles:
+    - role_under_test

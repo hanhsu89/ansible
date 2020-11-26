@@ -1,0 +1,8 @@
+---
+# vars file for ntp
+
+ssh_port: 22
+hostname: 192.168.206.240
+username: root
+password: 123@hanhsu
+ssh_public_key: ~/.ssh/id_rsa.pub

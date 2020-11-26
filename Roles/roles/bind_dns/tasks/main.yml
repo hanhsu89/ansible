@@ -1,0 +1,47 @@
+---
+- name: Update APT Cache
+  apt:
+    update_cache: yes
+    cache_valid_time: 86400
+    force_apt_get: yes     
+
+- name: Bind Install
+  apt:
+    name: 
+      - bind9
+      - bind9utils
+      - bind9-doc
+    state: present
+    update_cache: yes
+    force_apt_get: yes     
+
+- name: Configure Bind
+  template:
+    src: "templates/{{ item }}"
+    dest: "/etc/bind/{{ item }}"
+    owner: root
+    group: root
+    mode: 'u=rw,g=r,o=r'
+  with_items:
+    - named.conf.local
+    - named.conf.options
+
+- name: Restart Service 'bind9'
+  service:
+    name: bind9
+    state: restarted
+
+- name: Configure Zones
+  template:
+    src: "{{ item.template_source }}"
+    dest: "/etc/bind/db.{{ item.name }}"
+    owner: root
+    group: root
+    mode: 'u=rw,g=r,o=r'
+  with_items: "{{ zones }}"
+
+- name: Restart Service 'bind9'
+  service:
+    name: bind9
+    state: restarted
+    enabled: yes

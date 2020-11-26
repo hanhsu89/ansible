@@ -1,0 +1,27 @@
+---
+
+- name: Copy ssl cert
+  copy:
+    src: ssl
+    dest: /etc/filebeat
+    owner: root
+    group: root
+    mode: 0644
+
+- name: change permission
+  shell: "chmod 600 /etc/filebeat/*"
+
+- name: copy template filebeat.yml
+  template:
+    src: filebeat-logstash.j2
+    dest: "/etc/filebeat/filebeat.yml"
+    force: yes
+    backup: yes
+    mode: 0644
+    owner: root
+    group: root
+
+- name: Restart service filebeat
+  service:
+    name: filebeat
+    state: restarted

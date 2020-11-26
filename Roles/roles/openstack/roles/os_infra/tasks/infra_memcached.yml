@@ -1,0 +1,31 @@
+---
+
+- name: Install memcached service
+  yum:
+    name: "{{ item }}"
+    state: latest
+  register: install_packages
+  until: install_packages is success
+  retries: 5
+  delay: 1
+  with_items:
+    - memcached 
+    - python-memcached
+
+
+- name: Apply memcached config
+  template:
+    src: "memcached.conf.j2"
+    dest: "/etc/sysconfig/memcached"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+
+- name: start memcached service
+  systemd:
+    name: "memcached"
+    state: started
+  register: service_started
+  until: service_started is success
+  retries: 5
+  delay: 1

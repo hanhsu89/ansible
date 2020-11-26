@@ -1,0 +1,8 @@
+---
+
+version: 0.18.0
+
+serviceName: "blackbox_exporter"
+userId: "blackbox_exporter"
+groupId: "blackbox_exporter"
+exec_command: /usr/local/bin/blackbox_exporter --config.file /data/blackbox_exporter/blackbox.yml

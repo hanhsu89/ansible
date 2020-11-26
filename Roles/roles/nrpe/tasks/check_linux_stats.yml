@@ -1,0 +1,10 @@
+---
+- name: check_linux_stats | copy check_linux_stats.pl script to server
+  become: yes
+  copy: >
+    src=check_linux_stats.pl
+    dest="{{ linux_stats_plugin_path }}"
+    mode=0755
+    owner=root
+    group=root
+  when: ansible_os_family == "RedHat" or ansible_os_family == "Debian"

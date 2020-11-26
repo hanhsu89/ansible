@@ -1,0 +1,41 @@
+---
+
+
+- name: Create keyfile on /tmp
+  shell: openssl rand -base64 756 > /tmp/abc_key
+  args:
+    creates: abc.key
+  when: primary and primary is defined  
+
+- name: Cat key on /tmp
+  command: cat /tmp/abc_key
+  register: key
+  # when: primary and primary is defined  
+
+# - debug:
+#     msg: "{{ key.stdout }}"
+
+# - name: Get key
+#   set_fact:
+#     key: "{{ key.stdout }}"
+#     cacheable: Yes
+#   when: primary and primary is defined  
+
+- name: Copy key to remote hosts
+  template:
+    src: key.j2
+    dest: "/var/tmp/abc_key"
+    mode: 0755
+#   when: primary and primary is defined
+
+# - name: Copy key to remote hosts
+#   template:
+#     src: key.j2
+#     dest: "/var/tmp/abc.key"
+#     mode: 0755
+  # when: not primary and primary is defined
+
+# - fetch:
+#     src: /tmp/abc.key
+#     dest: /tmp/abc_key
+#     flat: yes

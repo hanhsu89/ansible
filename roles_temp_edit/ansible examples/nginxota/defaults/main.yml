@@ -1,0 +1,107 @@
+---
+    nginx_redhat_pkg:
+      - nginx
+
+    nginx_official_repo: False
+
+    nginx_installation_type: "packages"
+    nginx_binary_name: "nginx"
+    nginx_service_name: "{{nginx_binary_name}}"
+    nginx_conf_dir: "/usr/local/nginx"
+
+    nginx_user: "nginx"
+    nginx_group: "nginx"
+    nginx_pid_file: '/var/run/{{nginx_service_name}}.pid'
+
+    nginx_worker_processes: "{{ ansible_processor_vcpus }}"
+    nginx_worker_rlimit_nofile: 20480
+    nginx_log_format: "logstash"
+    nginx_log_buffer: "buffer=16k"
+    nginx_log_dir: "/var/log/nginx"
+    #nginx_error_log: {{ nginx_log_dir }}/error.log
+    php_fpm_sock: "/tmp/php_fpm.sock"
+    hhvm_sock: "/var/run/hhvm/hhvm.sock"
+    nginx_mime_file_path: "/usr/local/nginx/conf/mime.types"
+
+    nginx_events_params:
+      - worker_connections 1024
+      - multi_accept off
+    
+    nginx_http_params: |
+        server_tokens off;
+                sendfile on;
+                tcp_nopush on;
+                tcp_nodelay on;
+                keepalive_timeout 50;
+                keepalive_requests 100;
+                access_log {{nginx_log_dir}}/access.log;
+                error_log {{nginx_log_dir}}/error.log;
+                types_hash_max_size 2048;
+                client_max_body_size 10M;
+
+    nginx_open_file_cache_params: |
+        open_file_cache max=1000 inactive=20s;
+                open_file_cache_valid    30s;
+                open_file_cache_min_uses 2;
+                #open_file_cache_errors  on;
+
+    nginx_gzip_params: |
+        gzip on;
+                gzip_http_version 1.0;
+                gzip_comp_level 5;
+                gzip_proxied any;
+                gzip_min_length  1100;
+                gzip_buffers 16 8k;
+                gzip_vary on;
+                gzip_types text/plain  text/css application/javascript application/x-javascript text/xml application/xml application/xml+rss text/javascript image/x-icon image/png image/gif image/jpeg;
+                # Some version of IE 6 don't handle compression well on some mime-types, so just disable for them
+                gzip_disable "MSIE [1-6].(?!.*SV1)";
+#-------------------------------------------    
+    nginx_proxy_params: "/usr/local/nginx/conf.d/params/nginx_proxy"
+    proxy_cache_params: []
+    nginx_foreign_cdn_params: []
+    nginx_secure_params: []
+    nginx_limit_rate_params: []
+#-------------------------------------------
+
+# Example vhost below, showing all available options:
+# - listen: "80 default_server" # default: "80 default_server"
+#   server_name: "example.com" # default: N/A
+#   root: "/var/www/example.com" # default: N/A
+#   index: "index.html index.htm" # default: "index.html index.htm"
+#
+#   # Properties that are only added if defined:
+#   error_page: ""
+#   access_log: ""
+#   error_log: ""
+#   location_parameters: |
+#   extra_parameters: "" # Can be used to add extra config blocks (multiline).
+
+    nginx_site_default: |
+            listen 80 default_server;
+                    server_name _;
+                    root /usr/share/nginx/html;
+                    index index.html;
+                    if ($request_method !~ ^(GET|HEAD|POST)$ ) {
+                         return 444;
+                    }
+
+    nginx_upstreams: []
+#   - name: myapp1
+#     strategy: "ip_hash" # "least_conn", etc.
+#     keepalived: 16 # optional
+#     servers: {
+#       "srv1.example.com",
+#       "srv2.example.com weight=3",
+#       "srv3.example.com"
+#     }
+    proxy_cache_enable: "false"
+    nginx_remove_sites: []
+    ngx_proxy_cache_path: "/data/cache/nginx_cache"
+
+    nginx_configs: []
+    nginx_remove_configs: []
+
+    nginx_auth_basic_files: {}
+    nginx_remove_auth_basic_files: []
+    nginx_daemon_mode: "on"

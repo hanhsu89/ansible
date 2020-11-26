@@ -1,0 +1,105 @@
+---
+
+- name: Update the /etc/hosts file with nodes name
+  lineinfile:
+    dest: "/etc/hosts"
+    regexp: ".*\t{{ hostvars[item]['ansible_hostname']}}\t{{ hostvars[item]['ansible_hostname']}}"
+    line: "{{ hostvars[item]['ansible_default_ipv4']['address'] }}\t{{ hostvars[item]['ansible_hostname']}}"
+    state: present
+    backup: yes
+  with_items: "{{groups['kafka']}}"
+
+- name: Create kafka group
+  group:
+    name: '{{ kafka_group }}'
+    state: present
+
+- name: Create kafka user
+  user:
+    name: '{{ kafka_user }}'
+    group: '{{ kafka_group }}'
+    shell: /bin/false
+    system: yes
+    state: present
+    createhome: no
+
+- name: Create directory
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+    owner: kafka
+    group: kafka
+  loop:
+    - /var/log/kafka
+    - /usr/share/kafka
+    - /usr/share/kafka/config
+    - /usr/share/kafka/logs
+    - /var/lib/zookeeper
+    - /var/log/zookeeper
+
+- name: Install JavaJDK v11
+  apt:
+    name:
+      - openjdk-11-jdk
+    state: present         
+    update_cache: yes
+    force_apt_get: yes
+
+- name: Download and Unarchive kafka from source
+  unarchive:
+    src: "{{ kafka_url }}"
+    dest: /tmp
+    remote_src: yes
+    mode: 0755
+    owner: kafka
+    group: kafka
+
+- name: Copy kafka's source folder to {{ kafka_home_dir }}
+  copy:
+    src:  /tmp/kafka_{{ kafka_scala_version }}-{{ kafka_version }}/
+    dest: "{{ kafka_home_dir }}"
+    owner: kafka
+    group: kafka
+    mode: 0755
+    remote_src: yes    
+
+- name: Create kafka service
+  template:
+    src: kafka.service.j2
+    dest: /etc/systemd/system/kafka.service
+
+- name: Create zookeeper service
+  template:
+    src: zookeeper.service.j2
+    dest: /etc/systemd/system/zookeeper.service
+
+- name: Update kafka config file
+  template:
+    src: kafka.properties.j2
+    dest: "{{ kafka_home_dir }}/config/server.properties"
+
+- name: Update zookeeper config file
+  template:
+    src: zookeeper.properties.j2
+    dest: "{{ kafka_home_dir }}/config/zookeeper.properties"
+
+- name: Create myid file
+  copy:
+    content: |
+      {{ groups['kafka'].index(inventory_hostname) + 1 }}
+    dest: "{{ zookeeper_data_dir }}/myid"
+
+- name: Be sure zookeeper is running and enabled
+  systemd:
+    name: zookeeper
+    state: started
+    daemon_reload: true
+  register: zookeeper
+
+- name: Be sure kafka is running and enabled
+  systemd:
+    name: kafka
+    state: restarted
+    daemon_reload: yes
+  when: zookeeper is succeeded

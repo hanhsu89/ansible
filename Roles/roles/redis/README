@@ -1,0 +1,90 @@
+Redis Standalone & Cluster Master-Slave
+==================================
+
+There are 16384 slots. These slots are divided by the number of servers.
+If there are 3 servers; 1, 2 and 3 then
+Server 1 contains hash slots from 0 to 5500.
+Server 2 contains hash slots from 5501 to 11000.
+Server 3 contains hash slots from 11001 to 16383.
+
+https://medium.com/opstree-technology/redis-cluster-architecture-replication-sharding-and-failover-86871e783ac0
+
+https://medium.com/opstree-technology/redis-cluster-setup-sharding-and-failover-testing-cbf12d063d2c
+
+https://www.tecmint.com/setup-redis-cluster-in-centos-8/
+
+https://github.com/tinygg/ansible-redis
+
+https://rtfm.co.ua/en/redis-replication-part-4-writing-an-ansible-role-fore-the-master-slave-replication-with-redis-sentinel-provisioning/
+
+
+===> Create Cluster
+    redis-cli -a 64212833414c2245486c3c4472a742112d3bc525 --cluster create 192.168.206.241:6379 192.168.206.242:6379 192.168.206.243:6379 192.168.206.241:9736 192.168.206.242:9736 192.168.206.243:9736 --cluster-replicas 1
+
+
+
+===> AUTH command
+root@ubuntu-243:/etc/redis# redis-cli
+127.0.0.1:6379> 
+127.0.0.1:6379> INFO
+NOAUTH Authentication required.
+127.0.0.1:6379> AUTH 64212833414c2245486c3c4472a742112d3bc525
+OK
+127.0.0.1:6379> INFO
+# Server
+redis_version:6.0.9
+...
+
+
+===> Check status cluster
+=> Port MASTER
+root@ubuntu-241:~# redis-cli -p 6379
+127.0.0.1:6379> auth 64212833414c2245486c3c4472a742112d3bc525
+OK
+127.0.0.1:6379> info replication
+# Replication
+role:master
+connected_slaves:1
+slave0:ip=192.168.206.242,port=9736,state=online,offset=168,lag=0
+master_replid:1386e9910478e609ccf7c539b4e30c0fd6c02d00
+master_replid2:0000000000000000000000000000000000000000
+master_repl_offset:168
+second_repl_offset:-1
+repl_backlog_active:1
+repl_backlog_size:1048576
+repl_backlog_first_byte_offset:1
+repl_backlog_histlen:168
+127.0.0.1:6379> exit
+
+=> Port SLAVE
+root@ubuntu-241:~# redis-cli -p 9736
+127.0.0.1:9736> auth 64212833414c2245486c3c4472a742112d3bc525
+OK
+127.0.0.1:9736> info replication
+# Replication
+role:slave
+master_host:192.168.206.243
+master_port:6379
+master_link_status:up
+master_last_io_seconds_ago:4
+master_sync_in_progress:0
+slave_repl_offset:350
+slave_priority:100
+slave_read_only:1
+connected_slaves:0
+master_replid:fbde8820c4d7d7d2bbcee1ee0fcc3ca921e08223
+master_replid2:0000000000000000000000000000000000000000
+master_repl_offset:350
+second_repl_offset:-1
+repl_backlog_active:1
+repl_backlog_size:1048576
+repl_backlog_first_byte_offset:1
+repl_backlog_histlen:350
+127.0.0.1:9736> exit
+
+
+#=== Command
+    https://redis.io/commands
+
+CLUSTER NODES
+CLUSTER INFO

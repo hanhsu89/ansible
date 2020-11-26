@@ -1,0 +1,43 @@
+---
+
+- name: Disable selinux temporary
+  command: setenforce 0
+  ignore_errors: True
+
+- name: Disable selinux after reboot
+  selinux:
+    state: disabled
+
+- name: Install Repo GlusterFS v5
+  yum:
+    name: centos-release-gluster5
+    state: present
+
+- name: Disable Repo GlusterFS version 5
+  lineinfile:
+    path: /etc/yum.repos.d/CentOS-Gluster-5.repo
+    regexp: '^enabled=1'
+    line: 'enabled=0'
+
+- name: Install GlusterFS
+  yum:
+    name:
+     - glusterfs-server
+     - glusterfs-client
+    enablerepo: "centos-gluster5"
+    state: present
+
+- name: Update host to /etc/hosts
+  blockinfile:
+    path: /etc/hosts
+    content: |
+        {{ hostvars[groups['glusterfs'][0]].host_gfs }} {{ hostvars[groups['glusterfs'][0]].name_gfs }}
+        {{ hostvars[groups['glusterfs'][1]].host_gfs }} {{ hostvars[groups['glusterfs'][1]].name_gfs }}
+        {{ hostvars[groups['glusterfs'][2]].host_gfs }} {{ hostvars[groups['glusterfs'][2]].name_gfs }}
+        {{ hostvars[groups['glusterfs'][3]].host_gfs }} {{ hostvars[groups['glusterfs'][3]].name_gfs }}
+
+- name: Start GlusterFS Service
+  service:
+    name: glusterd
+    state: restarted
+    enabled: True

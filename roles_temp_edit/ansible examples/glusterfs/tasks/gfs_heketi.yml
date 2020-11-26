@@ -1,0 +1,37 @@
+---
+
+- name: Heketi | Install Heketi
+  yum:
+    name:
+     - heketi
+     - heketi-client
+    enablerepo: "centos-gluster5"
+    state: present
+
+- name: Heketi | File config
+  template:
+    src=heketi.j2
+    dest=/etc/heketi/heketi.json
+    mode=0644
+    backup=yes
+
+- name: Heketi | File Topology
+  template:
+    src=topology.j2
+    dest=/etc/heketi/topology.json
+    mode=0644
+
+#- name: Heketi | Import Topology
+#  shell: 'heketi-cli topology load --json=/etc/heketi/topology.json'
+
+- name: Heketi | Start service heketi
+  service:
+    name: heketi
+    state: restarted
+    enabled: True
+
+- name: Heketi | Allow Glusterd in FirewallD
+  firewalld:
+    port: 8080/tcp
+    permanent: true
+    state: enabled

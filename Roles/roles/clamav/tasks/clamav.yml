@@ -1,0 +1,114 @@
+---
+# tasks file for clamav
+- name: Add epel repository
+  yum:
+    name: "{{ epel_url }}"
+    state: present
+
+- name: Add epel repository signing key
+  rpm_key:
+    key: "{{ epel_key }}"
+
+- name: Install necessary packages
+  yum:
+    name: '{{ item.package }}'
+    state: present
+  register: clamav_installed
+  with_items: "{{ clamav_packages_EL }}"
+
+- name: Get SELinux status
+  command: getenforce
+  register: selinuxstatus
+  changed_when: false
+
+- name: Install libsemanage-python
+  yum:
+    name: libsemanage-python
+    state: present
+  when: "'Disable' not in selinuxstatus.stdout"
+
+- name: Apply SELinux configuration
+  seboolean:
+    name: "{{ item }}"
+    state: yes
+    persistent: yes
+  with_items:
+    - antivirus_can_scan_system
+    - clamd_use_jit
+  when: "'Disable' not in selinuxstatus.stdout"
+
+- name: Edit scan.conf
+  replace:
+    path: /etc/clamd.d/scan.conf
+    regexp: "{{ item.0 }}"
+    replace: "{{ item.1 }}"
+  with_together:
+    - ["^Example", "^#LocalSocket /var/run/clamd.scan/clamd.sock"]
+    - ["#Example", "LocalSocket /var/run/clamd.scan/clamd.sock"]
+
+- name: Edit freshclam.conf
+  replace:
+    path: /etc/freshclam.conf
+    regexp: "^Example"
+    replace: "#Example"
+
+- name: Try to get IP geolocation data
+  command: timeout 10 curl ipinfo.io
+  failed_when: False
+  changed_when: False
+  register: ipinfo
+  when: clamav_freshclam_geolocation_based_update_server
+
+- name: Parse country iso code
+  set_fact:
+    country_iso_code: "{% if 'country' not in ipinfo.stdout %}{% else %}{{ (ipinfo.stdout | from_json).country }}{% endif %}"
+  when: clamav_freshclam_geolocation_based_update_server
+
+- name: "{% if country_iso_code is defined and country_iso_code == '' %}Failed to get country iso code{% else %}Add geolocation based virus definitions update server{% endif %}"
+  lineinfile:
+    path: /etc/freshclam.conf
+    insertafter: '^#DatabaseMirror db\.XY\.clamav\.net'
+    line: "DatabaseMirror db.{{ country_iso_code }}.clamav.net"
+  when: >
+    clamav_freshclam_geolocation_based_update_server and
+    country_iso_code != ""
+- name: Remove geolocation based virus definitions update server
+  lineinfile:
+    path: /etc/freshclam.conf
+    regexp: '^DatabaseMirror db\...\.clamav\.net'
+    state: absent
+  when: clamav_freshclam_geolocation_based_update_server == False
+
+- name: Add additional virus definitions update server
+  lineinfile:
+    path: /etc/freshclam.conf
+    insertafter: '^DatabaseMirror database\.clamav\.net'
+    line: "DatabaseMirror db.local.clamav.net"
+
+- name: Perform virus definitions update
+  shell: freshclam
+  register: virus_def_update
+  changed_when: "'Downloading' in virus_def_update.stdout"
+  failed_when: False
+  when: >
+    clamav_installed.changed or 
+    clamav_freshclam_update_on_every_run
+- name: Install freshclam auto-update service
+  template:
+    src: freshclam.service.j2
+    dest: /usr/lib/systemd/system/freshclam.service
+  notify: restart freshclam
+  when: clamav_freshclam_autoupdate_service
+
+- name: Start and enable freshclam auto-update service
+  systemd:
+    name: "freshclam"
+    state: started
+    enabled: yes
+    daemon_reload: yes
+
+- name: Start and enable ClamAV scanner service
+  systemd:
+    name: "clamd@scan"
+    state: started
+    enabled: yes

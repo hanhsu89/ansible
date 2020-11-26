@@ -1,0 +1,29 @@
+---
+- hosts: 192.168.10.83
+  tasks:
+    - name: Ensure Service GlusterFS Stoped
+      service: 
+        name: glusterd
+        state: stopped
+
+    - name: Remove GlusterFS
+      yum:
+          name:
+            - glusterfs
+            - glusterfs-server
+            - glusterfs-client
+          state: absent
+
+    - name: Delete directory /var/lib/glusterd
+      file:
+        path: "/var/lib/glusterd"
+        state: absent        
+
+    - name: Delete directory /var/log/glusterfs
+      file:
+        path: "/var/log/glusterfs"
+        state: absent        
+
+    - name: Reload systemd
+      sudo: yes
+      command: systemctl daemon-reload

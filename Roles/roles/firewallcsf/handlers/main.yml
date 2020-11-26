@@ -1,0 +1,6 @@
+---
+# handlers file for firewallcsf
+- name: restart csf
+  service: 
+    name: csf
+    state: restarted

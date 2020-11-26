@@ -1,0 +1,39 @@
+---
+- name: clear rules
+  iptables:
+    flush: yes
+  tags:
+    - game
+    - dbgame
+
+- name: add port Log DB
+  iptables:
+    chain: INPUT
+    destination_port: "{{ item[0].port }}"
+    protocol: "{{ item[0].protocol }}"
+    jump: ACCEPT
+    action: "{{ item.1 }}"
+  with_nested:
+    - "{{ open_port_dbgame }}"
+    - "{{ action }}"
+  tags:
+  - dbgame
+
+- name: add port game
+  iptables:
+    chain: INPUT
+    destination_port: "{{ item[0].port }}"
+    protocol: "{{ item[0].protocol }}"
+    jump: ACCEPT
+    action: "{{ item.1 }}"
+  with_nested:
+    - "{{ open_port_game }}"
+    - "{{ action }}"
+  tags:
+  - game
+
+- name: iptables save
+  command: service iptables save
+  tags:
+  - dbgame
+  - game

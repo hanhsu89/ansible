@@ -1,0 +1,48 @@
+---
+
+- name: Node Exporter| Create Prometheus group
+  group:
+    name: prometheus
+    state: present
+
+- name: Node Exporter| Create Prometheus user
+  user:
+    name: prometheus
+    group: prometheus
+    state: present
+
+- name: Node Exporter| Remove all file in src folder
+  shell: "rm -rf {{ node_exporter_src_dir }}/node_exporter*"
+
+- name: Node Exporter| Download Node Exporter source file
+  get_url: url={{ node_exporter_url }} dest={{ node_exporter_src_dir }}/{{ node_exporter_version }}.tar.gz timeout=120
+
+- name: Node Exporter| Decompress Node Exporter source file
+  unarchive: src={{ node_exporter_src_dir }}/{{ node_exporter_version }}.tar.gz dest={{ node_exporter_src_dir }} creates={{ node_exporter_src_dir }}/{{ node_exporter_version }} copy=no
+
+- name: Node Exporter| Copy binary to /usr/local/bin
+  copy:
+    src: "{{ node_exporter_src_dir }}/{{ node_exporter_version }}/node_exporter"
+    dest: /usr/local/bin
+    owner: prometheus
+    group: prometheus
+    mode: 0755
+    remote_src: yes
+
+- name: Node Exporter| Create systemd service file for Redhat 7 or CentOS 7
+  template: 
+    src=node_exporter.service.j2
+    dest=/usr/lib/systemd/system/node_exporter.service
+    mode=0755
+  when: ansible_os_family == "RedHat" and ansible_service_mgr == "systemd"
+
+- name: Node Exporter| Reload systemd to reread configs
+  systemd: 
+    daemon_reload: yes
+  when: ansible_service_mgr == "systemd"
+
+- name: Node Exporter| Restart Node Exporter
+  service:
+    name: node_exporter
+    state: restarted
+    enabled: True

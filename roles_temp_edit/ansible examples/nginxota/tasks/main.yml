@@ -1,0 +1,20 @@
+---
+- name: ensure directories
+  include: ensure-dirs.yml
+
+- name: remove nginx extras 
+  include: remove-extras.yml
+  when: nginx_unmanaged_sites is defined
+  #tags: [remove-site,nginx]
+
+- name: push nginx site config 
+  include: configuration.yml
+  when: nginx_sites is defined
+  #tags: [configuration,nginx]
+
+
+- name: remove nginx cache
+  include: ngx-remove-cache.yml
+  when: ngx_remove_cache is defined
+  #tags: [remove-cache,nginx]
+

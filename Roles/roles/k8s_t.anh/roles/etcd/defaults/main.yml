@@ -1,0 +1,7 @@
+# defaults vars for etcd
+etcd:
+  version: 3.4.0
+  config_dir: /etc/etcd
+  data_dir: /var/lib/etcd
+  wal_dir: '{{ etcd.data_dir }}/wal'
+  nodes: "{{ groups['master'] | length }}"

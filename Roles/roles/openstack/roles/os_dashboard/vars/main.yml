@@ -1,0 +1,4 @@
+---
+# vars file for os_dashboard
+dashboard_packages: openstack-dashboard
+internal_vip_address: controller1

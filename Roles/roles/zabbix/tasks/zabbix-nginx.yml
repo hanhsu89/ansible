@@ -1,0 +1,13 @@
+---
+
+- name: Copy config check nginx
+  template:
+    src=userparameter_nginx.j2
+    dest=/etc/zabbix/zabbix_agentd.d/userparameter_nginx.conf
+    mode=0644
+
+- name: Copy script check nginx
+  template:
+    src=nginx.j2
+    dest=/etc/zabbix/scripts/nginx.sh
+    mode=0755

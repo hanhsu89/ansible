@@ -1,0 +1,9 @@
+---
+- name: Edit /etc/haproxy/haproxy.conf         | haproxy
+  shell: name=`sed -i "s/AAAA/AAAA \n    {{use_backend}}/" /etc/haproxy/haproxy.cfg`
+- name: Edit /etc/haproxy/game_pages.txt
+  shell: echo "{{domain}}" | sudo tee -a /etc/haproxy/game_pages.txt
+- name: Reload haproxy                         | haproxy
+  service:
+    name: haproxy
+    state: reloaded

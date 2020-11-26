@@ -1,0 +1,5 @@
+---
+- name: reload sysctl
+  shell: |
+    modprobe nf_conntrack_ipv4
+    sysctl -p

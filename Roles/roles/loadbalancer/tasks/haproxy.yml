@@ -1,0 +1,24 @@
+- name: Add haproxy repository
+  apt_repository:
+    repo: ppa:vbernat/haproxy-{{ haproxy.version }}
+
+- name: Install haproxy
+  apt:
+    name: 'haproxy={{ haproxy.version }}.*'
+    state: present
+    update_cache: Yes
+    install_recommends: No
+    force_apt_get: True
+
+- name: Configure haproxy
+  template:
+    src: haproxy.cfg.j2
+    dest: /etc/haproxy/haproxy.cfg
+    validate: /usr/sbin/haproxy -c -f %s
+
+- name: Be sure haproxy services is running and enabled
+  systemd:
+    name: haproxy
+    state: started
+    enabled: Yes
+    daemon_reload: Yes

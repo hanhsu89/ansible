@@ -1,0 +1,25 @@
+path.home: /usr/share/filebeat
+path.config: /etc/filebeat
+path.data: /var/lib/filebeat
+path.logs: /var/log/filebeat
+
+filebeat.registry_file: /var/lib/filebeat/registry
+
+filebeat.config.prospectors:
+  enabled: true
+  path: ${path.config}/conf.d/*.yml
+
+filebeat.config.modules:
+  path: ${path.config}/modules.d/*.yml
+  reload.enabled: false
+
+output.elasticsearch:
+  hosts: ["elasticsearch.appotapay.local:9200"]
+  pipeline: laravel-framework-log
+  worker: 5
+  index: "%{[domain]}"
+  username: "{{ filebeat_user }}"
+  password: "{{ filebeat_password }}"
+
+setup.template:
+  enabled: false

@@ -1,0 +1,56 @@
+---
+#- name: set hostname
+#  become: yes
+#  hostname:
+#    name: "{{ thienha3d_hostname }}"
+
+- name: set bashrc
+  become: yes
+  template:
+    src: bashrc.j2
+    dest: /root/.bashrc
+
+- name: create /root/.ssh folder
+  become: yes
+  file: >
+    path=/root/.ssh
+    state=directory
+    mode=0700
+    owner=root
+    group=root
+
+- name: copy /root/.ssh/authorized_keys
+  become: yes
+  copy: >
+    src=authorized_keys
+    dest=/root/.ssh/authorized_keys
+    mode=0600
+    owner=root
+    group=root
+
+- name: allow root login
+  become: yes
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: '^PermitRootLogin'
+    line: 'PermitRootLogin yes'
+  notify: restart sshd
+  when: ansible_os_family == "Debian"
+
+- name: change ssh port
+  become: yes
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: '^Port'
+    line: 'Port 32200'
+  notify: restart sshd
+  when: ansible_os_family == "Debian"
+
+- name: disable ssh login by password
+  become: yes
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: '^PasswordAuthentication.*'
+    line: 'PasswordAuthentication no'
+  notify: restart sshd
+  when: ansible_os_family == "Debian"

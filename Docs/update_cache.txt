@@ -1,0 +1,10 @@
+
+update_cache=yes => tells Ansible’s apt module to refresh the caches before applying whatever change is necessary (if any).
+
+
+
+apt maintains a local list of packages; that’s how it “knows” what packages are available, their dependencies etc. apt update updates these lists of packages by retrieving them from the repositories; it doesn’t upgrade any package.
+
+That’s what the cache is: it is a local cache of the package information available from the repositories configured on the system. apt makes all its decisions based on this cache, so it must be kept up-to-date. An outdated cache can lead apt to miss updates or to fail to install a package altogether (because the version it wants is no longer available from the repositories).
+
+update_cache=yes tells Ansible’s apt module to refresh the caches before applying whatever change is necessary (if any).

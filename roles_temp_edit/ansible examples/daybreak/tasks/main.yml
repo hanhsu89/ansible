@@ -1,0 +1,94 @@
+---
+- name: set hostname
+  become: yes
+  hostname:
+    name: "{{ hostname }}"
+
+- name: set bashrc
+  become: yes
+  template:
+    src: bashrc.j2
+    dest: /root/.bashrc
+
+- name: create /root/.ssh folder
+  become: yes
+  file: >
+    path=/root/.ssh
+    state=directory
+    mode=0700
+    owner=root
+    group=root
+
+- name: copy /root/.ssh/authorized_keys
+  become: yes
+  copy: >
+    src=authorized_keys
+    dest=/root/.ssh/authorized_keys
+    mode=0600
+    owner=root
+    group=root
+
+#- name: update local DNS
+#  become: yes
+#  lineinfile:
+#    dest: /etc/sysconfig/network-scripts/ifcfg-eth0
+#    regexp: "{{ item.regexp }}"
+#    line: "{{ item.line }}"
+#  with_items:
+#    - { regexp: '^DNS1.*', line: 'DNS1=43.239.221.208' }
+#    - { regexp: '^DNS2.*', line: 'DNS2=43.239.221.209' }
+#  when: ansible_os_family == "RedHat"
+
+#- name: change ssh port
+#  become: yes
+#  lineinfile:
+#    dest: /etc/ssh/sshd_config
+#    regexp: '^Port'
+#    line: 'Port 32200'
+#  notify: restart sshd
+
+- name: disable ssh login by password
+  become: yes
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: '^PasswordAuthentication.*'
+    line: 'PasswordAuthentication no'
+  notify: restart sshd
+
+#- name: Disable Firewalld Centos 7
+##  service: name=firewalld state=stopped enabled=no
+##  become: yes
+##  tags: pre
+##  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"
+
+- name: Install ntpdate
+  yum: name=ntpdate state=latest
+  when: ansible_os_family == "RedHat"
+  become: yes
+  tags:
+      - pre
+
+- name: Remove localtime
+  command: rm -f /etc/localtime
+  when: ansible_os_family == "RedHat"
+  become: yes
+  tags:
+      - pre
+
+- name: Link Mui gio +7
+  command: ln -sf /usr/share/zoneinfo/Asia/Ho_Chi_Minh /etc/localtime
+  when: ansible_os_family == "RedHat"
+  become: yes
+  tags:
+      - pre
+
+- name: Update Time
+  command: ntpdate pool.ntp.org
+  when: ansible_os_family == "RedHat"
+  become: yes
+  tags:
+      - pre
+
+
+
+

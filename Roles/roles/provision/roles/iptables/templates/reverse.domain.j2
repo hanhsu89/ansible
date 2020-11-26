@@ -1,0 +1,11 @@
+$TTL 86400
+@   IN  SOA  dns.{{ domain_local }}. root.{{ domain_local }}. (
+        2011071001  ;Serial
+        3600        ;Refresh
+        1800        ;Retry
+        604800      ;Expire
+        86400       ;Minimum TTL
+)
+
+@               IN  NS  dns.{{ domain_local }}.
+{{ lan_vip }}             IN PTR  dns.{{ domain_local }}.

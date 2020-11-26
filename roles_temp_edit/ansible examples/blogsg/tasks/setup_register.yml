@@ -1,0 +1,17 @@
+---
+- name: create register       | setup_register
+  command: gitlab-ci-multi-runner register -n \
+    --url '{{ url }}' \
+    --registration-token '{{ registration_token }}' \
+    --executor '{{ executor }}' \
+    --description '{{ description }}' \
+    --tag-list '{{ tag_list }}' \
+    --docker-image '{{ docker_image }}'
+
+- name: Change volumes        | setup_register
+  lineinfile:
+    dest: /root/test.txt
+    regexp: "^(.*)cache\"]$"
+    line: 'volumes = ["{{docker_volumes}}"]'
+    backrefs: yes
+    backup: yes

@@ -1,0 +1,17 @@
+---
+
+- name: Run apt update cache
+  apt:
+    update_cache: yes
+
+- name: Install required apt packages
+  apt:
+    name:
+      - build-essential
+      - libpcre3
+      - libpcre3-dev
+      - zlib1g-dev
+      - libssl-dev
+      - libgeoip-dev
+      - git
+    state: present

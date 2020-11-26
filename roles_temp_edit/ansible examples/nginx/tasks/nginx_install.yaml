@@ -1,0 +1,42 @@
+---
+- name: Download Nginx Source
+  get_url:
+    url: "{{ nginx_source_url }}"
+    dest: "/tmp/{{ nginx }}-{{ nginx_source_version }}.tar.gz"
+  sudo: yes
+  tags:
+      - nginx-install
+
+- name: Unpack the compressed Nginx source
+  command: tar -xvzf /tmp/{{ nginx }}-{{ nginx_source_version }}.tar.gz
+           chdir=/tmp creates=/tmp/nginx-{{ nginx_source_version }}/README
+
+- name: Build Nginx
+  shell: >
+    cd /tmp/{{ nginx }}-{{ nginx_source_version }} &&
+    ./configure {{ nginx_source_configure }} &&
+    make &&
+    make install
+  sudo: yes
+  tags:
+      - nginx-install
+
+- name: Nginx | Install the upstart init script
+  template:
+    src: nginx.j2
+    dest: /etc/init.d/nginx
+    owner: root
+    group: root
+    mode: 0755
+  notify:
+    - restart nginx
+  sudo: yes
+  tags:
+      - nginx-install
+      
+- name: Start and Enable boot Nginx
+  service: name=nginx state=started enabled=yes
+  when: ansible_os_family == "RedHat"
+  sudo: yes
+  tags:
+      - nginx-install

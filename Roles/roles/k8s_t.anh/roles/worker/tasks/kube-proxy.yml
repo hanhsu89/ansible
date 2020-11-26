@@ -1,0 +1,5 @@
+- name: Download kube-proxy binaries
+  get_url:
+    url: https://storage.googleapis.com/kubernetes-release/release/v{{ k8s_version }}/bin/linux/amd64/kube-proxy
+    dest: /usr/local/bin/
+    mode: 0755

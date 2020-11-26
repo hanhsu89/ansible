@@ -1,0 +1,17 @@
+---
+
+- include: cinder_install_controller.yml
+  when: inventory_hostname in groups['controller']
+  tags: cinder_install_controller
+
+- include: cinder_install_block.yml
+  when: inventory_hostname in groups['cinder_volume']
+  tags: cinder_install_block
+
+- include: cinder_db_setup.yml
+  when: inventory_hostname == os_controller_primary_node
+  tags: cinder_db
+
+- include: cinder_service_setup.yml
+  when: inventory_hostname == os_controller_primary_node
+  tags: cinder_service_setup

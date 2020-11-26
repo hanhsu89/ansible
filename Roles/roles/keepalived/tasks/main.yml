@@ -1,0 +1,103 @@
+---
+- name: Install Necessary Packages | {{ ansible_os_family }}
+  apt:
+    force_apt_get: yes    
+    state: latest
+    name:
+      - make
+      - gcc
+      - git 
+      - ca-certificates 
+      - libc6-dev 
+      - liblua5.3-dev 
+      - libpcre3-dev 
+      - libssl-dev 
+      - libsystemd-dev 
+      - wget
+      - zlib1g-dev
+      - build-essential
+  ignore_errors: yes
+  when: ansible_os_family == "Debian"
+
+- name: Install Necessary Packages | {{ ansible_os_family }}
+  yum:
+    state: latest
+    name:
+      - make
+      - gcc
+      - git 
+      - ca-certificates 
+      - libc6-dev 
+      - liblua5.3-dev 
+      - libpcre3-dev 
+      - libssl-dev 
+      - libsystemd-dev 
+      - wget
+      - zlib1g-dev
+      - build-essential
+  when: ansible_os_family == "RedHat"
+
+- name: Download and Unarchive keepalived v{{ keepalived_version }}
+  unarchive:
+    src: https://www.keepalived.org/software/keepalived-{{ keepalived_version }}.tar.gz
+    remote_src: yes
+    dest: /tmp
+    mode: 0755
+    owner: root
+    creates: keepalived-{{ keepalived_version }}
+
+- name: Build and install keepalived v{{ keepalived_version }}
+  shell: "{{ item }}"
+  args:
+    chdir: /tmp/keepalived-{{ keepalived_version }}
+  loop:
+    - ./configure
+    - make && make install
+
+- name: Create keepalived service
+  shell: "{{ item }}"
+  loop:
+    - cp /tmp/keepalived-{{ keepalived_version }}/keepalived/keepalived.service /etc/systemd/system/
+    - ln -s /etc/systemd/system/keepalived.service /etc/systemd/system/multi-user.target.wants/keepalived.service
+
+- name: Create keepalived Directory
+  file: 
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - /etc/keepalived
+
+- name: Copy chk_service script
+  template: 
+    src: check_script.sh.j2 
+    dest: /etc/keepalived/check_script.sh
+    mode: 0755
+    owner: root
+    group: root
+ 
+- name: Configuration keepalived for MASTER
+  template: 
+    src: keepalived.conf_master.j2 
+    dest: /etc/keepalived/keepalived.conf
+  when:
+    - roles == "master"
+ 
+- name: Configuration keepalived for BACKUP
+  template: 
+    src: keepalived.conf_backup.j2 
+    dest: /etc/keepalived/keepalived.conf
+  when:
+    - roles == "backup"
+
+- name: Start keepalived service
+  service: 
+    name: keepalived 
+    state: started
+    enabled: yes
+
+- name: Check status of keepalived service
+  service_facts:
+  register: service_state
+
+- debug:
+    var: service_state.ansible_facts.services["keepalived.service"].state

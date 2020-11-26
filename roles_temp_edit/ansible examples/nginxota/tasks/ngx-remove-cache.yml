@@ -1,0 +1,27 @@
+---
+- name: remove_nginx_cache_uri
+  file: path={{ item }} state=absent
+  #with_items: "{{ ngx_remove_cache_uris.keys()  | default([]) }}"
+  with_items: "{{ ngx_remove_cache_uris | default([]) }}"
+  when: ngx_remove_cache == "uri"
+
+- name: remove_nginx_cache_uri_extra_var
+  file: path={{ ngx_remove_cache_uri }} state=absent
+  when: ngx_remove_cache == "uri_extra_var"
+
+- name: list caches to remove
+  shell: ls -1 "{{ ngx_proxy_cache_path }}/{{ ngx_remove_cache_uri }}"
+  when: ngx_remove_cache == "all"
+  register: contents
+
+- name: remove all caches
+  file: 
+    #path: "{{ ngx_proxy_cache_path }}/{{ ngx_remove_cache_uri }}/lvtc.cdn.gamota.net/01"
+    path: "{{ ngx_proxy_cache_path }}/{{ ngx_remove_cache_uri }}/{{ item }}"
+    state: absent
+  with_items: "{{ contents.stdout_lines }}"
+  when: ngx_remove_cache == "all"
+  register: paths
+- debug: msg="{{ paths }}"
+
+

@@ -1,0 +1,164 @@
+---
+
+- name: Get Gitlab repository installation script
+  get_url:
+    url: "https://packages.gitlab.com/install/repositories/runner/{{ gitlab_runner_package_name }}/script.deb.sh"
+    dest: /tmp/gitlab-runner.script.deb.sh
+    mode: 0744
+
+- name: Install Gitlab repository
+  command: bash /tmp/gitlab-runner.script.deb.sh
+  args:
+    creates: "/etc/apt/sources.list.d/runner_{{ gitlab_runner_package_name }}.list"
+
+- name: Update gitlab_runner_package_name
+  set_fact:
+    gitlab_runner_package: "{{ gitlab_runner_package_name }}={{ gitlab_runner_package_version }}"
+    gitlab_runner_package_state: "present"
+  when: gitlab_runner_package_version is defined
+
+- name: Set gitlab_runner_package_name
+  set_fact:
+    gitlab_runner_package: "{{ gitlab_runner_package_name }}"
+    gitlab_runner_package_state: "latest"
+  when: gitlab_runner_package_version is not defined
+
+- name: Install GitLab Runner
+  apt:
+    name: "{{ gitlab_runner_package }}"
+    state: "{{ gitlab_runner_package_state }}"
+  environment:
+    GITLAB_RUNNER_DISABLE_SKEL: "true"
+  when: ansible_distribution_release in ["buster", "focal"]
+
+- name: Install GitLab Runner
+  apt:
+    name: "{{ gitlab_runner_package }}"
+    state: "{{ gitlab_runner_package_state }}"
+  when: ansible_distribution_release not in ["buster", "focal"]
+
+- name: Remove ~/gitlab-runner/.bash_logout on debian buster and ubuntu focal
+  file:
+    path: /home/gitlab-runner/.bash_logout
+    state: absent
+  when: ansible_distribution_release in ["buster", "focal"]
+
+
+
+
+- name: (Unix) List configured runners
+  command: "{{ gitlab_runner_executable }} list"
+  register: configured_runners
+  changed_when: False
+  check_mode: no
+
+- name: (Unix) Check runner is registered
+  command: "{{ gitlab_runner_executable }} verify"
+  register: verified_runners
+  ignore_errors: True
+  changed_when: False
+  check_mode: no
+
+- name: (Unix) Register GitLab Runner
+  include_tasks: register-runner.yml
+  when: gitlab_runner.token is defined or gitlab_runner_registration_token | string | length > 0  # Ensure value is set
+  loop: "{{ gitlab_runner_runners }}"
+  loop_control:
+    index_var: gitlab_runner_index
+    loop_var: gitlab_runner
+
+
+
+
+
+#=== Set global options
+- name: Create .gitlab-runner dir
+  file:
+    path: "{{ gitlab_runner_config_file_location }}"
+    state: directory
+    mode: '0755'
+  become: "{{ gitlab_runner_system_mode }}"
+
+- name: Ensure config.toml exists
+  file:
+    path: "{{ gitlab_runner_config_file }}"
+    state: touch
+    modification_time: preserve
+    access_time: preserve
+  become: "{{ gitlab_runner_system_mode }}"
+
+- name: Set concurrent option
+  lineinfile:
+    dest: "{{ gitlab_runner_config_file }}"
+    regexp: '^(\s*)concurrent ='
+    line: '\1concurrent = {{ gitlab_runner_concurrent }}'
+    state: present
+    backrefs: yes
+  become: "{{ gitlab_runner_system_mode }}"
+  notify:
+    - restart_gitlab_runner
+    - restart_gitlab_runner_macos
+
+- name: Add listen_address to config
+  lineinfile:
+    dest: "{{ gitlab_runner_config_file }}"
+    regexp: '^listen_address ='
+    line: 'listen_address = "{{ gitlab_runner_listen_address }}"'
+    insertafter: '\s*concurrent.*'
+    state: present
+  when: gitlab_runner_listen_address | length > 0  # Ensure value is set
+  become: "{{ gitlab_runner_system_mode }}"
+  notify:
+    - restart_gitlab_runner
+    - restart_gitlab_runner_macos
+
+- name: Add sentry dsn to config
+  lineinfile:
+    dest: "{{ gitlab_runner_config_file }}"
+    regexp: '^sentry_dsn ='
+    line: 'sentry_dsn = "{{ gitlab_runner_sentry_dsn }}"'
+    insertafter: '\s*concurrent.*'
+    state: present
+  when: gitlab_runner_sentry_dsn | length > 0  # Ensure value is set
+  become: "{{ gitlab_runner_system_mode }}"
+  notify:
+    - restart_gitlab_runner
+    - restart_gitlab_runner_macos
+
+
+
+#=== Configure GitLab Runner
+- name: Get existing config.toml
+  slurp:
+    src: "{{ gitlab_runner_config_file }}"
+  register: runner_config_file
+  become: "{{ gitlab_runner_system_mode }}"
+
+- name: Get pre-existing runner configs
+  set_fact:
+    runner_configs: "{{ (runner_config_file['content'] | b64decode).split('[[runners]]\n') }}"
+
+- name: Create temporary directory
+  tempfile:
+    state: directory
+    suffix: gitlab-runner-config
+  register: temp_runner_config_dir
+  check_mode: no
+  changed_when: false
+
+- name: Write config section for each runner
+  include_tasks: config-runner.yml
+  loop: "{{ runner_configs }}"
+  loop_control:
+    index_var: runner_config_index
+    loop_var: runner_config
+
+- name: Assemble new config.toml
+  assemble:
+    src: "{{ temp_runner_config_dir.path }}"
+    dest: "{{ gitlab_runner_config_file }}"
+    delimiter: '[[runners]]\n'
+    backup: yes
+    validate: "{{ gitlab_runner_executable }} verify -c %s"
+    mode: 0600
+  become: "{{ gitlab_runner_system_mode }}"

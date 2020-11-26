@@ -1,0 +1,25 @@
+---
+# vars file for clamav
+# defaults file for clamav-ansible-role
+
+clamav_packages_EL:
+  - {package: "clamav"}
+  - {package: "clamav-data"}
+  - {package: "clamav-devel"}
+  - {package: "clamav-filesystem"}
+  - {package: "clamav-lib"}
+  - {package: "clamav-scanner-systemd"}
+  - {package: "clamav-server"}
+  - {package: "clamav-server-systemd"}
+  - {package: "clamav-update"}
+
+clamav_freshclam_daily_checks_for_updates: 2
+
+clamav_freshclam_autoupdate_service: True
+
+clamav_freshclam_geolocation_based_update_server: True
+
+clamav_freshclam_update_on_every_run: False
+
+epel_url: "https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm"
+epel_key: "/etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7"

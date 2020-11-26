@@ -1,0 +1,14 @@
+---
+- include: install_packet.yaml
+
+- include: user.yaml
+  when: build_nginx
+
+- include: nginx_install.yaml
+  when: build_nginx
+
+- include: nginx_conf.yaml
+  when: install_config_nginx
+
+- include: v-host.yaml
+  when: nginx_vhost

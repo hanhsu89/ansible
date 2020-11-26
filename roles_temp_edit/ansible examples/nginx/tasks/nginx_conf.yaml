@@ -1,0 +1,49 @@
+---
+- name: Create Folder Logs
+  file: path={{nginx_log_dir}} mode=0755 state=directory
+  when: ansible_os_family == "RedHat"
+  become: yes
+  tags:
+      - nginx-config
+
+- name: Create Folder HTML Localhost
+  file: path={{ nginx_www_dir }} mode=0755 state=directory
+  when: ansible_os_family == "RedHat"
+  become: yes
+  tags:
+      - nginx-config
+
+- name: Create Nginx Config Folder
+  file: path={{ config_vhost_dir }} state=directory
+  tags: nginx-config
+  become: yes
+
+- name: Chown localhost permission
+  command: chown -R {{ nginx_user }}.{{ nginx_group }} {{ nginx_www_dir }}
+  when: ansible_os_family == "RedHat"
+  become: yes
+  tags:
+      - nginx-config
+
+- name: Copy file Config
+  template:
+    src: nginx.conf.j2
+    dest: "{{ nginx_prefix }}/nginx.conf"
+    owner: root
+    group: root
+    mode: 0755
+  when: ansible_os_family == "RedHat"
+  become: yes
+  tags:
+      - nginx-config
+
+- name: Copy Index Test
+  copy:
+    src: index.html
+    dest: "{{ nginx_www_dir }}"
+    owner: "{{ nginx_user }}"
+    group: "{{ nginx_group }}"
+    mode: 0644
+  become: yes
+  tags:
+      - nginx-config

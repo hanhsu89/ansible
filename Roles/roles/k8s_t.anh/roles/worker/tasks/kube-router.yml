@@ -1,0 +1,59 @@
+- name: Download kube-router
+  get_url:
+    url: https://github.com/cloudnativelabs/kube-router/releases/download/v{{ kube_router_version }}/kube-router_{{ kube_router_version }}_linux_amd64.tar.gz
+    dest: /tmp/
+
+- name: Install kube-router
+  unarchive:
+    remote_src: yes
+    src: /tmp/kube-router_{{ kube_router_version }}_linux_amd64.tar.gz
+    dest: /usr/local/bin/
+    mode: 0755
+    extra_opts:
+      - kube-router
+
+- name: Remove kube-router tar.gz file
+  file:
+    path: /tmp/kube-router_{{ kube_router_version }}_linux_amd64.tar.gz
+    state: absent
+
+- name: Create kube-router service account and RBAC
+  shell: kubectl apply -f {{ playbook_dir }}/rbac/kube-router.yaml
+  args:
+    executable: /bin/bash
+  delegate_to: localhost
+  become: False
+  run_once: True
+
+- name: Create kubeconfig for kube-router service account
+  shell: '{{ playbook_dir }}/bin/kube-sa-config kube-router -n kube-system | tee {{ kubeconfig_dir }}/kube-router.conf'
+  args:
+    executable: /bin/bash
+  delegate_to: localhost
+  become: False
+  run_once: True
+
+- name: Copy kube-router kubeconfig file to worker servers
+  copy:
+    src: '{{ kubeconfig_dir }}/kube-router.conf'
+    dest: '/etc/kubernetes/config/'
+
+- name: Create CNI config file
+  copy:
+    src: '{{ item }}'
+    dest: /etc/cni/net.d/
+  loop:
+    - 10-kuberouter.conf
+    - 99-loopback.conf
+
+- name: Create kube-router service
+  template:
+    src: kube-router.service.j2
+    dest: /etc/systemd/system/kube-router.service
+
+- name: Be sure kube-router services is running and enabled
+  systemd:
+    name: kube-router
+    state: started
+    enabled: Yes
+    daemon_reload: Yes

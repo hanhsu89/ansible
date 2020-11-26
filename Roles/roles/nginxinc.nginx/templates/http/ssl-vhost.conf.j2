@@ -1,0 +1,110 @@
+server {
+    listen {{ item.value.port }};
+    server_name  {{ item.value.server_name | default('localhost') }};
+
+{% if item.value.root is defined and item.value.root %}
+    root {{ item.value.root }};
+{% endif %}
+{% if item.value.index is defined %}
+    index {{ item.value.index }};
+{% endif %}
+{% if item.value.access_log is defined %}
+    access_log  {{ item.value.access_log }};
+{% endif %}
+{% if item.value.error_log is defined %}
+    error_log  {{ item.value.error_log }};
+{% endif %}
+
+{% if item.value.ssl is defined %}
+    ssl                  {{ item.value.ssl | ternary("on", "off") }};
+{% endif %}
+{% if item.value.ssl_protocols is defined %}
+    ssl_protocols  {{ item.value.ssl_protocols }};
+{% endif %}
+{% if item.value.ssl_certificate is defined %}
+    ssl_certificate      {{ item.value.ssl_certificate }};
+{% endif %}
+{% if item.value.ssl_certificate_key is defined %}
+    ssl_certificate_key      {{ item.value.ssl_certificate_key }};
+{% endif %}
+{% if item.value.ssl_ciphers is defined %}
+    ssl_ciphers          {{ item.value.ssl_ciphers }};
+{% endif %}
+{% if item.value.ssl_prefer_server_ciphers is defined %}
+    ssl_prefer_server_ciphers   {{ item.value.ssl_prefer_server_ciphers | ternary("on", "off") }};
+{% endif %}
+{% if item.value.add_header is defined %}
+    add_header {{ item.value.add_header }};
+{% endif %}
+{% if item.value.ssl_session_timeout is defined %}
+    ssl_session_timeout {{ item.value.ssl_session_timeout }};
+{% endif %}
+
+{% if item.value.web_server is defined and item.value.web_server %}
+{% for location in item.value.web_server %}
+    location {{ item.value.web_server[location].name }} {
+{% if item.value.web_server[location].name2 is defined %}
+        location {{ item.value.web_server[location].name2 }} {
+{% endif %}
+{% if item.value.web_server[location].deny2 is defined %}
+            deny {{ item.value.web_server[location].deny2 }};
+            }
+{% endif %}
+{% if item.value.web_server[location].return is defined %}
+        return {{ item.value.web_server[location].return }} {
+{% endif %}
+{% if item.value.web_server[location].proxy_pass is defined %}
+        proxy_pass         {{ item.value.web_server[location].proxy_pass }} {
+{% endif %}
+{% if item.value.web_server[location].include is defined %}
+        include {{ item.value.web_server[location].include }} {
+{% endif %}
+    }
+{% endfor %}
+{% endif %}
+
+{% if item.value.if is defined %}
+{% for location in item.value.if %}
+    if {{ item.value.if[location].name }} {
+{% if item.value.if[location].return is defined %}
+                return {{ item.value.if[location].return }};
+{% endif %}
+    }
+{% endfor %}
+{% endif %}
+
+{% if item.value.include is defined %}
+    include  {{ item.value.include }};
+{% endif %}
+
+{% if item.value.gzip is defined %}
+        gzip {{ item.value.gzip | ternary("on", "off") }};
+{% endif %}
+{% if item.value.gzip_http_version is defined %}
+        gzip_http_version {{ item.value.gzip_http_version }};
+{% endif %}
+{% if item.value.gzip_comp_level is defined %}
+        gzip_comp_level {{ item.value.gzip_comp_level }};
+{% endif %}
+{% if item.value.gzip_proxied is defined %}
+        gzip_proxied {{ item.value.gzip_proxied }};
+{% endif %}
+{% if item.value.gzip_min_length is defined %}
+        gzip_min_length  {{ item.value.gzip_min_length }};
+{% endif %}
+{% if item.value.gzip_buffers is defined %}
+        gzip_buffers  {{ item.value.gzip_buffers }};
+{% endif %}
+{% if item.value.gzip_vary is defined %}
+        gzip_vary  {{ item.value.gzip_vary | ternary("on", "off") }};
+{% endif %}
+
+
+{% if item.value.gzip_types is defined %}
+        gzip_types  {{ item.value.gzip_types }};
+{% endif %}
+{% if item.value.gzip_disable is defined %}
+        gzip_disable  {{ item.value.gzip_disable }};
+{% endif %}
+
+}

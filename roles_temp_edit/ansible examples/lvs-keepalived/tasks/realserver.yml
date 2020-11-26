@@ -1,0 +1,19 @@
+- name: Keepalived-LVS --> Tuning kernel parameters
+  sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    sysctl_set: yes
+  with_items:
+    - { name: "net.ipv4.conf.lo.arp_ignore", value: 1 }
+    - { name: "net.ipv4.conf.lo.arp_announce", value: 2 }
+
+- name: Keepalived-LVS --> Assign LVS virtual IP
+  lineinfile: 
+    path: "/etc/sysconfig/network-scripts/ifcfg-lo"
+    line: "{{ item }}"
+  with_items:
+    - "IPADDR2={{ keepalived_virtual_ip }}"
+    - "PREFIX2=32"
+  
+- name: Keepalived-LVS --> Restart network service
+  service: name=network state=restarted

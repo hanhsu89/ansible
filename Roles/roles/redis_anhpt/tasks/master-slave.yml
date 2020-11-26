@@ -1,0 +1,33 @@
+# - name: Create neccessary directory
+#   file:
+#     path: "{{ item }}"
+#     state: directory
+#     owner: redis
+#     group: redis
+#     mode: 0755
+#     recurse: Yes
+#   loop:
+#     - /var/log/redis/redis_cluster/{{ role }}
+#     - /var/lib/redis_cluster/{{ role }}
+#     - /var/run/redis/redis_cluster
+#     - /etc/redis
+
+# - name: Create redis-server service
+#   template:
+#     src: redis-server.service.j2
+#     dest: /etc/systemd/system/redis-server-{{ role }}.service
+
+# - name: Create redis-server config file
+#   template:
+#     src: redis.conf.j2
+#     dest: /etc/redis/redis-server-{{ role }}.conf
+#     mode: 0644
+#     owner: redis
+#     group: redis
+
+- name: Ensure redis-server is running and enabled
+  systemd:
+    name: redis-server-{{ role }}
+    state: started
+    enabled: Yes
+    daemon_reload: Yes

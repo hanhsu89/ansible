@@ -1,0 +1,10 @@
+---
+- name: yum | install epel repo
+  become: yes
+  yum: name=epel-release state=present
+  when: ansible_os_family == "RedHat"
+
+- name: yum | fix ca-certificates for epel
+  become: yes
+  yum: name=ca-certificates state=latest disablerepo=epel
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"

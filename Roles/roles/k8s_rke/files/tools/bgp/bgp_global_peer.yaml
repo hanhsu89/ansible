@@ -1,0 +1,8 @@
+---
+apiVersion: projectcalico.org/v3
+kind: BGPPeer
+metadata:
+  name: bgppeer-global
+spec:
+  asNumber: 64512
+  peerIP: 192.168.10.61

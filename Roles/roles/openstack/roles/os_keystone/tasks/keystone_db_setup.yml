@@ -1,0 +1,36 @@
+---
+
+- name: Create DB for service
+  mysql_db:
+    login_user: "{{ galera_root_user }}"
+    login_password: "{{ galera_root_password }}"
+    #login_host: "{{ keystone_galera_address }}"
+    name: "{{ keystone_galera_database }}"
+    state: "present"
+  delegate_to: "{{ keystone_db_setup_host }}"
+ # no_log: True
+
+- name: Grant access to the DB for the service
+  mysql_user:
+    login_user: "{{ galera_root_user }}"
+    login_password: "{{ galera_root_password }}"
+   # login_host: "{{ keystone_galera_address }}"
+    name: "{{ keystone_galera_user }}"
+    password: "{{ keystone_user_password }}"
+    host: "{{ item }}"
+    state: "present"
+    priv: "{{ keystone_galera_database }}.*:ALL"
+  delegate_to: "{{ keystone_db_setup_host }}"
+  with_items:
+    - "localhost"
+    - "%"
+    - "controller1"
+
+- name: run keystone-db sync
+  command: >
+      keystone-manage db_sync
+  become: true
+  become_user: keystone
+  run_once: true
+  tags: bug
+

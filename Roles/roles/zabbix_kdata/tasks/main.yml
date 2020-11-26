@@ -1,0 +1,41 @@
+---
+- include: common.yml
+
+  #- include: server.yml
+  #  when: zabbix_server_install | bool
+
+#- include: proxy.yml
+#  when: zabbix_proxy_install | bool
+
+#- include: sender.yml
+#  when: zabbix_sender_install | bool
+
+- include: agent.yml
+  when: zabbix_agent_install | bool
+
+- include: agent_script.yml
+  when: zabbix_agent_install | bool
+
+- include: megaraid_sas.yml
+  when: zabbix_check_megaraid_sas | bool
+
+- include: mpt_sas.yml
+  when: zabbix_check_mpt_sas | bool
+
+- include: mpt_sas2.yml
+  when: zabbix_check_mpt_sas2 | bool
+
+  #- include: frontend.yml
+  #  when: zabbix_server_front_install | bool
+
+  #- include: server_mariadb.yml
+  #  when: zabbix_server_db_type == 'mysql' and zabbix_server_install | bool
+
+  #- include: server_mariadb_init.yml
+  #  when: zabbix_server_db_type == 'mysql' and zabbix_server_install | bool
+
+#- include: proxy_mariadb.yml
+#  when: zabbix_server_db_type == 'mysql' and zabbix_proxy_install | bool
+
+#- include: proxy_mariadb_init.yml
+#  when: zabbix_server_db_type == 'mysql' and zabbix_proxy_install | bool

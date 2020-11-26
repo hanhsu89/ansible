@@ -1,0 +1,22 @@
+---
+- hosts: srv_slave_83
+  tasks:
+    - name: Ensure Service PostgreSQL-10 Stoped
+      service: 
+        name: postgresql-10
+        state: stopped
+
+    - name: Remove PostgreSQL-10
+      yum:
+          name:
+            - postgresql10
+            - postgresql10-contrib
+            - postgresql10-libs
+            - postgresql10-server
+            - python2-psycopg2
+          state: absent
+
+    - name: Delete directory /var/lib/pgsql
+      file:
+        path: /var/lib/pgsql
+        state: absent

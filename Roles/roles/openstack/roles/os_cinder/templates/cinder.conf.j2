@@ -1,0 +1,63 @@
+[DEFAULT]
+# Disable stderr logging
+use_stderr = False
+my_ip = {{ ansible_default_ipv4['address'] }}
+
+rootwrap_config = /etc/cinder/rootwrap.conf
+api_paste_config = /etc/cinder/api-paste.ini
+auth_strategy = keystone
+glance_api_servers = http://{{ internal_vip_address|default(groups['controller'][0]) }}:9292
+
+{% if cinder_volume_type in ['lvm', 'scaleio'] %}
+
+enabled_backends = {{ cinder_volume_type }}
+[scaleio]
+volume_driver = cinder.volume.drivers.dell_emc.scaleio.driver.ScaleIODriver
+volume_backend_name = scaleio
+san_ip = {{ scaleio_san_ip }}
+sio_unmap_volume_before_deletion = True
+sio_storage_pools = default:ops
+san_login = {{ scaleio_san_login }}
+san_password = {{ scaleio_san_password }}
+san_thin_provision = True
+sio_allow_non_padded_volumes = True
+
+#image_volume_cache_enabled = True
+{% endif %}
+
+## RabbitMQ RPC
+executor_thread_pool_size = {{ cinder_rpc_executor_thread_pool_size }}
+rpc_response_timeout = {{ cinder_rpc_response_timeout }}
+
+transport_url = rabbit://{% for host in groups['controller'] %}openstack:{{ rabbitmq_auth_password }}@{{ hostvars[host]['inventory_hostname'] }}{% if not loop.last %},{% endif %}{% endfor %}
+
+## Quota
+quota_volumes = {{ cinder_quota_volumes }}
+quota_snapshots = {{ cinder_quota_snapshots }}
+quota_consistencygroups = {{ cinder_quota_consistencygroups }}
+quota_gigabytes = {{ cinder_quota_gigabytes }}
+quota_backups = {{ cinder_quota_backups }}
+quota_backup_gigabytes = {{ cinder_quota_backup_gigabytes }}
+
+[database]
+connection = mysql+pymysql://cinder:{{ cinder_user_password }}@{{ internal_vip_address|default(groups['controller'][0]) }}/cinder
+
+[oslo_concurrency]
+lock_path = {{ cinder_lock_path }}
+
+[keystone_authtoken]
+{% if inventory_hostname in groups['cinder'] %}
+www_authenticate_uri = http://{{ internal_vip_address|default(groups['controller'][0]) }}:5000
+{% else %}
+auth_uri = http://{{ internal_vip_address|default(groups['controller'][0]) }}:5000
+{% endif %}
+auth_url = http://{{ internal_vip_address|default(groups['controller'][0]) }}:5000
+auth_type = password
+project_domain_id = default
+user_domain_id = default
+project_name = service
+username = cinder
+password = {{ cinder_user_password }}
+memcached_servers = {% for host in groups['controller'] %}{{ hostvars[host]['inventory_hostname'] }}:11211{% if not loop.last %},{% endif %}{% endfor %}
+
+token_cache_time = 300

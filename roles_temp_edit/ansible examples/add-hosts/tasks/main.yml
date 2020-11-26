@@ -1,0 +1,18 @@
+---
+- name: Create a new host for this agent
+      zabbix_host:
+        login_user: Admin
+        login_password: zabbix
+        server_url: http://192.168.10.61/zabbix
+        host_name: "{{ ansible_fqdn }}"
+        host_groups: "{{ zabbix_groups }}"
+        link_templates:
+          - Template OS Linux
+        inventory_mode: automatic
+        interfaces:
+          - type: agent
+            main: 1
+            useip: "{{ zabbix_interface_use_ip | ternary( 1, 0 ) }}"
+            ip: "192.168.10.10"
+            dns: "{{ ansible_fqdn }}"
+            port: 10050

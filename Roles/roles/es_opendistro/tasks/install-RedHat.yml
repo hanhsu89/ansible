@@ -1,0 +1,20 @@
+---
+
+- name: Install opendistroforelasticsearch_extra_packages
+  yum:
+    name: "{{ opendistroforelasticsearch_extra_packages }}"
+    state: present
+
+- name: Install opendistroforelasticsearch_package
+  yum:
+    name: "{{ opendistroforelasticsearch_package }}"
+    state: present
+
+- name: Create /etc/sysconfig/elasticsearch
+  template:
+    src: RedHat.sysconfig.j2
+    dest: /etc/sysconfig/elasticsearch
+    owner: root
+    group: root
+    mode: 0644
+    validate: sh -n %s

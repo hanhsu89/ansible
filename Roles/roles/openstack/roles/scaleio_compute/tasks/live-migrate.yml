@@ -1,0 +1,46 @@
+
+---
+
+- name: Compute Migrate || Change shell for user nova
+  user:
+    name: nova
+    shell: /bin/bash
+
+- name: Compute Migrate || Update Libvirt Config
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: 0644
+  with_items:
+    - { src: 'live-migrate/libvirt.conf', dest: '/etc/libvirt/libvirt.conf' }
+    - { src: 'live-migrate/libvirtd.conf', dest: '/etc/libvirt/libvirtd.conf' }
+    - { src: 'live-migrate/libvirtd', dest: '/etc/sysconfig/libvirtd' }
+
+- name: Compute Migrate || Create folder keys
+  file:
+    path: /var/lib/nova/.ssh
+    state: directory
+    owner: nova
+    group: nova
+    mode: 0755
+
+- name: Compute Migrate || Update SSH-Key and authen
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: 0600
+    owner: nova
+    group: nova
+  with_items:
+    - { src: 'ssh-nova/id_rsa', dest: '/var/lib/nova/.ssh/id_rsa' }
+    - { src: 'ssh-nova/config', dest: '/var/lib/nova/.ssh/config' }
+    - { src: 'ssh-nova/id_rsa.pub', dest: '/var/lib/nova/.ssh/id_rsa.pub' }
+    - { src: 'ssh-nova/authorized_keys', dest: '/var/lib/nova/.ssh/authorized_keys' }
+
+- name: Compute Migrate || Restart service
+  systemd:
+    name: "{{ item }}"
+    state: restarted
+  with_items:
+    - libvirtd
+    - openstack-nova-compute

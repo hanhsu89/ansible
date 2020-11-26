@@ -1,0 +1,60 @@
+---
+
+# - name: Install Necessary Packages
+#   apt:
+#     force_apt_get: yes    
+#     state: latest
+#     name:
+#       - ca-certificates
+#       - tar
+#   ignore_errors: yes
+
+# - name: Add system groups
+#   group:
+#     name: "{{ mongodb_exporter_system_groups }}"
+#     state: present
+
+# - name: Add system user
+#   user:
+#     name: "{{ mongodb_exporter_system_user }}"
+#     group: "{{ mongodb_exporter_system_groups }}"
+#     state: present
+
+- name: Download precompiled binary
+  unarchive:
+    src: "{{ mongodb_exporter_release_url }}"
+    dest: /usr/local/bin
+    owner: "{{ mongodb_exporter_system_user }}"
+    group: "{{ mongodb_exporter_system_groups }}"
+    mode: 0750
+    remote_src: yes
+
+# - name: Download & Decompress Node Exporter source file to /tmp
+#   unarchive:
+#     src: "{{ mongodb_exporter_release_url }}"
+#     dest: /tmp
+#     remote_src: yes
+
+# - name: Copy binary to "{{ node_exporter_src_dir }}"
+#   copy:
+#     src: /tmp/node_exporter-{{ node_exporter_version }}.linux-{{ go_arch }}/node_exporter
+#     dest: "{{ node_exporter_src_dir }}"
+#     owner: "{{ node_exporter_user }}"
+#     group: "{{ node_exporter_group }}"
+#     mode: 0755
+#     remote_src: yes
+
+- name: Create systemd service file
+  template:
+    src: mongodb_exporter.service.j2
+    dest: /etc/systemd/system/mongodb_exporter.service
+    owner: root
+    group: root
+    mode: 0644
+
+# - name: Restart mongodb exporter service
+#   systemd:
+#     name: mongodb_exporter.service
+#     state: restarted
+#     daemon_reload: yes
+#     enabled: yes

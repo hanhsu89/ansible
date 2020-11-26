@@ -1,0 +1,28 @@
+## What compmentes to install
+nrpe_check_linux_stats                : True  ## Check linux_stats
+nrpe_check_mpt_sas                    : False  ## Check mpt_sas
+nrpe_check_mpt_sas2                   : False  ## Check mpt_sas2
+nrpe_check_intel_fakeraid             : False  ## Check intel_fakeraid
+nrpe_check_megaraid_sas               : True  ## Check MegaRAID SAS
+nrpe_check_smart_array                : False  ## Check HP Smart_Array
+
+
+## Nrpe configuration
+nagios_master_ip                     : "192.168.10.5"
+
+
+
+mpt_status_rpm_file                   : "mpt-status-1.2.0-3.el6.x86_64.rpm"
+driver_hp_file                        : "hpacucli-9.20-9.0.x86_64.rpm"
+
+## Plugins path
+linux_stats_plugin_path               : "{{ nrpe_plugin_path }}/check_linux_stats.pl"
+megaraid_sas_plugin_path              : "{{ nrpe_plugin_path }}/check_megaraid_sas"
+intel_fakeraid_plugin_path            : "{{ nrpe_plugin_path }}/check_raid.pl"
+mpt_sas_plugin_path                   : "{{ nrpe_plugin_path }}/check_mpt"
+mpt_sas2_plugin_path                  : "{{ nrpe_plugin_path }}/sas2ircu-status"
+mpt_status_path                       : "/usr/sbin/mpt-status"
+mega_cli_path                         : "/opt/MegaRAID/MegaCli/MegaCli64"
+hp_smart_array_path                   : "{{ nrpe_plugin_path }}/check_smart_array.py"
+
+perl_file                             : "perl-Sys-Statistics-Linux-0.66-1.1.noarch.rpm"

@@ -1,0 +1,53 @@
+---
+# vars file for test
+action:
+  - "insert"
+open_port_dbgame: 
+  - port: 22
+    protocol: tcp
+  - port: 43557
+    protocol: tcp
+  - port: 11407
+    protocol: tcp
+
+open_port_game:
+  - port: 26000:26001
+    protocol: tcp
+  - port: 40000:40006
+    protocol: tcp
+  - port: 41000:41006
+    protocol: tcp
+  - port: 42000:42006
+    protocol: tcp
+  - port: 43000:43006
+    protocol: tcp
+  - port: 44000:44006
+    protocol: tcp
+  - port: 45000:45006
+    protocol: tcp
+  - port: 46000:46006
+    protocol: tcp
+  - port: 47000:47006
+    protocol: tcp
+  - port: 48000:48006
+    protocol: tcp
+  - port: 11407
+    protocol: tcp
+  - port: 26004
+    protocol: tcp
+  - port: 26101
+    protocol: tcp
+  - port: 26201
+    protocol: tcp
+  - port: 26301
+    protocol: tcp
+  - port: 26401
+    protocol: tcp
+  - port: 26501
+    protocol: tcp
+  - port: 26601
+    protocol: tcp
+  - port: 26701
+    protocol: tcp
+  - port: 26801
+    protocol: tcp

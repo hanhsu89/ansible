@@ -1,0 +1,18 @@
+filebeat:
+  inputs:
+    -
+      paths:
+        - /var/log/nginx/*.access.log
+      json.keys_under_root: true
+      json.overwrite_keys: true
+setup.template.name: "cdnk"
+setup.template.overwrite: false
+setup.template.pattern: "cdnk"
+output.kafka:
+  # initial brokers for reading cluster metadata
+  hosts: ["kafka-01.kdata.vn:9092", "kafka-02.kdata.vn:9092", "kafka-03.kdata.vn:9092"]
+  worker: 5
+  topic: 'cdn-nginx'
+  partition.round_robin:
+    reachable_only: false
+  max_message_bytes: 100000000

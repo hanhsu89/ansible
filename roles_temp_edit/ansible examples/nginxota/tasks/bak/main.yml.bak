@@ -1,0 +1,51 @@
+    - name : install net-snmp
+      yum : name=net-snmp state=latest
+      notify:
+        - Start snmpd
+
+    - name : copy config
+      template : src=snmpd.conf dest=/etc/snmp/ owner=root group=root mode=644
+
+    - name: copy ccu script
+      template : src=ccu dest=/etc/ mode="u=rwx,g=rx,o=rx"
+      notify:
+        - Reload Snmpd
+
+    - name : chkconfig
+      command : chkconfig snmpd on
+
+
+    - name: Copy the appota packages 
+      copy: src=appota.repo dest=/etc/yum.repos.d/appota.repo
+
+    - name: Install the nginx packages 
+      yum: name={{ item }} enablerepo=appota state=present
+      with_items: redhat_pkg
+      when: ansible_os_family == "RedHat"
+
+    - name: Create the directories for site specific configurations
+      file: path=/usr/local/nginx/conf.d/cdn/{{ item }} state=directory owner=root group=root mode=0755
+      with_items:
+        - "sites-available"
+        - "sites-enabled"
+
+    - name: Copy the nginx configuration file 
+      template: src=nginx.conf.j2 dest=/usr/local/nginx/conf/nginx.conf
+      notify: 
+       - restart nginx
+
+    - name: Create the configurations for sites
+      template: src=kcdn_site.j2 dest=/usr/local/nginx/conf.d/cdn/sites-available/{{ item['server']['file_name'] }}
+      with_items: nginx_sites
+      when: nginx_sites|lower != 'none'
+
+    - name: Create the links to enable site configurations
+      file: path=/usr/local/nginx/conf.d/cdn/sites-enabled/{{ item['server']['file_name'] }} state=link src=/usr/local/nginx/conf.d/cdn/sites-available/{{ item['server']['file_name'] }}
+      with_items: nginx_sites
+      when: nginx_sites|lower != 'none'
+      notify: 
+       - reload nginx
+
+    - name: start the nginx service
+      service: name=nginx state=started enabled=yes
+

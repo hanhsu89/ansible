@@ -1,0 +1,17 @@
+[Unit]
+Description=Kubernetes Scheduler
+Documentation=https://github.com/kubernetes/kubernetes
+
+[Service]
+ExecStart=/usr/local/bin/kube-scheduler \
+	--authentication-kubeconfig=/etc/kubernetes/config/kube-scheduler.conf \
+	--authorization-kubeconfig=/etc/kubernetes/config/kube-scheduler.conf \
+	--bind-address=127.0.0.1 \
+  --leader-elect=true \
+  --kubeconfig=/etc/kubernetes/config/kube-scheduler.conf \
+  --v=2
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

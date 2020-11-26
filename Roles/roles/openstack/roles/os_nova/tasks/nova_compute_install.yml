@@ -1,0 +1,24 @@
+- name: install nova compute packages
+  package:
+    name: "{{ item }}"
+    state: latest
+  register: packages_install
+  until: packages_install is success
+  retries: 5
+  delay: 2
+  with_items:
+    - "{{ nova_compute_packages }}"
+  when: inventory_hostname in groups['compute']
+
+- name: Place nova.conf 
+  template:
+    src: "nova.conf.j2"
+    dest: "/etc/nova/nova.conf"
+
+- name: Discover compute hosts
+  shell: "nova-manage cell_v2 discover_hosts --verbose"
+  become: yes
+  become_user: nova
+  changed_when: false
+  run_once: True
+  when: inventory_hostname == os_controller_primary_node

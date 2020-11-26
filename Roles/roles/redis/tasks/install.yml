@@ -1,0 +1,79 @@
+---
+
+- name: Install Necessary Packages
+  apt:
+    name:
+      - make
+      - gcc
+      - libc6-dev
+      - tcl
+      - build-essential
+      - pkg-config
+    state: present         
+    update_cache: yes
+    force_apt_get: yes
+
+- name: Create redis user and group
+  block:
+    - group:
+        name: redis
+        state: present
+        system: yes
+    - user:
+        name: redis
+        comment: 'Redis'
+        shell: /bin/false
+        group: redis
+        system: yes
+        state: present
+        create_home: no
+
+- name: Download and build redis stable from source
+  block:
+    - unarchive:
+        src: "{{ redis_url }}"
+        remote_src: yes
+        dest: /tmp
+        mode: 0755
+        owner: root
+        creates: /tmp/redis-stable
+    - command: make -C /tmp/redis-stable MALLOC=libc
+    - command: cp /tmp/redis-stable/src/{{ item }} /usr/local/bin/
+      loop:
+        - redis-server
+        - redis-sentinel
+        - redis-cli
+        - redis-check-aof
+        - redis-benchmark
+        - redis-check-rdb
+
+- name: Create neccessary directory
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: redis
+    group: redis
+    mode: 0755
+    recurse: Yes
+  loop:
+    - /var/log/redis
+    - /var/lib/redis
+    - /var/run/redis
+    - /etc/redis
+
+- name: Update redis config file
+  template:
+    src: redis.conf.j2
+    dest: /etc/redis/redis.conf
+
+- name: Create redis-server service
+  template:
+    src: redis-server.service.j2
+    dest: /etc/systemd/system/redis-server.service
+
+- name: Ensure redis-server is running and enabled
+  systemd:
+    name: redis-server
+    state: started
+    enabled: yes
+    daemon_reload: Yes    

@@ -1,0 +1,13 @@
+[server]
+#43.239.220.144
+#43.239.221.240
+43.239.221.241 ansible_user=root ansible_port=22
+43.239.221.242 ansible_user=root ansible_port=22
+43.239.221.243 ansible_user=root ansible_port=22
+43.239.221.244 ansible_user=root ansible_port=22
+43.239.221.245 ansible_user=root ansible_port=22
+
+[origin]
+103.53.171.84 ansible_user=longdv ansible_port=1102
+
+[new_server]

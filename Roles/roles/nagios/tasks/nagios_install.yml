@@ -1,0 +1,36 @@
+---
+- name: Install epel repo
+  become: yes
+  yum: name=epel-release state=present
+  when: ansible_os_family == "RedHat"
+
+- name: Fix ca-certificates for epel
+  become: yes
+  yum: name=ca-certificates state=latest disablerepo=epel
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"
+
+- name: CentOS install nagios
+  become: yes
+  yum: name=nagios state=present
+  when: ansible_os_family == "RedHat"
+
+- name: CentOS install nagios plugins
+  become: yes
+  yum: name=nagios-plugins-all state=present 
+  when: ansible_os_family == "RedHat"
+
+- name: CentOS install nagios plugins nrpe
+  become: yes
+  yum: name=nagios-plugins-nrpe state=present
+  when: ansible_os_family == "RedHat"
+
+
+
+#- name: CentOS install nagios
+#  become: yes
+#  yum: state=latest name={{ item }}
+#  with_items:
+#    - nagios
+#    - nagios-plugins-all
+#    - nagios-plugins-nrpe
+#  when: ansible_os_family == "RedHat"

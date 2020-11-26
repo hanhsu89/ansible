@@ -1,0 +1,12 @@
+---
+- name: start mongodb
+  service:
+    name: mongod
+    state: started
+    enabled: yes  
+
+- name: restart mongodb
+  service:
+    name: mongod
+    state: restarted
+    enabled: yes

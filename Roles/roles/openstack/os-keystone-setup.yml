@@ -1,0 +1,6 @@
+---
+- name: Install and Configure Keystone
+  hosts: controller
+  become: true
+  roles:
+    - os_keystone

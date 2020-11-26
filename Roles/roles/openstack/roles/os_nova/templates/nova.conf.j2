@@ -1,0 +1,109 @@
+[DEFAULT]
+use_stderr = False
+# Logs / State
+rootwrap_config = /etc/nova/rootwrap.conf
+service_down_time = 120
+enabled_apis = {{ nova_enabled_apis }}
+transport_url = rabbit://{% for host in groups['controller'] %}openstack:{{ rabbitmq_auth_password }}@{{ hostvars[host]['inventory_hostname'] }}{% if not loop.last %},{% endif %}{% endfor %}
+
+my_ip = {{ ansible_default_ipv4['address'] }}
+# Hypervisor
+default_ephemeral_format = ext4
+
+# Ceilometer notification configurations
+{% if nova_ceilometer_enabled %}
+instance_usage_audit = True
+instance_usage_audit_period = hour
+notify_on_state_change = vm_and_task_state
+{% endif %}
+
+# Notifications
+[oslo_messaging_notifications]
+driver = messagingv2
+firewall_driver = nova.virt.firewall.NoopFirewallDriver
+use_neutron = true
+# Cache
+[cache]
+memcached_servers = {% for host in groups['controller'] %}{{ hostvars[host]['inventory_hostname'] }}:11211{% if not loop.last %},{% endif %}{% endfor %}
+
+# Cinder
+[cinder]
+os_region_name = RegionOne
+
+[vnc]
+enabled = False
+server_listen = $my_ip
+server_proxyclient_address = $my_ip
+
+{% if ansible_hostname in groups['compute'] %}
+novncproxy_base_url = http://{{ internal_vip_address|default(groups['controller'][0]) }}:6080/vnc_auto.html
+server_listen = 0.0.0.0
+{% endif %}
+
+# Glance
+[glance]
+api_servers = http://{{ internal_vip_address|default(groups['controller'][0]) }}:9292
+
+# Placement
+[placement]
+os_region_name = RegionOne
+project_domain_name = Default
+project_name = service
+auth_type = password
+user_domain_name = Default
+auth_url = http://{{ internal_vip_address|default(groups['controller'][0]) }}:5000/v3
+username = placement
+password = {{ nova_placement_password }} 
+
+[keystone_authtoken]
+auth_url = http://{{ internal_vip_address|default(groups['controller'][0]) }}:5000
+auth_type = password
+project_domain_name = default
+user_domain_name = default
+project_name = service
+username = nova
+password = {{ nova_password }}
+memcached_servers = {% for host in groups['controller'] %}{{ hostvars[host]['inventory_hostname'] }}:11211{% if not loop.last %},{% endif %}{% endfor %}
+
+[neutron]
+url = http://{{ internal_vip_address|default(groups['controller'][0]) }}:9696
+auth_url = http://{{ internal_vip_address|default(groups['controller'][0]) }}:5000
+auth_type = password
+project_domain_name = default
+user_domain_name = default
+region_name = RegionOne
+project_name = service
+username = neutron
+password = {{ neutron_password }}
+service_metadata_proxy = true
+metadata_proxy_shared_secret = {{ metadata_secret }}
+
+
+{% if inventory_hostname in groups['controller'] %}
+[database]
+connection = mysql+pymysql://nova:{{ nova_user_password }}@{{ internal_vip_address|default(groups['controller'][0]) }}/nova
+
+[api_database]
+connection = mysql+pymysql://nova:{{ nova_user_password }}@{{ internal_vip_address|default(groups['controller'][0]) }}/nova_api
+
+[placement_database]
+connection = mysql+pymysql://placement:{{ nova_placement_password }}@{{ internal_vip_address|default(groups['controller'][0]) }}/placement
+{% endif %}
+
+[oslo_concurrency]
+lock_path = /var/lib/nova/tmp
+
+{% if nova_virt_type in ['kvm', 'qemu', 'xen'] %}
+[libvirt]
+inject_partition = {{ nova_libvirt_inject_partition }}
+inject_password = {{ nova_libvirt_inject_password }}
+inject_key = {{ nova_libvirt_inject_key }}
+use_virtio_for_bridges = True
+virt_type = {{ nova_virt_type }}
+{% endif %}
+
+[api]
+auth_strategy = keystone
+
+[scheduler]
+discover_hosts_in_cells_interval = 300

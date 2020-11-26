@@ -1,0 +1,6 @@
+---
+- name: Install & Configure Glance Image Service 
+  hosts: controller
+  become: true
+  roles:
+     - os_glance

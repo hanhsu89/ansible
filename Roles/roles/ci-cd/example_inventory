@@ -1,0 +1,17 @@
+[example]
+192.168.10.10 roles=backend
+192.168.10.20 roles=backend
+192.168.10.30 roles=runner
+
+[example:vars]
+
+gitlab_url='https://github.kdata.vn'
+
+project_url='ssh://git@github.kdata.vn:22999/kdata-research/laravel.git'
+project_token='oYgfG3RY0RBdD960'
+project_dir_backend='/data/www/laravel'
+project_dir_runner='/data/runner/laravel'
+project_framework='laravel'
+
+project_runner_tags='docker,production,laravel-example'
+project_runner_name='laravel-runner'

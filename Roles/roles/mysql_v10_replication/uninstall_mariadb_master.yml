@@ -1,0 +1,22 @@
+---
+- hosts: 192.168.10.81
+  tasks:
+    - name: Ensure Service MariaDB Stoped
+      service: 
+        name: mariadb
+        state: stopped
+
+    - name: Remove MariaDB
+      yum:
+          name:
+            - mariadb-server
+            - mariadb
+          state: absent
+
+    - name: Delete directory
+      file:
+        path: "{{ item }}"
+        with_items: 
+          - /var/lib/mysql
+          - /etc/my.cnf
+        state: absent

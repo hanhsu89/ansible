@@ -1,0 +1,111 @@
+---
+
+- name: RKE nodes || Change hostname
+  hostname:
+    name: "{{ hostname }}"
+
+- name: RKE nodes || Download RKE binary
+  get_url: url=https://github.com/rancher/rke/releases/download/v0.1.15/rke_linux-amd64 dest=/usr/bin/rke timeout=120
+
+- name: RKE nodes || Download Helm binary
+  get_url: url=https://storage.googleapis.com/kubernetes-helm/helm-v2.12.1-linux-amd64.tar.gz dest=/tmp/helm-linux-amd64.tar.gz timeout=120
+
+- name: RKE nodes || Decompress helm source file
+  unarchive: src=/tmp/helm-linux-amd64.tar.gz dest=/tmp copy=no
+
+- name: RKE nodes || Move helm to bin
+  shell: |
+    mv /tmp/linux-amd64/helm /usr/bin/helm
+    mv /tmp/linux-amd64/tiller /usr/bin/tiller
+    rm -rf /tmp/*
+
+- name: RKE nodes || Change excute for helm, tiller, rke binary
+  file:
+    path: "{{ item }}"
+    owner: root
+    group: root
+    mode: 0755
+  with_items:
+    - /usr/bin/helm
+    - /usr/bin/rke
+    - /usr/bin/tiller
+
+- name: RKE nodes || Create kubernetes.repo
+  copy:
+    src: kubernetes.repo
+    dest: /etc/yum.repos.d/kubernetes.repo
+    owner: root
+    group: root
+    mode: 0644
+
+- name: RKE nodes || Install kubectl
+  yum:
+    name: kubectl
+    state: present
+
+- name: RKE nodes || Create User kubernetes
+  user:
+    name: "{{ rke_ssh_user }}"
+    shell: /bin/bash
+    generate_ssh_key: yes
+    state: present
+
+- name: RKE nodes || Create folder deploy
+  file:
+    path: "/home/{{ rke_ssh_user }}/{{ k8s_cluster_name }}"
+    state: directory
+    owner: "{{ rke_ssh_user }}"
+    group: "{{ rke_ssh_user }}"
+
+- name: RKE nodes || Generate SSH keys
+  shell: ssh-keygen -b 2048 -t rsa -f /home/{{ rke_ssh_user }}/{{ k8s_cluster_name }}/id_rsa -q -N ""
+  args:
+    creates: "/home/{{ rke_ssh_user }}/{{ k8s_cluster_name }}/id_rsa"
+
+- name: RKE nodes || Change owner of rsa key
+  file:
+    path: "{{ item }}"
+    owner: "{{ rke_ssh_user }}"
+    group: "{{ rke_ssh_user }}"
+  with_items:
+    - "/home/{{ rke_ssh_user }}/{{ k8s_cluster_name }}/id_rsa"
+    - "/home/{{ rke_ssh_user }}/{{ k8s_cluster_name }}/id_rsa.pub"
+
+- name: RKE nodes || Disable check fingerprint SSH
+  copy:
+    src: ssh-config
+    dest: "/home/{{ rke_ssh_user }}/.ssh/config"
+    owner: "{{ rke_ssh_user }}"
+    group: "{{ rke_ssh_user }}"
+    mode: 0400
+
+- name: RKE nodes || Copy file rke-cluster example 
+  template:
+    src: rke-cluster.j2
+    dest: "/home/{{ rke_ssh_user }}/{{ k8s_cluster_name }}/cluster.yml"
+    mode: 0644
+    owner: "{{ rke_ssh_user }}"
+    group: "{{ rke_ssh_user }}"
+    backup: yes
+
+- name: RKE nodes || Copy deploy scripts
+  copy:
+    src: k8s_deploy.sh
+    dest: "/home/{{ rke_ssh_user }}/{{ k8s_cluster_name }}/k8s_deploy.sh"
+    owner: "{{ rke_ssh_user }}"
+    group: "{{ rke_ssh_user }}"
+    mode: 0755
+
+- name: RKE nodes || Copy tools folder
+  copy:
+    src: tools
+    dest: "/home/{{ rke_ssh_user }}/{{ k8s_cluster_name }}"
+    owner: "{{ rke_ssh_user }}"
+    group: "{{ rke_ssh_user }}"
+
+- name: RKE nodes || Enable command completion
+  blockinfile:
+    path: "/home/{{ rke_ssh_user }}/.bashrc"
+    block: |
+      source <(kubectl completion bash)
+      source <(helm completion bash)

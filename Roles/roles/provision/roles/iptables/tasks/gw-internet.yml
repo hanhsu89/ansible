@@ -1,0 +1,146 @@
+---
+
+- name: Change default active zone FirewallD
+  shell: firewall-cmd --set-default-zone=internal
+  tags:
+    - gw_internet
+
+- name: Change zone for WAN interface
+  shell: 'firewall-cmd --change-interface="{{ wan_interface}}" --zone=public --permanent'
+  tags:
+    - gw_internet
+
+- name: Change zone for LAN interface
+  shell: 'firewall-cmd --change-interface="{{ lan_interface}}" --zone=internal --permanent'
+  tags:
+    - gw_internet
+
+- name: Allow port for SSH, NRPE, Zabbix for Internal zone
+  firewalld:
+    zone: internal    
+    port: "{{ item }}"
+    permanent: true
+    state: enabled
+  with_items:
+    - 1102/tcp
+    - 5666/tcp
+    - 10050/tcp
+  tags:
+    - gw_internet
+
+- name: Allow dns service for Internal zone
+  firewalld:
+    zone: internal
+    service: dns
+    permanent: true
+    state: enabled
+  tags:
+    - gw_internet
+
+- name: Remove default service Internal zone                                                                                                                                                                               
+  firewalld:
+    zone: internal 
+    service: "{{ item }}"
+    permanent: true
+    state: disabled
+  with_items:
+    - ssh
+    - dhcpv6-client
+    - mdns
+    - samba-client
+  tags:
+    - gw_internet
+
+- name: Remove default service in Public zone
+  firewalld:
+    zone: public
+    service: "{{ item }}"
+    permanent: true
+    state: disabled
+  with_items:
+    - ssh
+    - dhcpv6-client
+  tags:
+    - gw_internet
+
+- name: Remove port for SSH, NRPE, Zabbix in Public Zone
+  firewalld:
+    zone: public
+    port: "{{ item }}"
+    permanent: true
+    state: disabled
+  with_items:
+    - 1102/tcp
+    - 5666/tcp
+    - 10050/tcp
+  tags:
+    - gw_internet
+
+- name: NAT all traffic from "{{ lan_interface }}" to "{{ wan_interface }}"
+  shell: |
+    firewall-cmd --direct --permanent --add-rule ipv4 nat POSTROUTING 0 -o "{{ wan_interface }}" -j MASQUERADE
+    firewall-cmd --direct --permanent --add-rule ipv4 filter FORWARD 0 -i "{{ lan_interface }}" -o "{{ wan_interface }}" -j ACCEPT
+    firewall-cmd --direct --permanent --add-rule ipv4 filter FORWARD 0 -i "{{ wan_interface }}" -o "{{ lan_interface }}" -m state --state RELATED,ESTABLISHED -j ACCEPT
+  tags:
+    - gw_internet
+
+- name: Install keepalived, named
+  yum:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - bind
+    - bind-utils
+    - keepalived
+  tags:
+    - gw_internet
+
+- name: Config /etc/named.conf
+  template:
+    src: named.j2
+    dest: /etc/named.conf
+  tags:
+    - gw_internet
+
+- name: Config forward zone for domain_local
+  template:
+    src: forward.domain.j2
+    dest: "/var/named/forward.{{ domain_local }}"
+  when: domain_local is defined
+  tags:
+    - gw_internet
+
+- name: Config reverse zone for domain_local
+  template:
+    src: reverse.domain.j2
+    dest: "/var/named/reverse.{{ domain_local }}"
+  when: domain_local is defined
+  tags:
+    - gw_internet
+
+- name: Config keepalived for master
+  template:
+    src: keepalived.master.j2
+    dest: /etc/keepalived/keepalived.conf
+  when:
+    - roles == "master"
+  tags:
+    - gw_internet
+
+- name: Config keepalived for slave
+  template:
+    src: keepalived.backup.j2
+    dest: /etc/keepalived/keepalived.conf                
+  when:
+    - roles == "backup"
+  tags:
+    - gw_internet
+
+- name: Restart FirewallD
+  service: name={{ item }} state=restarted enabled=True
+  with_items:
+    - firewalld
+    - named
+    - keepalived
+  tags:
+    - gw_internet

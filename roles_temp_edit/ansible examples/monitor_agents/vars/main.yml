@@ -1,0 +1,4 @@
+# nrpe_user
+nrpe_user: nagios
+# nrpe_group
+nrpe_group: nagios

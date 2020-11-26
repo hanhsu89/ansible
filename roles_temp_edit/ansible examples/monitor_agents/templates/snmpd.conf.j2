@@ -1,0 +1,3 @@
+{% for item in snmpd_hosts_config  %}
+rocommunity {{ item.snpmd_string_community }} {{ item.snmpd_host }}
+{% endfor %}

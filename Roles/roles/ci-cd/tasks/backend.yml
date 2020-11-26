@@ -1,0 +1,21 @@
+---
+
+- name: Backend | Check location of project
+  stat:
+    path: "{{ project_dir_backend }}"
+  register: project_location
+
+- name: Backend | Git clone project if project_dir_backend not exist
+  git:
+    repo: "{{ project_url }}"
+    dest: "{{ project_dir_backend }}"
+  when: not project_location.stat.exists
+  become_user: deploy
+
+- name: Backend | Run setfact for project Laravel
+  command: "setfacl -Rm u:deploy:rwx,u:apache:rwx {{ item }}"
+  with_items:
+   - "{{ project_dir_backend }}/src/storage/"
+   - "{{ project_dir_backend }}/src/bootstrap/"
+  ignore_errors: True
+  when: project_framework == "laravel"

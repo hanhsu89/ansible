@@ -1,0 +1,28 @@
+---
+- name: Create DB for service
+  mysql_db:
+    login_user: "{{ galera_root_user }}"
+    login_password: "{{ galera_root_password }}"
+    name: "{{ cinder_galera_database }}"
+    state: "present"
+
+- name: Grant access to the DB for the service
+  mysql_user:
+    login_user: "{{ galera_root_user }}"
+    login_password: "{{ galera_root_password }}"
+    #login_host: "{{ glance_galera_address }}"
+    name: "{{ cinder_galera_user }}"
+    password: "{{ cinder_user_password }}"
+    host: "{{ item }}"  
+    state: "present"
+    priv: "{{ cinder_galera_database }}.*:ALL"
+  with_items:
+    - "localhost"
+    - "%"
+    - "controller1"
+
+- name: run cinder db sync
+  command: "cinder-manage db sync" 
+  become: true
+  become_user: cinder
+  run_once: true

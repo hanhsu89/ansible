@@ -1,0 +1,8 @@
+---
+- include: nagios_install.yml
+
+- include: nagios_configure.yml
+
+- include: nagios_check_esxi.yml
+
+- include: nagios_telegram_notify.yml

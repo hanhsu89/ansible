@@ -1,0 +1,8 @@
+---
+
+
+- name: Set root prompt color to red
+  copy: src=colours.sh dest=/etc/profile.d/colours.sh
+  tags:
+    - bash
+    - colorize

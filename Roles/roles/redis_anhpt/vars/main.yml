@@ -1,0 +1,15 @@
+---
+# Redis port
+redis_port: 6379
+
+# Redis cluster name
+cluster_name: gokoin
+
+# Number redis slave nodes
+total_slave_nodes: 2
+
+# Redis master node
+master_nodes: redis.gokoin.com
+
+# Redis master-slave auth pass
+auth_pass: wekoin@123

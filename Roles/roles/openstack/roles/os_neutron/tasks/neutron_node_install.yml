@@ -1,0 +1,55 @@
+---
+- name: Install neutron server packages
+  package:
+    name: "{{ item }}"
+    state: latest
+  register: packages_install
+  until: packages_install is success
+  retries: 5
+  delay: 2
+  with_items: "{{ neutron_node_packages }}"
+  when: inventory_hostname in groups['network']
+
+- name: Network Node || Update Network node config
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: root
+    group: "{{ item.group }}"
+    mode: 0640
+  with_items:
+    - { src: 'neutron.network.conf.j2', dest: '/etc/neutron/neutron.conf', group: 'neutron'}
+    - { src: 'dhcp_agent.ini.j2', dest: '/etc/neutron/dhcp_agent.ini', group: 'neutron'}
+    - { src: 'l3_agent.ini.j2', dest: '/etc/neutron/l3_agent.ini', group: 'neutron'}
+    - { src: 'metadata_agent.ini.j2', dest: '/etc/neutron/metadata_agent.ini', group: 'neutron'}
+    - { src: 'ml2_conf.ini.j2', dest: '/etc/neutron/plugins/ml2/ml2_conf.ini', group: 'neutron'}
+  when: inventory_hostname in groups['network']
+  tags: neutron_node_config
+
+- name: Network Node || Start OVS service
+  systemd:
+    state: restarted
+    name: openvswitch
+
+- name: Network Node || Create provider network via Openvswitch
+  shell: |
+    ovs-vsctl add-br wan-provider                                                                                                                                                                 
+    ovs-vsctl add-port wan-provider "{{ wan_interface }}"
+  run_once: True
+
+- name: Create symlink
+  file: 
+    src: /etc/neutron/plugins/ml2/ml2_conf.ini 
+    dest: /etc/neutron/plugin.ini 
+    state: link
+- name: Network node || Restart service
+  systemd:
+    name: "{{ item }}"
+    state: restarted
+  with_items:
+    - neutron-dhcp-agent
+    - neutron-l3-agent
+    - neutron-metadata-agent
+    - neutron-openvswitch-agent
+  tags: neutron_node_config
+

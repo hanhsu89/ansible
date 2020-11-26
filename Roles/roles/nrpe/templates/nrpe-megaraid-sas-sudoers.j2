@@ -1,0 +1,4 @@
+Defaults:{{ nrpe_user }} !requiretty
+Defaults:{{ nrpe_user }} !syslog
+{{ nrpe_user }} ALL=(ALL) NOPASSWD:{{ mega_cli_path }}
+{{ nrpe_user }} ALL=(ALL) NOPASSWD:{{ megaraid_sas_plugin_path }}

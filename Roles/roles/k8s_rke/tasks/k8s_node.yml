@@ -1,0 +1,132 @@
+---
+
+- name: K8S nodes || Upgrade Full OS
+  yum:
+    name: '*'
+    state: latest
+  when: upgrade_os == "upgrade"
+
+- name: K8S nodes || Change hostname
+  hostname:
+    name: "{{ hostname }}"
+
+- name: K8S nodes || Enable kernel module
+  modprobe:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - br_netfilter
+    - ip6_udp_tunnel
+    - ip_conntrack
+    - ip_set
+    - ip_set_hash_ip
+    - ip_set_hash_net
+    - iptable_filter
+    - iptable_nat
+    - iptable_mangle
+    - iptable_raw
+    - nf_conntrack_netlink
+    - nf_conntrack
+    - nf_conntrack_ipv4
+    - nf_defrag_ipv4
+    - nf_nat
+    - nf_nat_ipv4
+    - nf_nat_masquerade_ipv4
+    - nfnetlink
+    - udp_tunnel
+    - veth
+    - vxlan
+    - x_tables
+    - xt_addrtype
+    - xt_conntrack
+    - xt_comment
+    - xt_mark
+    - xt_multiport
+    - xt_nat
+    - xt_recent
+    - xt_set
+    - xt_statistic
+    - xt_tcpudp
+
+- name: K8S nodes || Update sysctl
+  sysctl:
+    name: '{{ item.name }}'
+    value: '{{ item.value }}'
+    sysctl_set: yes
+    state: present
+    reload: yes
+  with_items:
+    - { name: 'net.bridge.bridge-nf-call-iptables', value: '1'}
+    - { name: 'net.netfilter.nf_conntrack_max', value: '1000000'}
+
+- name: K8S nodes || Install docker version 17.03
+  yum:
+    name:
+      - yum-utils
+      - device-mapper-persistent-data
+      - lvm2
+      - wget
+      - ntp
+      - bash-completion
+      - https://download.docker.com/linux/centos/7/x86_64/stable/Packages/docker-ce-selinux-17.03.2.ce-1.el7.centos.noarch.rpm
+      - https://download.docker.com/linux/centos/7/x86_64/stable/Packages/docker-ce-17.03.2.ce-1.el7.centos.x86_64.rpm
+    state: present
+
+- name: K8S nodes || Create User kubernetes run Docker
+  user:
+    name: "{{ rke_ssh_user }}"
+    group: docker
+    shell: /bin/bash
+    generate_ssh_key: yes
+    state: present
+
+- name: K8S nodes || Allow User K8S SSH
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    line: "AllowUsers {{ rke_ssh_user }}"
+
+- name: K8S nodes || Add ssh public-key to kubernetes nodes
+  copy:
+    content: "{{ rke_ssh_key }}"
+    dest: "/home/{{ rke_ssh_user }}/.ssh/authorized_keys"
+    owner: "{{ rke_ssh_user }}"
+    group: docker
+    mode: 0600
+
+- name: K8S nodes || Copy config direct.xml FirewallD
+  template:
+    src: direct.xml.j2
+    dest: /etc/firewalld/direct.xml
+    mode: 0644
+    owner: root
+    group: root
+    backup: yes
+
+- name: K8S nodes || Open HTTP, HTTPs in FirewallD
+  firewalld:
+    service: "{{ item }}"
+    permanent: yes
+    state: enabled
+  with_items:
+    - http
+    - https
+
+- name: K8S nodes || Open kubernetes API port
+  firewalld:
+    port: 6443/tcp
+    permanent: yes
+    state: enabled
+
+- name: K8S nodes || Start & Enable service
+  systemd:
+    name: "{{ item }}"
+    state: restarted
+    enabled: yes
+  with_items:
+    - docker
+    - ntpd
+    - firewalld
+    - sshd
+
+- name: K8S nodes || Reboot Nodes
+  shell: "sleep 15 && reboot"

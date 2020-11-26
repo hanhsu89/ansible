@@ -1,0 +1,5 @@
+# Custom host records are listed here.
+
+{{ hosts_custom.address }}{% for hostname in hosts_custom.hostnames %} {{ hostname }}{% endfor %}
+
+127.0.0.1 {{ inventory_hostname }}

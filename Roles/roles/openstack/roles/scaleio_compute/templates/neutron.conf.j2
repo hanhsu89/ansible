@@ -1,0 +1,51 @@
+[DEFAULT]
+auth_strategy = keystone
+core_plugin = ml2
+
+service_plugins =
+
+transport_url = rabbit://openstack:{{ metadata_secret }}@controller-01,openstack:{{ metadata_secret }}@controller-02,openstack:{{ metadata_secret }}@controller-03
+
+[agent]
+
+[cors]
+
+[database]
+
+[keystone_authtoken]
+
+[keystone_authtoken]
+www_authenticate_uri = http://controller1:5000
+auth_url = http://controller1:5000
+memcached_servers = controller1:11211,controller2:11211,controller3:11211
+auth_type = password
+project_domain_name = default
+user_domain_name = default
+project_name = service
+username = neutron
+password = {{ metadata_secret }}
+
+[matchmaker_redis]
+
+[nova]
+
+[oslo_concurrency]
+lock_path = /var/lib/neutron/tmp
+
+[oslo_messaging_amqp]
+
+[oslo_messaging_kafka]
+
+[oslo_messaging_notifications]
+
+[oslo_messaging_rabbit]
+
+[oslo_messaging_zmq]
+
+[oslo_middleware]
+
+[oslo_policy]
+
+[quotas]
+
+[ssl]

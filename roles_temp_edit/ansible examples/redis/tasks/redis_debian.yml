@@ -1,0 +1,12 @@
+---
+
+- name: Run apt update cache
+  apt:
+    update_cache: yes
+
+- name: Install required apt packages
+  apt:
+    name:
+      - build-essential
+      - wget
+    state: present

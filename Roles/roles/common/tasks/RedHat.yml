@@ -1,0 +1,90 @@
+---
+- name: Install NTP
+  yum: 
+    name: ntpdate 
+    state: latest
+
+- name: Remove localtime
+  command: rm -f /etc/localtime
+  args:
+    warn: false
+
+- name: Link TimeZone +7
+  command: ln -sf /usr/share/zoneinfo/Asia/Ho_Chi_Minh /etc/localtime
+  args:
+    warn: false
+
+- name: Update Time
+  command: ntpdate pool.ntp.org
+
+- name: Restart NTP service
+  service:
+    name: ntpd
+    state: restarted  
+    enabled: yes
+
+
+#=====
+- name: Upgrade all packages
+  yum:
+    name: '*'
+    state: latest
+
+
+#=====
+- name: Tunning sysctl.conf
+  template: 
+    src: sysctl.conf_RedHat.j2 
+    dest: /etc/sysctl.conf
+
+- name: Enable ip_conntrack module
+  modprobe:
+    name: ip_conntrack
+    state: present
+  when: ansible_distribution_major_version == "7"
+  
+- name: Apply new sysctl config
+  shell: 'sysctl -p'
+
+- name: Clear cache yum repo old when clone VM
+  command: yum clean all
+  args:
+    warn: false
+
+#======
+- name: Install epel-repo
+  yum:
+    name: epel-release
+    state: latest
+
+#- name: Repo Fish shell for CentOS 6
+#  get_url:
+#    url: https://download.opensuse.org/repositories/shells:fish:release:2/CentOS_6/shells:fish:release:2.repo
+#    dest: /etc/yum.repos.d/fish.repo
+#    mode: 0640
+#  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "6"
+#  tags: common
+
+#- name: Repo Fish shell for CentOS 7
+#  get_url:
+#    url: https://download.opensuse.org/repositories/shells:fish:release:2/CentOS_7/shells:fish:release:2.repo
+#    dest: /etc/yum.repos.d/fish.repo
+#    mode: 0640
+#  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"
+#  tags: common
+
+#====
+- name: Install Packages
+  yum:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - htop
+    - atop
+    - vim
+    - telnet
+    - traceroute
+    - net-tools
+    - wget
+    - git
+  ignore_errors: yes

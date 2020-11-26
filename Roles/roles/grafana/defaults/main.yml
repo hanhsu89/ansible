@@ -1,0 +1,13 @@
+---
+# defaults vars for grafana
+
+# Add Grafana Data Source
+grafana_url: "http://192.168.206.241:3000"
+grafana_user: admin
+grafana_password: "123@hanhsu"
+org_id: "1"
+
+data_source:
+  name: "Prometheus"
+  ds_type: "prometheus"
+  url: "http://192.168.206.241:9090"

@@ -1,0 +1,16 @@
+Install NGINX
+=========
+
+tags: nginx_src		=> build NGINX from source
+tags: nginx 		=> build NGINX lastest from yum/apt
+------------------------------------
+
+Build from source
+------------------------------------
+
+
+Build latest by yum/apt
+------------------------------------
+
+
+------------------------------------

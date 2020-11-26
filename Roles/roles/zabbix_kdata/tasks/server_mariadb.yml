@@ -1,0 +1,15 @@
+---
+- name: Create Zabbix server mysql database
+  mysql_db: name="{{ zabbix_server_db_name }}" state=present
+  notify: restart apache2
+  tags: mysql_server
+
+- name: Create zabbix server mysql user
+  action:
+    module: mysql_user
+    name: "{{ zabbix_server_db_user }}"
+    password: "{{ zabbix_server_db_pass }}"
+    priv: "zabbix_server_db_name }}.*:ALL"
+    state: present
+    host: "{{ zabbix_server_db_host }}"
+  tags: mysql_server

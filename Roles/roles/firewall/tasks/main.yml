@@ -1,0 +1,15 @@
+---
+- name: Disable the UFW firewall | Ubuntu
+  service:
+    name: ufw
+    state: stopped
+    enabled: false
+  when: ansible_os_family == "Debian"
+
+
+- name: Disable the FirewallD | CentOS
+  service:
+    name: firewalld
+    state: stopped
+    enabled: false
+  when: ansible_os_family == "RedHat"

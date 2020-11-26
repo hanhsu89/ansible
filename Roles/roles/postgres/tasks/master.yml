@@ -1,0 +1,92 @@
+---
+- name: Install Repo for PostgreSQL v10
+  yum:
+    name: https://yum.postgresql.org/10/redhat/rhel-7-x86_64/pgdg-centos10-10-2.noarch.rpm
+    state: present
+
+- name: Install PostgreSQL v10
+  yum:
+    name:
+      - postgresql10-server
+      - postgresql10
+      - postgresql10-contrib
+      - python-psycopg2
+    state: present
+
+- name: Initialize Database
+  command: /usr/pgsql-10/bin/postgresql-10-setup initdb
+
+- name: Start Postgres Service
+  service:
+    name: postgresql-10
+    state: started
+
+- name: Create Database_hanhnn
+  become: true
+  become_user: "{{ postgresql_admin_user }}"
+  postgresql_db: 
+    name: "{{ db_name }}"
+    encoding: "{{ encoding }}"
+    lc_collate: "{{ lc_collate }}"
+    lc_ctype: "{{ lc_collate }}"
+    template: template0    
+    state: present
+  tags: create_db
+
+- name: Create user_hanhnn for database_hanhnn
+  become: yes
+  become_user: "{{ postgresql_admin_user }}"
+  postgresql_user:
+    db: "{{ db_name }}"
+    name: "{{ user_name }}"
+    password: "{{ user_pw }}"
+    priv: ALL
+    role_attr_flags: "{{ role_attr_flags }}"
+    state: present
+  tags: user_create
+
+- name: "Configure postgresql.conf"
+  lineinfile:
+    dest: "{{ postgresql_conf_dir }}/postgresql.conf"
+    state: present
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.value }}"
+  with_items: "{{ postgresql_conf_default_values_master }}"    
+
+- name: Creates directory for archiving purposes
+  file:
+    path: /var/lib/pgsql/10/archive
+    state: directory
+    owner: postgres
+    group: postgres
+    mode: 0700
+
+- name: "Configure pg_hba.conf"
+  template:
+    src: pg_hba.conf.j2
+    dest: "{{ postgresql_conf_dir }}/pg_hba.conf"
+    owner: "{{ postgresql_admin_user }}"
+    group: "{{ postgresql_admin_user }}"
+    mode: 0640
+
+- name: Restart Postgres Service
+  service:
+    name: postgresql-10
+    state: restarted
+
+- name: Create replication user account
+  become: yes
+  become_user: "{{ postgresql_admin_user }}"
+  postgresql_user:
+    name: "{{ postgresql_replication_user.name }}"
+    password: "{{ postgresql_replication_user.pass }}"
+    role_attr_flags: "{{ role_attr_flags_replication }}"
+
+
+#- name: Ensure user does not have unnecessary privileges
+#  sudo_user: postgres
+#  postgresql_user: 
+#    name: testuser2
+#    role_attr_flags: NOSUPERUSER,NOCREATEDB
+#    state: present
+#  tags: user_remove_super

@@ -1,0 +1,15 @@
+---
+- include: neutron_install.yml
+
+- include: neutron_node_install.yml
+  tags: neutron_node_setup
+  when: inventory_hostname in groups['network']
+
+- include: neutron_service_setup.yml
+  when: inventory_hostname == os_controller_primary_node
+  tags: neutron_setup
+- include: neutron_db_setup.yml
+  when: inventory_hostname == os_controller_primary_node
+  tags: neutron_db
+
+- meta: flush_handlers

@@ -1,0 +1,16 @@
+---
+# handlers file for mariadb
+- name: restart mariadb
+  systemd:
+    name: mariadb
+    state: restarted
+
+- name: Restart galera cluster
+  systemd:
+    name: "mysql"
+    state: "restarted"
+    enabled: False
+  register: galera_restart
+  until: galera_restart is success
+  retries: 3
+  delay: 5

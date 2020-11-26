@@ -1,0 +1,9 @@
+---
+
+include: glusterfs.yml
+tags:
+  - install_glusterfs
+
+include: gfs_heketi.yml
+tags:
+  - install_gfs_heketi

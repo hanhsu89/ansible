@@ -1,0 +1,64 @@
+---
+- name: Install Repo for PostgreSQL v10
+  yum:
+    name: https://yum.postgresql.org/10/redhat/rhel-7-x86_64/pgdg-centos10-10-2.noarch.rpm
+    state: present
+
+- name: Install PostgreSQL v10
+  yum:
+    name:
+      - postgresql10-server
+      - postgresql10
+      - postgresql10-contrib
+      - python-psycopg2
+    state: present
+
+- name: Initialize Database
+  command: /usr/pgsql-10/bin/postgresql-10-setup initdb
+
+- name: Start Postgres Service
+  service:
+    name: postgresql-10
+    state: started
+    enabled: yes
+
+- name: Stop Postgres Service to config Slave
+  service:
+    name: postgresql-10
+    state: stopped
+
+- name: Remove data directory
+  file:
+    path: "{{ postgresql_data_dir }}"
+    state: absent
+
+- name: Create empty data directory
+  file:
+    path: "{{ postgresql_data_dir }}"
+    state: directory
+    owner: postgres
+    group: postgres
+    mode: '0700'    
+
+- name: Create base backup
+  become: yes
+  become_user: postgres   
+  shell: export PGPASSWORD="{{ password_pg_basebackup }}" && /usr/pgsql-10/bin/pg_basebackup -h {{ postgresql_streaming_master }} -U {{ postgresql_replication_user.name }} -D {{ postgresql_data_dir }} -P -v --wal-method=stream: pg_basebackup -h {{ postgresql_streaming_master }} -U {{ postgresql_replication_user.name }} -D {{ postgresql_data_dir }} -R -Xs -c fast -P -v
+
+- name: Create recovery.conf
+  template:
+    src: recovery.conf.j2
+    dest: "{{ postgresql_data_dir }}/recovery.conf"
+    owner: postgres
+    group: postgres
+    mode: '0600'
+
+
+- name: "Configure postgresql.conf"
+  lineinfile:
+    dest: "{{ postgresql_conf_dir }}/postgresql.conf"
+    state: present
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.value }}"
+  with_items: "{{ postgresql_conf_default_values_slave }}"    
+  notify: Restart Postgres Service    

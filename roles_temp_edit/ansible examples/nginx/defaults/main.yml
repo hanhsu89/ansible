@@ -1,0 +1,92 @@
+---
+# Default install 
+
+# nginx_install
+nginx_version: "1.10.3"
+nginx_group: "nginx"
+nginx_user: "nginx"
+
+nginx_src_dir: "/usr/local/src"
+nginx_install_dir: "/usr/local/nginx"
+
+nginx_main_file: "{{ nginx_install_dir }}/conf/nginx.conf"
+
+nginx_config_dir: "{{ nginx_install_dir }}/conf.d"
+nginx_binary_file: "{{ nginx_install_dir }}/sbin/nginx"
+nginx_log_dir: "/var/log/nginx"
+
+nginx_certs_dir: "{{ nginx_config_dir }}/certs"
+nginx_nossl_dir: "{{ nginx_config_dir }}/nossl"
+nginx_ssl_dir: "{{ nginx_config_dir }}/ssl"
+nginx_params_dir: "{{ nginx_config_dir }}/params"
+
+nginx_custom_modules: "--prefix=/usr/local/nginx \
+  --sbin-path=/usr/local/nginx/sbin/nginx \
+  --conf-path=/usr/local/nginx/conf/nginx.conf \
+  --http-log-path=/var/log/nginx/access.log \
+  --error-log-path=/var/log/nginx/error.log \
+  --without-mail_pop3_module \
+  --without-mail_imap_module \
+  --without-mail_smtp_module \
+  --without-http_split_clients_module \
+  --without-http_uwsgi_module \
+  --without-http_scgi_module \
+  --with-http_realip_module \
+  --with-http_secure_link_module \
+  --with-http_geoip_module \
+  --with-http_gzip_static_module \
+  --with-debug \
+  --with-file-aio \
+  --with-threads \
+  --with-http_addition_module \
+  --with-ld-opt=-Wl,-E --with-http_ssl_module \
+  --with-http_stub_status_module"
+
+# DH Param variables
+dhparam_size: "2048"
+dhparam_path: "{{ nginx_params_dir }}/dhparams.pem"
+
+## letsencrypt
+certbot_repo: https://github.com/certbot/certbot.git
+certbot_dir: /opt/certbot
+certbot_version: master
+certbot_keep_updated: yes
+certbot_test_command: "{{ certbot_dir}}/letsencrypt-auto certonly -a webroot --agree-tos --email anpn@gmail.com -w /usr/local/nginx/html/ -d {{ item.name }} --dry-run"
+certbot_create_command: "{{ certbot_dir}}/letsencrypt-auto certonly -a webroot --agree-tos --email anpn@gmail.com -w /usr/local/nginx/html/ -d {{ item.name }}"
+
+## nginx_vhost:
+nginx_vhost_domain: 
+
+  - name: mon.example.com
+    upstream: mon-example-com
+    path: /data/www/mon.example.com
+    ssl: http
+    backend:
+      - 192.168.99.200
+
+  - name: cf.example.com
+    upstream: cf-example-com
+    path: /data/www/cf.example.com
+    ssl: cloudflare
+    backend:
+      - 192.168.99.100
+      - 192.168.99.200
+
+  - name: example.com
+    upstream: example-com
+    path: /data/www/example.com
+    ssl: https
+    cert_name: example.com.crt
+    cert_key: example.com.key 
+    backend:
+      - 192.168.99.100
+
+  - name: demo.example.com
+    upstream: demo-example-com
+    path: /data/www/demo.example.com
+    ssl: letsencrypt
+    lb_master:
+      - 192.168.99.10
+    backend:
+      - 192.168.99.100
+      - 192.168.99.200

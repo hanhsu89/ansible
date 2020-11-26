@@ -1,0 +1,12 @@
+---
+# Setup/install tasks.
+- include: setup-RedHat.yml
+  when: ansible_os_family == 'RedHat'
+  tags: install
+# Configure MySQL.
+- include: secure-installation.yml
+  tags: config
+# - include_tasks: databases.yml
+# - include_tasks: users.yml
+- include: replication.yml
+  tags: config-rep

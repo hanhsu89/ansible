@@ -1,0 +1,50 @@
+---
+# - name: Update yum cache if needed
+#   yum:
+#     update_cache: yes
+#   register: yum_update
+#   until: yum_update is success
+#   retries: 5
+#   delay: 2
+
+- name: install required packages
+  package:
+    name: "{{ item }}"
+    state: latest
+  register: install_packages
+  until: install_packages is success
+  retries: 5
+  delay: 2
+  with_items: 
+    - openstack-keystone 
+    - httpd 
+    - mod_wsgi
+
+- name: install keystone configuration
+  template:
+    src: "keystone.conf.j2"
+    dest: "/etc/keystone/keystone.conf"
+  notify:
+    - Restart Apache
+    
+- name: Configure the Apache HTTP server
+  file:
+   src: "/usr/share/keystone/wsgi-keystone.conf"
+   dest: "/etc/httpd/conf.d/wsgi-keystone.conf"
+   state: link
+  notify:
+    - Restart Apache
+
+- name: Edit Apache ServerName
+  lineinfile:
+    dest: "/etc/httpd/conf/httpd.conf"
+    line: "ServerName {{ ansible_hostname }}"
+  notify:
+    - Restart Apache
+
+- name: place credential file
+  template:
+    src: "admin-openrc.j2"
+    dest: "{{ os_admin_credential_path }}"
+    mode: 0600
+

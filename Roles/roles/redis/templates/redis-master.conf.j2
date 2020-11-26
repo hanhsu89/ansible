@@ -1,0 +1,21 @@
+# Common settings
+
+# bind 0.0.0.0
+port 6379
+logfile "/var/log/redis_cluster/master/redis-server.log"
+dir "/var/lib/redis_cluster/master"
+pidfile "/var/run/redis_cluster/master.pid"
+daemonize yes
+supervised no
+loglevel notice
+maxmemory 0
+maxmemory-policy volatile-lru
+appendonly yes
+protected-mode no
+
+requirepass {{ redis_masterauth }}
+
+# Cluster settings
+cluster-enabled yes
+cluster-config-file nodes.conf
+cluster-node-timeout 5000

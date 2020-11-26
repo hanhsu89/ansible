@@ -1,0 +1,9 @@
+haproxy:
+  version: 2.0
+  log_setting: 'stderr format raw daemon notice'
+
+keepalived:
+  version: 2.0.20
+  auth_pass: "FWork@123"
+
+vip: ""

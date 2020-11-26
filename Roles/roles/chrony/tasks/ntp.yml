@@ -1,0 +1,16 @@
+---
+- name: Check if NTP Exists
+  stat:
+    path: /usr/lib/systemd/system/ntpd.service
+  register: ntpd_service_status
+
+- name: Stop NTPD running
+  systemd:
+    name: ntpd
+    state: stopped
+  when: ntpd_service_status.stat.exists
+  register: service_stopped
+
+- name: Set timezone Asia/HoChiMinh
+  timezone:
+    name: Asia/Ho_Chi_Minh

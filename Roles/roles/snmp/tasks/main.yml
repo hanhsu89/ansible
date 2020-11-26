@@ -1,0 +1,41 @@
+---
+- name: Install prerequisites SNMP
+  apt:
+    name: 
+      - snmpd
+      - snmp
+      - snmp-mibs-downloader
+      - lm-sensors
+    state: present       
+    force_apt_get: yes
+
+- name: Update configuration file - /etc/snmp/snmpd.conf
+  template:
+    src: snmpd.conf.j2
+    dest: /etc/snmp/snmpd.conf
+    owner: root
+    group: root
+    mode: 0600
+
+- name: Start SNMP service
+  systemd:
+    daemon_reload: true
+    name: snmpd
+    state: restarted
+    enabled: true
+
+# - name: Add port to firewalld
+#   firewalld:
+#     port: "{{ item }}"
+#     zone: public
+#     permanent: yes
+#     state: enabled
+#   loop:
+#     - 161/udp
+#     - 162/udp
+
+# - name: Restart FirewallD service 
+#   service:
+#     name: firewalld
+#     state: restarted
+#     daemon_reload: yes

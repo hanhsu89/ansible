@@ -1,0 +1,29 @@
+---
+- name: Copy the nginx configuration file
+  template: src=nginx.conf.j2 dest={{nginx_conf_dir}}/conf/nginx.conf owner=root group=root mode=0644
+  notify:
+   - restart nginx
+  tags: [configuration,nginx]
+
+
+- name: Create the configurations for sites
+  template: src=site.conf.j2 dest={{nginx_conf_dir}}/conf.d/sites-available/{{ item.value.server_name }}.conf
+  with_dict: "{{ nginx_sites | default({}) }}"
+
+  notify:
+   - reload nginx
+  tags: [configuration,nginx]
+
+- name: Create links for sites-enabled
+  file: 
+    src: "{{nginx_conf_dir}}/conf.d/sites-available/{{ item.value.server_name }}.conf"
+    dest: "{{nginx_conf_dir}}/conf.d/sites-enabled/{{ item.value.server_name }}.conf"
+    state: link 
+    owner: root
+    group: root 
+    mode: 0644
+  with_dict: "{{ nginx_sites | default({}) }}"
+  
+  notify:
+   - reload nginx
+  tags: [configuration,nginx]

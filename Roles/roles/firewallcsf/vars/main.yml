@@ -1,0 +1,59 @@
+---
+# vars file for firewallcsf
+
+#setip
+csf_binary: "/usr/sbin/csf"
+csf_folder: "/usr/src"
+csf_version: "v14.01"
+csf_config_file: "/etc/csf/csf.conf"
+csf_allow_config_file: "/etc/csf/csf.allow"
+csf_deny_config_file: "/etc/csf/csf.deny"
+csf_allow_ui_file: "/etc/csf/ui/ui.allow"
+
+#config sample 
+testing_mode: "0"
+restrict_syslog: "1"
+restrict_ui: "0"
+
+#access
+tcp_in: "80,443,1102,5666,10050"
+tcp_out: "1:65535"
+udp_in: "20,21,123"
+udp_out: "1:65535"
+icmp_in: "1"
+icmp_out: "1"
+
+#interface to apply 
+eth_apply: "ens160"
+eth_skip: "ens192"
+
+#options 
+connect_tracking: "0"
+process_tracking: "0"
+port_tracking: "10"
+account_tracking: "2"
+
+#UI interface 
+ui_interface_master: "1"
+ui_interface_slave: "0"
+ui_interface_port: "1997"
+ui_interface: "172.214.532.88"
+ui_interface_user: "admin-csf"
+ui_interface_password: "Abc123@$^35"
+ui_interface_access_private: "1"
+ui_interface_ip_access: ""
+
+#lfd cluster 
+cluster_master: ""
+cluster_slave: ""
+cluster_port: "8888"
+cluster_key: "0123456789012345678554267890123456725223456789012345"
+cluster_block: ""
+cluster_config_master: "0"
+cluster_config_slave: "1"
+
+#sshd port
+port_sshd: "1102"
+
+#file 
+custom_ip_access: ""

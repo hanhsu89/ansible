@@ -1,0 +1,60 @@
+---
+- name: CentOS install check ESXi hardware  
+  become: yes
+  yum: name=python-setuptools state=present
+  when: ansible_os_family == "RedHat"
+
+- name: CentOS install check ESXi hardware requirement
+  become: yes
+  yum: name=pywbem state=present
+  when: ansible_os_family == "RedHat"
+
+- name: Copy check_esxi_hardware.py script
+  become: yes
+  copy: >
+    src=check_esxi_hardware.py
+    dest={{ nagios_plugin_path }}/check_esxi_hardware.py
+    mode=0755
+    owner=root
+    group=root
+  when: ansible_os_family == "RedHat"
+
+- name: Copy check_dell_server_idrac.py script
+  become: yes
+  copy: >
+    src=check_dell_server_idrac.py
+    dest={{ nagios_plugin_path }}/check_dell_server_idrac.py
+    mode=0755
+    owner=root
+    group=root
+  when: ansible_os_family == "RedHat"
+
+- name: Copy check_snmp_supermicro.pl script
+  become: yes
+  copy: >
+    src=check_snmp_supermicro.pl
+    dest={{ nagios_plugin_path }}/check_snmp_supermicro.pl
+    mode=0755
+    owner=root
+    group=root
+  when: ansible_os_family == "RedHat"
+
+- name: Copy check_supermicro_superdoctor.pl script
+  become: yes
+  copy: >
+    src=check_supermicro_superdoctor.pl
+    dest={{ nagios_plugin_path }}/check_supermicro_superdoctor.pl
+    mode=0755
+    owner=root
+    group=root
+  when: ansible_os_family == "RedHat"
+
+- name: Copy check_vmware_api.pl script
+  become: yes
+  copy: >
+    src=check_vmware_api.pl
+    dest={{ nagios_plugin_path }}/check_vmware_api.pl
+    mode=0755
+    owner=root
+    group=root
+  when: ansible_os_family == "RedHat"

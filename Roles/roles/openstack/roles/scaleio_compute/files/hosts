@@ -1,0 +1,36 @@
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+
+172.16.69.254 ntpd-server
+172.16.69.22 controller
+
+172.16.69.22 controller-01
+172.16.69.23 controller-02
+172.16.69.24 controller-03
+
+172.16.69.41 compute-41
+172.16.69.42 compute-42
+172.16.69.43 compute-43
+172.16.69.44 compute-44
+172.16.69.45 compute-45
+172.16.69.46 compute-46
+172.16.69.47 compute-47
+172.16.69.48 compute-48
+172.16.69.49 compute-49
+172.16.69.50 compute-50
+172.16.69.51 compute-51
+172.16.69.52 compute-52
+172.16.69.53 compute-53
+172.16.69.54 compute-54
+172.16.69.55 compute-55
+172.16.69.56 compute-56
+172.16.69.57 compute-57
+172.16.69.58 compute-58
+172.16.69.59 compute-59
+172.16.69.60 compute-60
+172.16.69.61 compute-61
+172.16.69.62 compute-62
+172.16.69.63 compute-63
+172.16.69.64 compute-64
+172.16.69.65 compute-65
+172.16.69.66 compute-66

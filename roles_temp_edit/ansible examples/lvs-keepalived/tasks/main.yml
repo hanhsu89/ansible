@@ -1,0 +1,12 @@
+- name: Keepalived-LVS --> Configure director nodes
+  include: director.yml
+  when: inventory_hostname in groups["director"]
+  tags:
+    - director
+
+- name: Keepalived-LVS --> Configure realserver nodes
+  include: realserver.yml
+  when: inventory_hostname in groups["realserver"]
+  tags:
+    - realserver
+  

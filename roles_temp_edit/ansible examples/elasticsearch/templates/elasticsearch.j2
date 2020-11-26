@@ -1,0 +1,41 @@
+cluster.name: {{ cluster_name }}
+node.name: {{ ansible_hostname }}
+
+path.data: {{ data_dir }}
+path.logs: {{ log_dir }}
+
+{% if roles == "master" %}
+node.master: true
+node.data: false
+{% elif roles == "data" %}
+node.master: false
+node.data: true
+{% elif roles == "client" %}
+node.master: false
+node.data: false
+{% endif %}
+
+network.bind_host: 127.0.0.1
+network.publish_host: 127.0.0.1
+network.host: 127.0.0.1
+
+transport.host: {{ ansible_default_ipv4.address }}
+transport.tcp.port: 9300
+
+http.port: 9200
+{% if roles == "client" %}
+http.host: ["127.0.0.1", "{{ ansible_default_ipv4.address }}"]
+{% elif roles != "client" %}
+http.host: 127.0.0.1
+{% endif %}
+
+http.max_content_length: 500mb
+
+discovery.zen.ping.unicast.hosts: ["{{ master_nodes }}"]
+discovery.zen.minimum_master_nodes: {{ minimum_master_nodes }}
+discovery.zen.fd.ping_timeout: 30s
+
+bootstrap.memory_lock: true
+indices.fielddata.cache.size: 50%
+
+xpack.monitoring.collection.enabled: true

@@ -1,0 +1,9 @@
+pidfile "{{ redis_sock_dir }}/redis_sentinel.pid"
+logfile "{{ redis_log_dir }}/redis_sentinel.log"
+
+protected-mode no
+port {{ sentinel_port }}
+
+sentinel monitor mymaster {{ sentinel_master_node }} 6379 {{ sentinel_quorum }}
+sentinel down-after-milliseconds mymaster 5000
+sentinel failover-timeout mymaster 10000

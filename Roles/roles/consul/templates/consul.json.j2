@@ -1,0 +1,31 @@
+{
+    "advertise_addr": "{{ consul_ip }}",
+    "bind_addr": "{{ consul_ip }}",
+    "bootstrap_expect": {{ groups['consul'] | length }},
+    "client_addr": "0.0.0.0",
+    "datacenter": "{{ datacenter }}",
+    "data_dir": "{{ consul_data_dir }}",
+    "domain": "{{ domain }}",
+    "enable_script_checks": true,
+    "dns_config": {
+        "enable_truncate": true,
+        "only_passing": true
+    },
+    "enable_syslog": true,
+    "encrypt": "bnRHLmJ6TeLomirgEOWP2g==",
+    "leave_on_terminate": true,
+    "log_level": "INFO",
+    "rejoin_after_leave": true,
+    "retry_join": [
+        {%- for host in groups['consul'] %}
+        "{{ host }}" {% if not loop.last %}, {% endif %}
+        {% endfor -%}
+    ],
+    "server": true,
+    "start_join": [
+        {%- for host in groups['consul'] %}
+        "{{ host }}" {% if not loop.last %}, {% endif %}
+        {% endfor -%}
+    ],
+    "ui": true
+}

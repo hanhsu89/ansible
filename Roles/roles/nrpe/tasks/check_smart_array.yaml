@@ -1,0 +1,39 @@
+---
+- name: Copy RPM File to Server
+  become: yes
+  copy: >
+    src="{{ driver_hp_file }}"
+    dest="/tmp/{{ driver_hp_file }}"
+    mode=0644
+    owner=root
+    group=root
+  when: ansible_distribution == "CentOS"
+
+- name: Install HP Driver
+  become: yes
+  yum: name="/tmp/{{ driver_hp_file }}" state=present
+  when: ansible_distribution == "CentOS"
+
+- name: Copy Check Smart Array Script
+  become: yes
+  copy: >
+    src=smart_array.py
+    dest="{{ hp_smart_array_path }}"
+    mode=0755
+    owner=root
+    group=root
+  when: ansible_distribution == "CentOS"
+
+- name: Edit Sudoers HP Check_smart_array
+  become: yes
+  lineinfile: >
+    dest=/etc/sudoers
+    line="{{ item }}"
+    validate='visudo -cf %s'
+  with_items:
+    - "Defaults:{{ nrpe_user }} !requiretty"
+    - "Defaults:{{ nrpe_user }} !syslog"
+    - "{{ nrpe_user }} ALL=(ALL) NOPASSWD:{{ hp_smart_array_path }}"
+    - "{{ nrpe_user }} ALL=(ALL) NOPASSWD:/usr/sbin/hpacucli"
+  notify: restart nrpe
+  when: ansible_distribution == "CentOS"

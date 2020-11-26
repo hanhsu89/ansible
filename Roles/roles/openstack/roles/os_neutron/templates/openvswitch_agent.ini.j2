@@ -1,0 +1,14 @@
+[DEFAULT]
+
+[agent]
+
+[network_log]
+
+[ovs]
+#bridge_mappings = provider:wan-provider,provider2:lan-provider
+bridge_mappings = provider:wan-provider
+
+[securitygroup]
+firewall_driver = iptables_hybrid
+
+[xenapi]

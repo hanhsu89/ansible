@@ -1,0 +1,6 @@
+---
+- name: Install & Configure Compute Service 
+  hosts: nova_all
+  become: True
+  roles:
+    - os_nova

@@ -1,0 +1,5 @@
+[director]
+43.239.223.110 viface="ens160"
+43.239.223.111 viface="ens160"
+
+[realserver]

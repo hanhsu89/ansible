@@ -1,0 +1,43 @@
+---
+# tasks file for zabbix
+
+- include: zabbix-memcached.yml
+  tags:
+    - memcached
+
+- include: zabbix-mysql.yml
+  tags:
+    - mysql
+
+- include: zabbix-nginx.yml
+  tags:
+    - nginx
+
+- include: zabbix-php-fpm.yml
+  tags:
+    - php-fpm
+
+- include: zabbix-tcp.yml
+  tags:
+    - tcp
+
+- include: zabbix-mongod.yml
+  tags:
+    - mongod
+
+- include: zabbix-redis.yml
+  tags:
+    - redis
+
+- name: Restart zabbix-agent
+  service:
+    name: zabbix-agent
+    state: restarted
+  tags:
+    - tcp
+    - memcached
+    - mysql
+    - nginx
+    - php-fpm
+    - mongod
+    - redis

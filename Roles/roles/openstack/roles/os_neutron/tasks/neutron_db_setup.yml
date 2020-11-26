@@ -1,0 +1,30 @@
+---
+
+- name: Create DB for service
+  mysql_db:
+    login_user: "{{ galera_root_user }}"
+    login_password: "{{ galera_root_password }}"
+   # login_host: "{{ neutron_galera_address }}"
+    name: "{{ neutron_galera_database }}"
+    state: "present"
+  delegate_to: "{{ neutron_db_setup_host }}"
+
+- name: Grant access to the DB for the service
+  mysql_user:
+    login_user: "{{ galera_root_user }}"
+    login_password: "{{ galera_root_password }}"
+   #  login_host: "{{ neutron_galera_address }}"
+    name: "{{ neutron_galera_user }}"
+    password: "{{ neutron_user_password }}"
+    host: "{{ item }}"
+    state: "present"
+    priv: "{{ neutron_galera_database }}.*:ALL"
+  delegate_to: "{{ neutron_db_setup_host }}"
+  with_items:
+    - "localhost"
+    - "%"
+
+- name: Execute neutron DB sync
+  shell: "neutron-db-manage --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head"
+  become: yes
+  become_user: neutron

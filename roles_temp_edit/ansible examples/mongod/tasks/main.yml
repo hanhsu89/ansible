@@ -1,0 +1,4 @@
+---
+
+- import_tasks: mongod_redhat.yml
+  tags: mongod_install

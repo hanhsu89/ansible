@@ -1,0 +1,301 @@
+{% if item.value.upstreams is defined and item.value.upstreams %}
+{% for upstream in item.value.upstreams %}
+upstream {{ item.value.upstreams[upstream].name }} {
+{% if item.value.upstreams[upstream].server1 %}
+    server {{ item.value.upstreams[upstream].server1 }};
+{% endif %}
+{% if item.value.upstreams[upstream].server2 %}
+    server {{ item.value.upstreams[upstream].server2 }};
+{% endif %}
+{% if item.value.upstreams[upstream].keepalive %}
+    keepalive {{ item.value.upstreams[upstream].keepalive }};
+{% endif %}
+{% if item.value.upstreams[upstream].ip_hash is sameas true %}
+    ip_hash;
+{% endif %}
+}
+{% endfor %}
+{% endif %}
+
+server {
+    listen {{ item.value.port }};
+    server_name  {{ item.value.server_name | default('localhost') }};
+
+{% if item.value.root is defined and item.value.root %}
+    root {{ item.value.root }};
+{% if item.value.index is defined %}
+    index {{ item.value.index }};
+
+{% endif %}
+{% if item.value.access_log is defined %}
+    access_log  {{ item.value.access_log }};
+{% endif %}
+{% if item.value.error_log is defined %}
+    error_log  {{ item.value.error_log }};
+{% endif %}
+{% if item.value.pid is defined %}
+    pid {{ item.value.pid }};
+{% endif %}
+{% if item.value.client_max_body_size is defined %}
+    client_max_body_size {{ item.value.client_max_body_size }};
+{% endif %}
+
+{% endif %} 
+{% if item.value.include is defined %}
+    include {{ item.value.include }};
+{% endif %} 
+
+{% if item.value.add_header is defined %}
+    add_header {{ item.value.add_header }}; 
+{% endif %}
+
+{% if item.value.set_real_ip_from is defined %}
+    set_real_ip_from {{ item.value.set_real_ip_from }};
+{% endif %}
+{% if item.value.real_ip_header is defined %}
+    real_ip_header {{ item.value.real_ip_header }};
+{% endif %}
+{% if item.value.port_in_redirect is defined %}
+    port_in_redirect {{ item.value.port_in_redirect | ternary("on", "off")}};
+{% endif %}
+
+{% if item.value.rewrite is defined %}
+    rewrite {{ item.value.rewrite }};
+{% endif %}
+{% if item.value.error_page is defined %}
+    error_page {{ item.value.error_page }};
+{% endif %}
+{% if item.value.web_server is defined and item.value.web_server %}
+{% for location in item.value.web_server %}
+    location {{ item.value.web_server[location].name }} {
+{% if item.value.web_server[location].name2 is defined %}
+        location {{ item.value.web_server[location].name2 }} {
+{% endif %}
+{% if item.value.web_server[location].deny2 is defined %}
+            deny {{ item.value.web_server[location].deny2 }};
+            }
+{% endif %}
+{% if item.value.web_server[location].root is defined %}
+        root   {{ item.value.web_server[location].root }};
+{% endif %}
+{% if item.value.web_server[location].index is defined %}
+        index  {{ item.value.web_server[location].index }};
+{% endif %}
+{% if item.value.web_server[location].deny is defined %}
+        deny  {{ item.value.web_server[location].deny }};
+{% endif %}
+{% if item.value.web_server[location].autoindex | default(false) %}
+        autoindex on;
+{% endif %}
+{% if item.value.web_server[location].add_header is defined %}
+        add_header      {{ item.value.web_server[location].add_header }};
+{% endif %}
+{% if item.value.web_server[location].stub_status is defined %}
+        stub_status   {{ item.value.web_server[location].stub_status | ternary("on", "off") }};
+{% endif %}
+{% if item.value.web_server[location].allow is defined %}
+        allow   {{ item.value.web_server[location].allow }};
+{% endif %}
+{% if item.value.web_server[location].access_log is defined %}
+        access_log  {{ item.value.web_server[location].access_log | ternary("on", "off") }};
+{% endif %}
+{% if item.value.web_server[location].expires is defined %}
+        expires  {{ item.value.web_server[location].expires }};
+{% endif %}
+{% if item.value.web_server[location].tcp_nodelay is defined %}
+        tcp_nodelay  {{ item.value.web_server[location].tcp_nodelay | ternary("on", "off") }};
+{% endif %}
+{% if item.value.web_server[location].open_file_cache is defined %}
+        open_file_cache  {{ item.value.web_server[location].open_file_cache }};
+{% endif %}
+{% if item.value.web_server[location].open_file_cache_valid is defined %}
+        open_file_cache_valid  {{ item.value.web_server[location].open_file_cache_valid }};
+{% endif %}
+{% if item.value.web_server[location].open_file_cache_min_uses is defined %}
+        open_file_cache_min_uses  {{ item.value.web_server[location].open_file_cache_min_uses }};
+{% endif %}
+{% if item.value.web_server[location].open_file_cache_errors is defined %}
+        open_file_cache_errors  {{ item.value.web_server[location].open_file_cache_errors | ternary("on", "off") }};
+{% endif %}
+{% if item.value.web_server[location].log_not_found is defined %}
+        log_not_found     {{ item.value.web_server[location].log_not_found | ternary("on", "off") }};
+{% endif %}
+{% if item.value.web_server[location].try_files is defined %}
+        try_files  {{ item.value.web_server[location].try_files }};
+{% endif %}
+{% if item.value.web_server[location].break is sameas true %}
+        break;
+{% endif %}
+{% if item.value.web_server[location].internal is sameas true %}
+        internal;
+{% endif %}
+{% if item.value.web_server[location].return is defined %}
+        return {{ item.value.web_server[location].return }};
+{% endif %}
+    }
+{% endfor %}
+{% endif %}
+
+{% if item.value.if is defined %}
+{% for location in item.value.if.locations %}
+    if {{ item.value.if.locations[location].location }} {
+{% if item.value.if.locations[location].return is defined %}
+    return  {{ item.value.if.locations[location].return }};
+    }
+{% endif %}
+{% endfor %}
+{% endif %}
+
+{% if item.value.fastcgi is defined and item.value.fastcgi %}
+    location {{ item.value.fastcgi.location }} {
+{% if item.value.fastcgi.pass is defined %}
+    fastcgi_pass {{ item.value.fastcgi.pass }};
+{% endif %}
+{% if item.value.fastcgi.index is defined %}
+    fastcgi_index {{ item.value.fastcgi.index }};
+{% endif %}
+{% if item.value.fastcgi.include is defined %}
+    include {{ item.value.fastcgi.include }};
+{% endif %}
+{% if item.value.fastcgi.param is defined %}
+    fastcgi_param {{ item.value.fastcgi.param }};
+{% endif %}
+{% if item.value.fastcgi.split_path_info is defined %}
+    fastcgi_split_path_info {{ item.value.fastcgi.split_path_info }};
+{% endif %}
+{% if item.value.fastcgi.PATH_INFO is defined %}
+    fastcgi_param PATH_INFO {{ item.value.fastcgi.PATH_INFO }};
+{% endif %}
+{% if item.value.fastcgi.PATH_TRANSLATED is defined %}
+    fastcgi_param PATH_TRANSLATED {{ item.value.fastcgi.PATH_TRANSLATED }};
+{% endif %}
+{% if item.value.fastcgi.connect_timeout is defined %}
+    fastcgi_connect_timeout {{ item.value.fastcgi.connect_timeout }};
+{% endif %}
+{% if item.value.fastcgi.send_timeout is defined %}
+    fastcgi_send_timeout {{ item.value.fastcgi.send_timeout }};
+{% endif %}
+{% if item.value.fastcgi.read_timeout is defined %}
+    fastcgi_read_timeout {{ item.value.fastcgi.read_timeout }};
+{% endif %}
+{% if item.value.fastcgi.buffer_size is defined %}
+    fastcgi_buffer_size {{ item.value.fastcgi.buffer_size }};
+{% endif %}
+{% if item.value.fastcgi.buffers is defined %}
+    fastcgi_buffers {{ item.value.fastcgi.buffers }};
+{% endif %}
+{% if item.value.fastcgi.busy_buffers_size is defined %}
+    fastcgi_busy_buffers_size {{ item.value.fastcgi.busy_buffers_size }};
+{% endif %}
+{% if item.value.fastcgi.temp_file_write_size is defined %}
+    fastcgi_temp_file_write_size {{ item.value.fastcgi.temp_file_write_size }};
+{% endif %}
+{% if item.value.fastcgi.intercept_errors is defined and item.value.fastcgi.intercept_errors %}
+    fastcgi_intercept_errors on;
+{% endif %}
+
+{% if item.value.fastcgi.GEOIP_COUNTRY_CODE is defined %}
+    fastcgi_param GEOIP_COUNTRY_CODE {{ item.value.fastcgi.GEOIP_COUNTRY_CODE }};
+{% endif %}
+{% if item.value.fastcgi.GEOIP_COUNTRY_CODE3 is defined %}
+    fastcgi_param GEOIP_COUNTRY_CODE3 {{ item.value.fastcgi.GEOIP_COUNTRY_CODE3 }};
+{% endif %}
+{% if item.value.fastcgi.GEOIP_COUNTRY_NAME is defined %}
+    fastcgi_param GEOIP_COUNTRY_NAME {{ item.value.fastcgi.GEOIP_COUNTRY_NAME }};
+{% endif %}
+
+{% if item.value.fastcgi.GEOIP_CITY_COUNTRY_CODE is defined %}
+    fastcgi_param GEOIP_CITY_COUNTRY_CODE {{ item.value.fastcgi.GEOIP_CITY_COUNTRY_CODE }};
+{% endif %}
+{% if item.value.fastcgi.GEOIP_CITY_COUNTRY_CODE3 is defined %}
+    fastcgi_param GEOIP_CITY_COUNTRY_CODE3 {{ item.value.fastcgi.GEOIP_CITY_COUNTRY_CODE3 }};
+{% endif %}
+{% if item.value.fastcgi.GEOIP_CITY_COUNTRY_NAME is defined %}
+    fastcgi_param GEOIP_CITY_COUNTRY_NAME {{ item.value.fastcgi.GEOIP_CITY_COUNTRY_NAME }};
+{% endif %}
+{% if item.value.fastcgi.GEOIP_REGION is defined %}
+    fastcgi_param GEOIP_REGION {{ item.value.fastcgi.GEOIP_REGION }};
+{% endif %}
+{% if item.value.fastcgi.GEOIP_CITY is defined %}
+    fastcgi_param GEOIP_CITY {{ item.value.fastcgi.GEOIP_CITY }};
+{% endif %}
+{% if item.value.fastcgi.GEOIP_POSTAL_CODE is defined %}
+    fastcgi_param GEOIP_POSTAL_CODE {{ item.value.fastcgi.GEOIP_POSTAL_CODE }};
+{% endif %}
+{% if item.value.fastcgi.GEOIP_CITY_CONTINENT_CODE is defined %}
+    fastcgi_param GEOIP_CITY_CONTINENT_CODE {{ item.value.fastcgi.GEOIP_CITY_CONTINENT_CODE }};
+{% endif %}
+{% if item.value.fastcgi.GEOIP_LATITUDE is defined %}
+    fastcgi_param GEOIP_LATITUDE {{ item.value.fastcgi.GEOIP_LATITUDE }};
+{% endif %}
+{% if item.value.fastcgi.GEOIP_LONGITUDE is defined %}
+    fastcgi_param GEOIP_LONGITUDE {{ item.value.fastcgi.GEOIP_LONGITUDE }};
+{% endif %}
+{% endif %}
+
+{% if item.value.proxy is defined %}
+{% for location in item.value.proxy.locations %}
+    location {{ item.value.proxy.locations[location].location }} {
+{% if item.value.proxy.locations[location].proxy_pass is defined %}
+        proxy_pass         {{ item.value.proxy.locations[location].proxy_pass }};
+{% endif %}
+{% if item.value.proxy.locations[location].include is defined %}
+        include {{ item.value.proxy.locations[location].include }};
+{% endif %}
+
+{% if item.value.proxy.locations[location].proxy_cache is defined %}
+        proxy_cache {{ item.value.proxy.locations[location].proxy_cache | ternary("on", "off") }};
+{% endif %}
+
+{% if item.value.proxy.locations[location].proxy_cache_methods is defined %}
+        proxy_cache_methods {{ item.value.proxy.locations[location].proxy_cache_methods }};
+{% endif %}
+{% if item.value.proxy.locations[location].proxy_cache_valid is defined %}
+        proxy_cache_valid     {{ item.value.proxy.locations[location].proxy_cache_valid }};
+{% endif %}
+{% if item.value.proxy.locations[location].proxy_no_cache is defined %}
+        proxy_no_cache {{ item.value.proxy.locations[location].proxy_no_cache }};
+{% endif %}
+{% if item.value.proxy.locations[location].proxy_cache_bypass is defined %}
+        proxy_cache_bypass {{ item.value.proxy.locations[location].proxy_cache_bypass }};
+{% endif %}
+{% if item.value.proxy.locations[location].proxy_cache_key is defined %}
+        proxy_cache_key {{ item.value.proxy.locations[location].proxy_cache_key }};
+{% endif %}
+    }
+{% endfor %}
+
+{% endif %}
+
+{% if item.value.gzip is defined %}
+        gzip {{ item.value.gzip | ternary("on", "off") }};
+{% endif %}
+{% if item.value.gzip_http_version is defined %}
+        gzip_http_version {{ item.value.gzip_http_version }};
+{% endif %}
+{% if item.value.gzip_comp_level is defined %}
+        gzip_comp_level {{ item.value.gzip_comp_level }};
+{% endif %}
+{% if item.value.gzip_proxied is defined %}
+        gzip_proxied {{ item.value.gzip_proxied }};
+{% endif %}
+{% if item.value.gzip_min_length is defined %}
+        gzip_min_length  {{ item.value.gzip_min_length }};
+{% endif %}
+{% if item.value.gzip_buffers is defined %}
+        gzip_buffers  {{ item.value.gzip_buffers }};
+{% endif %}
+{% if item.value.gzip_vary is defined %}
+        gzip_vary  {{ item.value.gzip_vary | ternary("on", "off") }};
+{% endif %}
+
+
+{% if item.value.gzip_types is defined %}
+        gzip_types  {{ item.value.gzip_types }};
+{% endif %}
+{% if item.value.gzip_disable is defined %}
+        gzip_disable  {{ item.value.gzip_disable }};
+{% endif %}
+
+}
+

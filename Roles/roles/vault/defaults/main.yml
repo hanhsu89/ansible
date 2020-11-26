@@ -1,0 +1,10 @@
+---
+# defaults file for vault
+vault_version: 1.4.2
+vault_host: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
+
+db_host: 10.0.0.8
+db_port: 3306
+db_name: harshicorp_vault
+db_user: harshicorp_vault
+db_pass: FXJb96EEu9Zfa34R

@@ -1,0 +1,15 @@
+---
+# - Prepare /etc/hosts
+- include: infra_etc_hosts.yml
+
+# - NTP Services
+- include: infra_ntp.yml
+
+# Memcached
+- include: infra_memcached.yml
+  #when: inventory_hostname in groups['memcached']
+
+# - Repository + extra pkg
+- include: infra_extra_packages.yml
+
+- meta: flush_handlers

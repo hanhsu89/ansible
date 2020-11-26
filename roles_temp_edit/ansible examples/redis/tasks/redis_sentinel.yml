@@ -1,0 +1,38 @@
+---
+
+- name: Sentinel| Show the master node in slave node
+  blockinfile:
+    path: "{{ redis_install_dir }}/{{ redis_port }}.conf"
+    block: |
+      slaveof {{ sentinel_master_node }} {{ redis_port }}
+  when: inventory_hostname != sentinel_master_node
+ 
+- name: Sentinel| Restart redis
+  service:
+    name: "redis_{{ redis_port }}"
+    state: restarted
+
+- name: Sentinel| Copy file config
+  template:
+    src: redis_sentinel_sample.conf.j2
+    dest: "{{ redis_install_dir }}/redis_sentinel.conf"
+    owner: redis
+    group: redis
+    mode: 0644
+
+- name: Sentinel| Create systemd service file for Redhat 7 or CentOS 7
+  template: 
+    src: redis_sentinel.service.j2
+    dest: /usr/lib/systemd/system/redis_sentinel.service
+    mode: 0755
+  when: ansible_os_family == "RedHat" and ansible_service_mgr == "systemd"
+
+- name: Sentinel| Reload systemd to reread configs
+  systemd: 
+    daemon_reload: yes
+  when: ansible_service_mgr == "systemd"
+
+- name: Sentinel| Restart redis sentinel
+  service:
+    name: "redis_sentinel"
+    state: restarted

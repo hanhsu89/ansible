@@ -1,0 +1,3 @@
+# Default string community and snmpd host
+snmpd_hosts_config:
+    - {snpmd_string_community: "Appota", snmpd_host: "103.53.170.254"}

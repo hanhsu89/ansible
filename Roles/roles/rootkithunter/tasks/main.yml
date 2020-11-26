@@ -1,0 +1,33 @@
+---
+# tasks file for rkhunter-ansible-role
+
+- include: install.yml
+  register: installed
+
+- name: Configure rkhunter.conf
+  template:
+    src: rkhunter.conf.j2
+    dest: /etc/rkhunter.conf
+
+- name: Configure sysconfig/rkhunter
+  template:
+    src: rkhunter.j2
+    dest: /etc/sysconfig/rkhunter
+
+# By default, on debian, the log file is /var/log/rkhunter.log
+- name: Create logfile directory
+  file:
+    path: '/var/log/rkhunter/'
+    state: 'directory'
+    mode: 0644
+  when: ansible_os_family == "Debian"
+
+- name: rkhunter update
+  command: rkhunter --update
+  register: rkhunter_update
+  failed_when: rkhunter_update.rc != 2 and rkhunter_update.rc != 0
+  changed_when: False
+
+- name: rkhunter propupd
+  command: rkhunter --propupd
+  changed_when: False

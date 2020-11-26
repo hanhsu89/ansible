@@ -1,0 +1,15 @@
+---
+
+- name: Tune system
+  include: tuning.yml
+
+# - name: Install Standalone
+#   include: install.yml
+
+#=== Install & Create Cluster Master_Slave
+- name: Install Master-Slave
+  include: master_slave.yml
+
+- name: Create Cluster
+  include: cluster_create.yml
+#=== Install & Create Cluster Master_Slave

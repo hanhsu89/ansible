@@ -1,0 +1,104 @@
+---
+
+- name: Install Remi Repo for CentOS 7
+  yum:
+    name: http://rpms.remirepo.net/enterprise/remi-release-7.rpm
+    state: present
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7" and roles == "backend"
+  tags:
+    - php7.1_install
+    - php5.6_install
+
+- name: Install Remi Repo for CentOS 6 (PHP 5.6)
+  yum:
+    name: http://rpms.remirepo.net/enterprise/remi-release-6.rpm
+    state: present
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "6" and roles == "backend"
+  tags:
+    - php5.6_install
+
+- name: Install php and php-fpm version 7.1
+  yum:
+    name:
+      - php-fpm
+      - php-common
+      - php-opcache
+      - php-pecl-apcu
+      - php-cli
+      - php-pear
+      - php-pdo
+      - php-mysqlnd
+      - php-pgsql
+      - php-pecl-mongodb
+      - php-pecl-redis
+      - php-pecl-memcache
+      - php-pecl-memcached
+      - php-gd
+      - php-mbstring
+      - php-mcrypt
+      - php-xml
+      - php-apc
+      - php-bcmath
+      - php-imap
+      - php-ldap
+      - php-snmp
+      - php-soap
+      - php-zip
+    enablerepo: "remi,remi-php71"
+    state: installed
+  when: roles == "backend"
+  tags:
+    - php7.1_install
+
+- name: Install php and php-fpm version 5.6
+  yum:
+    name:
+      - php-fpm
+      - php-common
+      - php-opcache
+      - php-pecl-apcu
+      - php-cli
+      - php-pear
+      - php-pdo
+      - php-mysqlnd
+      - php-pgsql
+      - php-pecl-mongodb
+      - php-pecl-redis
+      - php-pecl-memcache
+      - php-pecl-memcached
+      - php-gd
+      - php-mbstring
+      - php-mcrypt
+      - php-xml
+      - php-apc
+      - php-bcmath
+      - php-imap
+      - php-ldap
+      - php-snmp
+      - php-soap
+      - php-zip
+    enablerepo: "remi,remi-php56"
+    state: installed
+  when: roles == "backend"
+  tags:
+    - php5.6_install
+
+- name: Config pool www.conf for php-fpm
+  template:
+    src=www.conf.j2 
+    dest=/etc/php-fpm.d/www.conf
+    mode=0644
+  when: roles == "backend"
+  tags:
+    - php7.1_install
+    - php5.6_install
+
+- name: Start php-fpm and enables start with system
+  service:
+    name: php-fpm
+    state: restarted
+    enabled: yes
+  when: roles == "backend"
+  tags:
+    - php7.1_install
+    - php5.6_install

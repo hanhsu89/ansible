@@ -1,0 +1,89 @@
+bind {{ ansible_default_ipv4.address }} 127.0.0.1
+port {{ redis_port }}
+
+unixsocket {{ redis_sock_dir }}/{{ redis_port }}.sock
+unixsocketperm 755
+
+# TCP listen() backlog.
+#
+# In high requests-per-second environments you need an high backlog in order
+# to avoid slow clients connections issues. Note that the Linux kernel
+# will silently truncate it to the value of /proc/sys/net/core/somaxconn so
+# make sure to raise both the value of somaxconn and tcp_max_syn_backlog
+# in order to get the desired effect.
+tcp-backlog 4096
+
+# Close the connection after a client is idle for N seconds (0 to disable)
+timeout 30
+
+# TCP keepalive.
+#
+# If non-zero, use SO_KEEPALIVE to send TCP ACKs to clients in absence
+# of communication. This is useful for two reasons:
+#
+# 1) Detect dead peers.
+# 2) Take the connection alive from the point of view of network
+#    equipment in the middle.
+#
+# On Linux, the specified value (in seconds) is the period used to send ACKs.
+# Note that to close the connection the double of the time is needed.
+# On other kernels the period depends on the kernel configuration.
+#
+# A reasonable value for this option is 300 seconds, which is the new
+# Redis default starting with Redis 3.2.1.
+tcp-keepalive 60
+
+# General
+pidfile {{ redis_sock_dir }}/{{ redis_port }}.pid
+
+loglevel notice
+logfile {{ redis_log_dir }}/redis_{{ redis_port }}.log
+
+# Snapshotting
+dbfilename dump.rdb
+dir {{ redis_data_dir }}/{{ redis_port }}
+
+# Clients
+maxclients 10000
+
+# MEMORY MANAGEMENT
+# maxmemory <bytes>
+maxmemory-policy noeviction
+
+# APPEND ONLY MODE
+appendonly no
+appendfilename "redis-append.aof"
+
+# The fsync() call tells the Operating System to actually write data on disk
+# instead of waiting for more data in the output buffer. Some OS will really flush
+# data on disk, some other OS will just try to do it ASAP.
+#
+# Redis supports three different modes:
+#
+# no: don't fsync, just let the OS flush the data when it wants. Faster.
+# always: fsync after every write to the append only log. Slow, Safest.
+# everysec: fsync only one time every second. Compromise.
+#
+# The default is "everysec", as that's usually the right compromise between
+# speed and data safety. It's up to you to understand if you can relax this to
+# "no" that will let the operating system flush the output buffer when
+# it wants, for better performances (but if you can live with the idea of
+# some data loss consider the default persistence mode that's snapshotting),
+# or on the contrary, use "always" that's very slow but a bit safer than
+# everysec.
+#
+# More details please check the following article:
+# http://antirez.com/post/redis-persistence-demystified.html
+#
+# If unsure, use "everysec".
+
+# appendfsync always
+#appendfsync everysec
+# appendfsync no
+
+# Slow log
+slowlog-log-slower-than 10000
+slowlog-max-len 128
+
+# LATENCY MONITOR
+latency-monitor-threshold 0

@@ -1,0 +1,43 @@
+---
+
+- name: Create Group
+  group:
+    name: heketi
+    state: present
+  tags: 
+    - genkey   
+
+- name: Create User
+  user:
+    name: heketi
+    group: heketi
+    shell: /sbin/nologin
+    state: present
+  tags: 
+    - genkey   
+
+- name: Create Data/Log Directory
+  file: 
+    path: "{{ item }}"
+    state: directory
+    owner: heketi
+    group: heketi
+  with_items:
+    - /etc/heketi/
+  tags: 
+    - genkey   
+
+- name: Create keyfile
+  shell: ssh-keygen -f /etc/heketi/heketi_key -t rsa -N ''
+  tags:
+    - genkey
+
+- name: chmod folder
+  file:
+    path: /etc/heketi/
+    recurse: yes
+    state: directory    
+    owner: heketi
+    group: heketi    
+  tags:
+    - genkey

@@ -1,0 +1,51 @@
+---
+- name: Install config files
+  become: yes
+  notify: restart nagios
+  template: >
+    src={{ item.src }}
+    dest={{ nagios_object_dir }}/{{ item.dest }}
+    owner={{ nagios_user }}
+    group={{ nagios_group }}
+    mode=0640
+  with_items:
+    - { src: hosts.cfg.j2, dest: hosts.cfg }
+    - { src: hostgroups.cfg.j2, dest: hostgroups.cfg }
+    - { src: services.cfg.j2, dest: services.cfg }
+    - { src: commands.cfg.j2, dest: additional_commands.cfg }
+    - { src: contacts.cfg.j2, dest: additional_contacts.cfg }
+    - { src: templates.cfg.j2, dest: additional_templates.cfg }
+
+- name: Update nagios.cfg with config files
+  become: yes
+  notify: restart nagios
+  lineinfile:
+    dest={{ nagios_base_dir }}/nagios.cfg
+    line="cfg_file={{ nagios_object_dir }}/{{ item }}.cfg"
+    regexp="^cfg_file\={{ nagios_object_dir }}/{{ item }}\.cfg"
+  with_items:
+    - hosts
+    - hostgroups
+    - services
+    - additional_commands
+    - additional_contacts
+    - additional_templates
+  when: nagios_cfg_dir_enabled == false
+
+- name: Update nagios.cfg with config dir
+  become: yes
+  notify: restart nagios
+  lineinfile: >
+    dest={{ nagios_base_dir }}/nagios.cfg
+    line="cfg_dir={{ nagios_object_dir }}"
+    regexp="^cfg_dir={{ nagios_object_dir }}"
+  when: nagios_cfg_dir_enabled == true
+
+- name: Don't include localhost.cfg
+  become: yes
+  notify: restart nagios
+  replace: >
+    dest={{ nagios_base_dir }}/nagios.cfg
+    regexp="^cfg_file=/etc/nagios/objects/localhost.cfg"
+    replace="#cfg_file=/etc/nagios/objects/localhost.cfg"
+  when: disable_monitor_localhost

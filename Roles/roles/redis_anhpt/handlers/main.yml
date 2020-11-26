@@ -1,0 +1,8 @@
+---
+# - import_tasks: master.yml
+# - import_tasks: slave.yml
+# - import_tasks: sentinel.yml
+- name: restart redis
+  service:
+    name: redis-server
+    state: restarted

@@ -1,0 +1,27 @@
+---
+- name: install repo packages
+  package:
+    name: "{{ item }}"
+    state: latest   
+  register: install_repo
+  until: install_repo is success
+  retries: 5
+  delay: 1
+  with_items:
+    - centos-release-openstack-rocky
+
+# - name: install python-shade module
+#   pip:
+#     name: Shade
+
+- name: install extra packages
+  package:  
+    name: "{{ item }}"
+    state: latest
+  register: install_packages
+  until: install_packages is success
+  retries: 5
+  delay: 1
+  with_items:
+    - python-openstackclient
+    - openstack-selinux

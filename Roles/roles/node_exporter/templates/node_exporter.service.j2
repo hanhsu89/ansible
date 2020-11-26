@@ -1,0 +1,25 @@
+[Unit]
+Description=Prometheus Node Exporter
+After=network-online.target
+
+[Service]
+Type=simple
+User=node-exporter
+Group=node-exporter
+ExecReload=/bin/kill -HUP $MAINPID
+ExecStart={{ node_exporter_src_dir }}/node_exporter --collector.systemd
+
+CapabilityBoundingSet=CAP_SET_UID
+LimitNOFILE=infinity
+LockPersonality=true
+NoNewPrivileges=true
+MemoryDenyWriteExecute=true
+PrivateDevices=true
+PrivateTmp=true
+ProtectHome=true
+RemoveIPC=true
+SyslogIdentifier=node-exporter
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

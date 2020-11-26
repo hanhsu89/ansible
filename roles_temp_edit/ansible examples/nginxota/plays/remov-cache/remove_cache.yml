@@ -1,0 +1,9 @@
+---
+- hosts: login
+  roles:
+    - role: ansible-role-nginx
+      ngx_remove_cache: "all"
+      ngx_remove_cache_uri: "lvtc.cdn.gamota.net"
+      ngx_remove_cache_uris:
+            /data/cache/nginx_cache/lvtc.cdn.gamota.net/diepdj: "ok"
+            /data/cache/nginx_cache/lvtc.cdn.gamota.net/01/02/03/diepdh: "ok"

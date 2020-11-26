@@ -1,0 +1,16 @@
+---
+- name: Check all port numbers are accessible from current host
+  wait_for:
+    host: orig-vtve.vtvgiaitri.vn
+    port: "{{ item }}"
+    state: started         # Port should be open
+    delay: 0               # No wait before first check (sec)
+    timeout: 3             # Stop checking after timeout (sec)
+  ignore_errors: yes
+  with_items:
+    - 443
+    - 80
+
+- name: Check url can access from current host
+  uri:
+    url: https://orig-vtve.vtvgiaitri.vn/hls/13/7d/d6/28/47/daa2/bbb0/9d8d-ky-uc-1_,360,480,720,p.mp4.urlset/master.m3u8

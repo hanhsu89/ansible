@@ -1,0 +1,14 @@
+---
+# vars file for elasticsearch
+
+version: 7.0.0
+elasticsearch_url: https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.0.0-x86_64.rpm
+
+cluster_name: ELK-Cluster
+master_nodes: 192.168.10.45
+minimum_master_nodes: 1
+
+data_dir: /data
+log_dir: /var/log/elasticsearch
+config_dir: /etc/elasticsearch
+home_dir: /usr/share/elasticsearch

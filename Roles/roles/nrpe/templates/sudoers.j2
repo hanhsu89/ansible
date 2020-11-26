@@ -1,0 +1,25 @@
+# {{ ansible_managed }}
+
+# nagios_nrpe_server_commands
+{% for item in nagios_nrpe_server_commands if nagios_nrpe_server_commands|length > 0 -%}
+  {% if item.sudo is defined and item.sudo -%}
+    {% if item.plugin is defined -%}
+      {% if item.plugin|match("/.*") -%}
+        {% set command = item.plugin -%}
+      {% else -%}
+        {% set command = nrpe_plugin_path ~ "/" ~ item.plugin -%}
+      {% endif -%}
+    {{ nrpe_user }} ALL=NOPASSWD: {{ command }}
+    {% endif -%}
+  {% endif -%}
+{% endfor -%}
+
+# nagios_nrpe_server_sudo_commands
+{% for item in nagios_nrpe_server_sudo_commands if nagios_nrpe_server_sudo_commands|length > 0 -%}
+  {% if item|match("/.*") -%}
+    {% set command = item -%}
+  {% else -%}
+    {% set command = nrpe_plugin_path ~ "/" ~ item -%}
+  {% endif -%}
+  {{ nrpe_user }} ALL=NOPASSWD: {{ command }}
+{% endfor -%}

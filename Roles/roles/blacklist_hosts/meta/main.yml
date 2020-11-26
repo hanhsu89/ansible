@@ -1,0 +1,17 @@
+galaxy_info:
+  author: Pedro Gomes
+  description: Role for installing StevenBlack hosts blacklist collection.
+  company: n/a.
+  license: MIT
+  min_ansible_version: 2.0
+  platforms:
+  - name: Ubuntu
+    versions:
+    - trusty
+    - wily
+    - xenial
+  galaxy_tags:
+    - hosts
+    - network
+    - system
+dependencies: []

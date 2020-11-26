@@ -1,0 +1,55 @@
+[DEFAULT]
+auth_strategy = keystone
+core_plugin = ml2
+{% if neutron_network_options == 'self-service' %}
+service_plugins = {{ neutron_selfservice_networks.service_plugins }}
+{% else %}
+service_plugins = 
+allow_overlapping_ips = True
+{% endif %}
+
+# Workers
+api_workers = {{ neutron_api_workers | default(neutron_api_threads) }}
+rpc_workers = {{ neutron_rpc_workers }}
+
+{% if inventory_hostname in groups['controller'] %}
+notify_nova_on_port_status_changes = True
+notify_nova_on_port_data_changes = True
+{% endif %}
+
+dhcp_agent_notification = True
+dhcp_agents_per_network = 2
+dhcp_lease_duration = 86400
+
+transport_url = rabbit://{% for host in groups['controller'] %}openstack:{{ rabbitmq_password }}@{{ hostvars[host]['inventory_hostname']}}{% if not loop.last %},{% endif %}{% endfor %}
+
+[database]
+connection = mysql+pymysql://neutron:{{ neutron_user_password }}@{{ internal_vip_address|default(groups['controller'][0]) }}/neutron
+
+[nova]
+auth_url = http://{{ internal_vip_address|default(groups['controller'][0]) }}:5000
+auth_type = password
+project_domain_name = default
+user_domain_name = default
+region_name = RegionOne
+project_name = service
+username = nova
+password = {{ nova_password }}
+
+[keystone_authtoken]
+www_authenticate_uri = http://{{ internal_vip_address|default(groups['controller'][0]) }}:5000
+auth_url = http://{{ internal_vip_address|default(groups['controller'][0]) }}:5000
+auth_type = password
+project_domain_name = default
+user_domain_name = default
+project_name = service
+username = neutron
+password = {{ neutron_user_password }}
+memcached_servers = {% for host in groups['controller'] %}{{ hostvars[host]['inventory_hostname'] }}:11211{% if not loop.last %},{% endif %}{% endfor %}
+
+
+[oslo_concurrency]
+lock_path = /var/lib/neutron/tmp
+[oslo_messaging_notifications]
+driver = messagingv2
+

@@ -1,0 +1,29 @@
+*filter
+:INPUT ACCEPT [0:0]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [42:3208]
+-A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT 
+-A INPUT -p icmp -j ACCEPT 
+-A INPUT -i lo -j ACCEPT 
+-A INPUT -i em2 -j ACCEPT 
+-A INPUT -p tcp -m state --state NEW -m tcp --dport 22 -j ACCEPT 
+-A INPUT -s 103.53.170.254/32 -p tcp -m tcp --dport 5666 -j ACCEPT
+-A INPUT -s 43.239.220.129/32 -p tcp -m tcp --dport 10050 -j ACCEPT 
+-A INPUT -p tcp -s 60.206.235.5 -j ACCEPT
+-A INPUT -p tcp --dport 11477 -m iprange --src-range 60.206.235.1-60.206.235.2 -j ACCEPT
+-A INPUT -p tcp --dport 11477 -m iprange --src-range 124.205.188.244-124.205.188.253 -j ACCEPT
+-A INPUT -p tcp --dport 11477 -m iprange --src-range 124.243.248.34-124.243.248.43 -j ACCEPT
+# service game
+-A INPUT -p tcp -m tcp --dport 28000:28010 -j ACCEPT 
+
+#####
+-A INPUT -s 113.190.242.72 -p tcp -j ACCEPT
+-A INPUT -s 118.70.28.200 -p tcp -j ACCEPT
+-A INPUT -s 222.252.17.253 -p tcp -j ACCEPT
+-A INPUT -s 118.70.184.34 -p tcp -j ACCEPT
+-A INPUT -s 115.79.46.168 -p tcp -j ACCEPT
+
+-A INPUT -j REJECT --reject-with icmp-host-prohibited
+-A FORWARD -j REJECT --reject-with icmp-host-prohibited 
+COMMIT
+

@@ -1,0 +1,36 @@
+---
+os_controller_primary_node: "{{ groups['controller'][0] }}"
+# keystone_install.yml
+keystone_yum_packages:
+    - openstack-keystone 
+    - httpd 
+    - mod_wsgi
+#keystone_client_config.yml
+os_admin_credential_path: /root/admin-openrc
+#keystone_db_setup.yml
+galera_root_user: root  
+galera_root_password: Jd0Hs5XHmFrJzPTW
+keystone_galera_address: "{{ galera_address | default(groups['controller'][0])  }}"
+#keystone_galera_address: "{{ galera_address | default('')  }}"
+keystone_db_setup_host: "{{ ('database' in groups) | ternary(groups['database'][0], 'localhost') }}"
+keystone_galera_database: keystone
+keystone_galera_user: keystone
+keystone_user_password: Jd0Hs5XHmFrJzPTW
+keystone_system_user_name: keystone 
+keystone_system_user_group: keystone
+keystone_bin: "/usr/bin"
+keystone_fernet_tokens_key_repository: "/etc/keystone/fernet-keys"
+#keystone_service_setup
+keystone_service_description: keystone_service_description
+keystone_service_tenant_name: service 
+# config keystone 
+keystone_token_provider: fernet
+# config admin 
+os_admin_project_domain: Default
+os_admin_user_domain: Default
+os_admin_project: admin
+os_admin_user: admin
+os_admin_password: Jd0Hs5XHmFrJzPTW
+keystone_service_adminurl: "http://controller:5000/v3"
+keystone_auth_admin_password: Jd0Hs5XHmFrJzPTW
+keystone_credential_key_repository: "/etc/keystone/credential-keys"

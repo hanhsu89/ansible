@@ -1,0 +1,13 @@
+frontend http_front
+   bind *:80
+   stats uri /haproxy?stats
+   acl url_blog path_beg /blog
+   use_backend blog_back if url_blog
+   default_backend http_back
+
+backend http_back
+   balance roundrobin
+   server test 192.168.206.241:80 check
+
+backend blog_back
+   server test 192.168.206.241:80 check

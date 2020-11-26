@@ -1,0 +1,28 @@
+---
+
+- name: Stop Service
+  service:
+    name: mongod
+    state: stopped
+
+- name: Delete folders/files config
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - /data 
+    - /var/lib/mongo
+    - /var/run/mongodb/mongod.pid
+
+- name: Copy file bash uninstall MongoDB to /tmp
+  template: 
+    src: uninstall.sh.j2
+    dest: /tmp/uninstall.sh
+    mode: 0775
+
+- name: Run file bash to remove MongoDB
+  shell: /tmp/uninstall.sh
+
+- name: deamon-reload
+  systemd:
+    daemon_reload: yes 

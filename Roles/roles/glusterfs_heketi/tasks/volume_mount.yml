@@ -1,0 +1,15 @@
+
+- name: Create Folder to Mount
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "{{ mount_dir }}"
+
+- name: Ensure the Gluster Volume is Mounted
+  mount:
+    src: "{{ cluster_1 }}:/{{ volume_name }}"
+    name: "{{ mount_dir }}"
+    fstype: glusterfs
+    opts: "defaults,_netdev"
+    state: mounted

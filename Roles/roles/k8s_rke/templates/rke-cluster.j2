@@ -1,0 +1,112 @@
+nodes:
+{% for hosts in ansible_play_batch %}
+{% if hostvars[hosts].roles != "rke-node" %}
+    - address: {{ hosts }}
+      user: {{ rke_ssh_user }}
+      role:
+{% for host_roles in hostvars[hosts].roles %}
+        - {{ host_roles }}
+{% endfor %}
+      hostname_override: {{ hostvars[hosts].hostname }}
+      port: {{ ansible_ssh_port }}
+      internal_address: {{ hostvars[hosts].internal_address }}
+      labels:
+{% for host_labels in hostvars[hosts].labels %}
+        {{ host_labels }}
+{% endfor %}
+
+{% endif %}
+{% endfor %}
+ignore_docker_version: false
+
+ssh_key_path: ./id_rsa
+
+cluster_name: {{ k8s_cluster_name }}
+
+kubernetes_version: v1.12.4-rancher1-1
+
+system_images:
+    kubernetes: rancher/hyperkube:v1.12.4-rancher1
+    etcd: quay.io/coreos/etcd:v3.2.24
+    alpine: rancher/rke-tools:v0.1.21
+    nginx_proxy: rancher/rke-tools:v0.1.21
+    cert_downloader: rancher/rke-tools:v0.1.21
+    kubernetes_services_sidecar: rancher/rke-tools:v0.1.21
+    kubedns: gcr.io/google_containers/k8s-dns-kube-dns-amd64:1.14.13
+    dnsmasq: gcr.io/google_containers/k8s-dns-dnsmasq-nanny-amd64:1.14.13
+    kubedns_sidecar: gcr.io/google_containers/k8s-dns-sidecar-amd64:1.14.13
+    kubedns_autoscaler: gcr.io/google_containers/cluster-proportional-autoscaler-amd64:1.0.0
+    pod_infra_container: gcr.io/google_containers/pause-amd64:3.1
+
+services:
+    etcd:
+      # Create snapshot ETCD every 12h and save in 72h before delete
+      snapshot: true
+      creation: 12h
+      retention: 72h
+
+    kube-api:
+      service_cluster_ip_range: 10.43.0.0/16
+      service_node_port_range: 30000-32767
+      pod_security_policy: false
+      extra_args:
+        audit-log-path: "-"
+        delete-collection-workers: 3
+        v: 4
+
+    kube-controller:
+      cluster_cidr: 10.42.0.0/16
+      service_cluster_ip_range: 10.43.0.0/16
+
+    kubelet:
+      cluster_domain: cluster.local
+      cluster_dns_server: 10.43.0.10
+      fail_swap_on: false
+      extra_args:
+        max-pods: {{ k8s_max_pods_per_node }}
+      extra_binds:
+        - "/usr/libexec/kubernetes/kubelet-plugins:/usr/libexec/kubernetes/kubelet-plugins"
+
+authentication:
+    strategy: x509
+    # List domain and IP LoadBalancer of API
+    sans:
+{% for k8s_api_domain in k8s_api_domain %}
+      - "{{ k8s_api_domain }}"
+{% endfor %}
+
+authorization:
+    mode: rbac
+
+addon_job_timeout: 30
+
+network:
+{% if k8s_network_plugin == "canal" %}
+    plugin: canal
+    options:
+      canal_iface: {{ k8s_flannel_interface }}
+      canal_flannel_backend_type: vxlan
+{% endif %}
+{% if k8s_network_plugin == "flannel" %}
+    plugin: flannel
+    options:
+      flannel_iface: {{ k8s_flannel_interface }}
+      flannel_backend_type: vxlan
+{% endif %}
+{% if k8s_network_plugin == "calico" %}
+    plugin: calico
+{% endif %}
+
+ingress: 
+{% if k8s_network_plugin == "yes" %}
+    provider: nginx
+    options:
+      map-hash-bucket-size: "128"
+      server-tokens: "false"
+      ssl-ciphers: "AES128+EECDH:AES128+EDH"
+      ssl-protocols: "TLSv1 TLSv1.1 TLSv1.2"
+    node_selector:
+      app: ingress
+{% else %}
+    provider: none
+{% endif %}

@@ -1,0 +1,70 @@
+# TEMPLATE of nagios server
+nagios_contacts:
+  - {name: 'phamthai96', alias: 'Pham Van Thai 96', email: 'thaipv96@kdata.vn', sys_appota: true}
+  - {name: 'Telegram', alias: 'Test', pager: '-1001341716943', sys_appota: true}
+
+
+nagios_contact_groups:
+
+  - name: 'sys_appota'
+    alias: 'System Administrator of Appota servers'
+
+
+nagios_hosts:
+  - {name: 'phamthai1', address: '192.168.10.10', contact_groups: sys_appota, all: true, PhamThai: true}
+#  - {name: 'phamthai2', address: '192.168.10.11', contact_groups: sys_appota, all: true, PhamThai: true}
+#  - {name: 'phamthai3', address: '192.168.10.12', contact_groups: sys_appota, all: true, PhamThai: true}
+#  - {name: 'phamthai4', address: '192.168.10.13', contact_groups: sys_appota, all: true, Kdata: true}
+#  - {name: 'phamthai5', address: '192.168.10.14', contact_groups: sys_appota, all: true, Kdata: true}
+  - {name: 'phamthai6', address: '192.168.10.15', contact_groups: sys_appota, all: true, Kdata: true}
+
+nagios_host_groups:
+  - name: 'Kdata'
+    alias: 'Service'
+
+  - name: 'PhamThai'
+    alias: 'Servers'
+
+  - name: 'all'
+    alias: 'All Servers'
+    register: 0
+    checks:
+      - {command: 'check_ping!100.0,20%!500.0,60%', description: 'check_ping', contact_groups: 'sys_appota'}
+      - {command: 'check_nrpe!check_disk', description: 'check_disk', contact_groups: 'sys_appota'}
+      - {command: 'check_nrpe!check_cpu', description: 'check_cpu', contact_groups: 'sys_appota'}
+      - {command: 'check_nrpe!check_mem', description: 'check_mem', contact_groups: 'sys_appota'}
+      - {command: 'check_nrpe!check_uptime', description: 'check_uptime', contact_groups: 'sys_appota'}
+      - {command: 'check_nrpe!check_network', description: 'check_network', contact_groups: 'sys_appota'}
+      - {command: 'check_nrpe!check_procs', description: 'check_procs', contact_groups: 'sys_appota'}
+
+#  - name: 'use_megaraid_sas'
+#    alias: 'LSI MegaRAID SAS Servers'
+#    checks:
+#      - {command: 'check_nrpe!check_megaraid_sas', description: 'check_megaraid_sas'}
+
+#  - name: 'use_intel_fakeraid'
+#    alias: 'Intel Fake RAID Servers'
+#    checks:
+#      - {command: 'check_nrpe!check_intel_fakeraid', description: 'check_intel_fakeraid'}
+
+#  - name: 'use_mpt_sas2'
+#    alias: 'LSI Fusion MPT SAS2 Servers'
+#    checks:
+#      - {command: 'check_nrpe!check_mpt_sas2', description: 'check_mpt_sas2'}
+
+nagios_commands:
+  - {name: 'check_http_custom', command: '$USER1$/check_http -H npmjs.org -I $HOSTADDRESS$ $ARG1$'}
+  - {name: 'check_nrpe', command: '$USER1$/check_nrpe -H $HOSTADDRESS$ -c $ARG1$'}
+  - name: 'notify-host-by-email-update'
+    command: '/bin/printf "%b" "***** Nagios *****\n\nNotification Type: $NOTIFICATIONTYPE$\nHost: $HOSTNAME$\nState: $HOSTSTATE$\nAddress: $HOSTADDRESS$\nInfo: $HOSTOUTPUT$\n\nDate/Time: $LONGDATETIME$\n" | /bin/mail -r nagios@vdco.kdata -s "** $NOTIFICATIONTYPE$ Host Alert: $HOSTNAME$ is $HOSTSTATE$ **" $CONTACTEMAIL$'
+  - name: 'notify-service-by-email-update'
+    command: '/bin/printf "%b" "***** Nagios *****\n\nNotification Type: $NOTIFICATIONTYPE$\n\nService: $SERVICEDESC$\nHost: $HOSTALIAS$\nAddress: $HOSTADDRESS$\nState: $SERVICESTATE$\n\nDate/Time: $LONGDATETIME$\n\nAdditional Info:\n\n$SERVICEOUTPUT$\n" | /bin/mail -r nagios@vdco.kdata -s "** $NOTIFICATIONTYPE$ Service Alert: $HOSTALIAS$/$SERVICEDESC$ is $SERVICESTATE$ **" $CONTACTEMAIL$'
+  - name: 'check_esxi_hardware'
+    command: '$USER1$/check_esxi_hardware.py -H $HOSTADDRESS$ -U $ARG1$ -P $ARG2$'
+  - name: 'notify-host-by-telegram'
+    command: '/usr/local/bin/nagios_telegram.py --token 954769423:AAG9Rxtu1p89_WpsGIXBu6_tpeiuzj8fl9Y--object_type host --contact "$CONTACTPAGER$" --notificationtype "$NOTIFICATIONTYPE$" --hoststate "$HOSTSTATE$" --hostname "$HOSTNAME$" --hostaddress "$HOSTADDRESS$" --output "$HOSTOUTPUT$"'
+  - name: 'notify-service-by-telegram'
+    command: '/usr/local/bin/nagios_telegram.py --token 954769423:AAG9Rxtu1p89_WpsGIXBu6_tpeiuzj8fl9Y --object_type service --contact "$CONTACTPAGER$" --notificationtype "$NOTIFICATIONTYPE$" --servicestate "$SERVICESTATE$" --hostname "$HOSTNAME$" --servicedesc "$SERVICEDESC$" --output "$SERVICEOUTPUT$"'
+
+
+

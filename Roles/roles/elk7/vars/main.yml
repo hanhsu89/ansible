@@ -1,0 +1,11 @@
+---
+# vars file for elasticsearch
+
+data_dir: /data
+log_dir: /var/log/elasticsearch
+config_dir: /etc/elasticsearch
+home_dir: /usr/share/elasticsearch
+
+kibana_user: admin
+kibana_password: 123@hanhsu
+elk_ip: 192.168.10.45

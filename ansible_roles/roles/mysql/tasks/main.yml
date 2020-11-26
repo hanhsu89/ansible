@@ -1,0 +1,39 @@
+---
+# tasks file for mysql
+- name: get all ip
+  debug:
+    var: ansible_all_ipv4_addresses
+
+- name: get default ip
+  debug: 
+    var: ansible_default_ipv4.address
+
+- name: Install MySQL
+  apt: 
+    update_cache: yes
+    name: 
+      - mysql-server
+
+- name: Start MySQL
+  systemd:
+    name: mysql
+    state: started
+    daemon_reload: yes
+    enabled: yes
+
+- name: Allow intra net access to mysql
+  iptables:
+    chain: INPUT
+    protocol: tcp
+    source: 10.0.0.0/8
+    destination_port: '3306'
+    jump: ACCEPT
+
+- name: Save iptables rules to /etc/sysconfig/iptables
+  lineinfile:
+    path: /etc/sysconfig/iptables
+    line: '-A INPUT -s 10.0.0.0/8 -p tcp -m tcp --dport 3306 -j ACCEPT'
+    
+
+
+    

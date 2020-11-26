@@ -1,0 +1,41 @@
+- name: Create redis user and group
+  block:
+    - group:
+        name: redis
+        state: present
+        system: yes
+    - user:
+        name: redis
+        comment: 'Redis'
+        shell: /bin/false
+        group: redis
+        system: yes
+        state: present
+        create_home: no
+
+- name: Download and build redis from source
+  block:
+    - unarchive:
+        src: http://download.redis.io/redis-stable.tar.gz
+        remote_src: yes
+        dest: /tmp
+        mode: 0755
+        owner: root
+        creates: /tmp/redis-stable
+    - apt:
+        name:
+          - build-essential
+          - pkg-config
+        state: present
+        update_cache: yes
+        install_recommends: no
+        force_apt_get: Yes
+    - command: make -C /tmp/redis-stable MALLOC=libc
+    - command: cp /tmp/redis-stable/src/{{ item }} /usr/local/bin/
+      loop:
+        - redis-server
+        - redis-sentinel
+        - redis-cli
+        - redis-check-aof
+        - redis-benchmark
+        - redis-check-rdb

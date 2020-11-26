@@ -1,0 +1,32 @@
+---
+- name: check_megaraid_sas | copy script to server
+  become: yes
+  template: >
+    src=check_megaraid_sas.j2
+    dest="{{ megaraid_sas_plugin_path }}"
+    mode=0755
+    owner=root
+    group=root
+  when: ansible_os_family == "RedHat" or ansible_os_family == "Debian"
+
+
+- name: check_megaraid_sas | copy MegaRAID tool
+  become: yes
+  copy: >
+    src=MegaRAID
+    dest=/opt
+    mode=0755
+    owner=root
+    group=root
+  when: ansible_os_family == "RedHat" or ansible_os_family == "Debian"
+
+- name: check_megaraid_sas | configure nrpe sudoers file
+  become: yes
+  template: >
+    src=nrpe-megaraid-sas-sudoers.j2
+    dest=/etc/sudoers.d/nrpe-sudoers
+    mode=0640
+    owner=root
+    group=root
+    validate='visudo -cf %s'
+  when: ansible_os_family == "RedHat" or ansible_os_family == "Debian"

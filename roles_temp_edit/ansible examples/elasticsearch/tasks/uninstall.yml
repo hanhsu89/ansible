@@ -1,0 +1,32 @@
+---
+
+- name: stop service elastichsearch
+  systemd:
+    name: "{{ item }}"
+    state: stopped
+  ignore_errors: True
+  with_items:
+    - kibana
+    - elasticsearch  
+
+- name: Remove elasticsearch package
+  yum:
+    name: "{{ item }}"
+    state: absent
+  with_items:
+    - kibana
+    - elasticsearch
+
+- name: remove config, data folder
+  file:
+    name: "{{ item }}"
+    state: absent
+  with_items:
+    - "{{ data_dir }}"
+    - "{{ log_dir }}"
+    - "{{ config_dir }}"
+    - "{{ home_dir }}"
+    - /etc/kibana
+    - /var/log/kibana
+    - /usr/share/kibana
+    - /var/lib/kibana

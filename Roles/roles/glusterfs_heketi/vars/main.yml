@@ -1,0 +1,39 @@
+---
+
+replicas_count: 2
+
+#=== for heketi: topology.j2
+heketi_db_path: /var/lib/heketi/heketi.db
+heketi_topo_device: /dev/sdb
+heketi_zone: 1
+
+sshexec_keyfile: /etc/heketi/heketi_key
+sshexec_user: root
+sshexec_port: 22
+
+key_admin: SFwerfsdadsGAwwa
+key_user: ASFwerfsdadsGAwwa
+
+
+#==== for heketi: topology_for.j2
+gluster_servers:
+  - servername: gfs-1
+    serverip: 192.168.10.42
+    zone: 1
+    disks:
+      - /dev/sdb
+  - servername: gfs-2
+    serverip: 192.168.10.43
+    zone: 1
+    disks:
+      - /dev/sdb
+  - servername: gfs-3
+    serverip: 192.168.10.44
+    zone: 1
+    disks:
+      - /dev/sdb
+  - servername: gfs-4
+    serverip: 192.168.10.31
+    zone: 1
+    disks:
+      - /dev/sdb

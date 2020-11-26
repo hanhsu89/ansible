@@ -1,0 +1,13 @@
+# - name: Install redis
+#   include: install.yml
+
+# - name: Configure redis
+#   include: master-slave.yml
+
+# - name: Configure redis cluster
+#   include: cluster.yml
+
+- name: Configure rsyslog
+  import_role:
+    name: rsyslog
+    defaults_from: main

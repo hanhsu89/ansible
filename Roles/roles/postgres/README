@@ -1,0 +1,24 @@
+Install PostgreSQL v10 Replicaset
+
+
+Link check version (lastest: 12)
+	https://download.postgresql.org/pub/repos/yum/
+
+
+1. Change hosts in hosts file
+	[srv_master]
+	192.168.10.82
+
+	[srv_slave]
+	192.168.10.83
+
+2. Change IP host in folder: defaults > main.yml
+	postgresql_streaming_master: 192.168.10.82
+	postgresql_streaming_slaves: 192.168.10.83
+
+3. Run:
+	# Install Master
+	ansible-playbook -i hosts site.yml --limit ='srv_master' --tags master_install
+
+	# Install Slave
+	ansible-playbook -i hosts site.yml --limit ='srv_slave' --tags slave_install

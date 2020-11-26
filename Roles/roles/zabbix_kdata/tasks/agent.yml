@@ -1,0 +1,24 @@
+---
+- name: Install Zabbix agent
+  become: yes
+  yum: name=zabbix-agent state=present
+  when: ansible_os_family == "RedHat"
+
+- name: Install Zabbix agent
+  become: yes
+  apt: name=zabbix-agent state=present
+  when: ansible_os_family == "Debian"
+
+- name: Deploy zabbix_agentd.conf file
+  become: yes
+  template:
+     src="agent/zabbix_agentd.conf.j2"
+     dest="/etc/zabbix/zabbix_agentd.conf"
+     mode=0644
+     owner=root
+     group=root
+  notify: restart zabbix_agent
+
+- name: Start and enable Zabbix agent
+  become: yes
+  service: name=zabbix-agent state=started enabled=yes

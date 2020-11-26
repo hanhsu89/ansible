@@ -1,0 +1,32 @@
+---
+- name: Create .ssh folder                 | Create SSH key
+  file: path="{{ runner_user_home }}/.ssh" state=directory mode=0700
+
+- name: Install python-pip                 | Create SSH key
+  yum: name={{ item }} state=present
+  with_items:
+    - libsemanage-python
+    - epel-release
+    - python-pip
+- name: Install pexpect                     | Create SSH key
+  pip:
+    name: pexpect
+
+- name: create ssh key if it does not exist  | Create SSH key
+  expect:
+    command: ssh-keygen -t rsa
+    creates: "{{ runner_user_home }}/.ssh/id_rsa"
+    echo: yes
+    timeout: 5
+    responses:
+      "file": "{{ runner_user_home }}/.ssh/id_rsa"
+      "passphrase": ""
+
+- name: Copy known_hosts                    | Create SSH key
+  template:
+    src: "known_hosts_runner.j2"
+    dest: "{{ runner_user_home }}/.ssh/known_hosts"
+
+- name: read public key                     | Create SSH key
+  command: "cat {{ runner_user_home }}/.ssh/id_rsa.pub"
+  register: runner_pub_key

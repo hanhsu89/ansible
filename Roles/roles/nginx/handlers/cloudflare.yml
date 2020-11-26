@@ -1,0 +1,26 @@
+---
+
+- name: update cloudflare ip
+  debug: msg="Update new list IP CloudFlare"
+  changed_when: True
+#  listen: update cloudflare ip
+  notify:
+    - get list ipv4 cloudflare
+    - save list ip cloudflare
+
+- name: get list ipv4 cloudflare
+  uri:
+    url: https://www.cloudflare.com/ips-v4
+    return_content: yes
+  register: cloudflare_ipv4_list
+
+#- name: get list ipv6 cloudflare
+#  uri:
+#    url: https://www.cloudflare.com/ips-v6
+#    return_content: yes
+#  register: cloudflare_ipv6_list
+
+- name: save list ip cloudflare
+  template:
+    src: cloudflare_real_ips.j2
+    dest: "{{ nginx_params_dir }}/cloudflare_real_ips"

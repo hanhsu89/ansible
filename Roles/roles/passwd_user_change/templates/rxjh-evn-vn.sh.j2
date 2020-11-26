@@ -1,0 +1,67 @@
+#!/bin/bash
+HOST_NAME=$(hostname)
+IP=$(ip a |grep "inet" |grep eth0 |awk -F"/" '{print $1}'|awk '{print $2}')
+
+if [ $(id -u) != "0" ]
+then
+    echo "Error: You must be root"
+    exit 1
+fi
+
+#update and install
+apt-get update
+apt-get -y install software-properties-common
+add-apt-repository ppa:openjdk-r/ppa
+apt-get update
+apt-get -y install unzip zip dos2unix openjdk-8-jdk
+
+#change root password
+#passwd root << EOF
+#L+t(tyWh9XB0p_
+#L+t(tyWh9XB0p_
+#EOF
+if [ -e /etc/subgid.lock ]
+then
+	mv /etc/subgid.lock /tmp
+fi
+
+cat >>/etc/security/limits.conf<<eof
+root hard nofile 102400
+root soft nofile 102400
+root soft core unlimited
+root soft stack 102400
+ubuntu hard nofile 102400
+ubuntu soft nofile 102400
+ubuntu soft core unlimited
+ubuntu soft stack 102400
+tomcat hard nofile 102400
+tomcat soft nofile 102400
+tomcat soft core unlimited
+tomcat soft stack 102400
+*       hard nofile 102400
+*       soft nofile 102400
+*       soft core unlimited
+*       soft stack 102400
+eof
+
+cat >>/etc/sysctl.conf<<eof
+fs.file-max=10000000
+eof
+
+#add tomcat user
+adduser tomcat <<in
+ltvmrxjhWq-1E06
+ltvmrxjhWq-1E06
+gs publish user
+1111111
+1111111
+1111111
+no other info
+y
+in
+
+#user log
+echo "export PROMPT_COMMAND='{ msg=\$(history 1 | { read x y; echo \$y; });logger \"[euid=\$(whoami)]\":\$(who am i):[\`pwd\`]\"\$msg\"; }'">> .bashrc
+echo "export PROMPT_COMMAND='{ msg=\$(history 1 | { read x y; echo \$y; });logger \"[euid=\$(whoami)]\":\$(who am i):[\`pwd\`]\"\$msg\"; }'">> /home/tomcat/.bashrc
+
+echo "Hostname : $HOST_NAME  Interior_ip : $IP"

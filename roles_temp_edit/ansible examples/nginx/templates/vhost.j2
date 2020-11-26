@@ -1,0 +1,56 @@
+server {
+    listen 80;
+    server_name {{ item }} www.{{ item }};
+
+    access_log /var/log/nginx/{{ item }}-access.log;
+    error_log /var/log/nginx/{{ item }}-error.log;
+
+    root /data/www/{{ item }}/public_html/;
+    index index.php index.html index.htm;
+    real_ip_header X-Forwarded-For;
+
+    client_max_body_size 20m;
+    port_in_redirect off;
+
+    # Enable htpassword
+    #auth_basic              "Thong Bao";
+    #auth_basic_user_file    /etc/htpasswd;
+
+#    location ~* /.git(.*)? {
+#        deny all;
+#    }
+
+    location / {
+        index index.php index.html index.htm;
+        if (-f $request_filename) {
+            expires 30d;
+            break;
+	}
+        if (!-e $request_filename) {
+            rewrite ^ /index.php last;
+        }
+    }
+
+    location /backend/ {
+        try_files $uri $uri/ /backend/index.php;
+    }
+
+    location ~ \.php$ {
+        fastcgi_pass unix:{{ php_socket }};
+        fastcgi_index   index.php;
+        include     fastcgi_params;
+        fastcgi_param   SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_split_path_info ^(.+\.php)(.*)$;
+        fastcgi_param PATH_INFO $fastcgi_path_info;
+        fastcgi_param PATH_TRANSLATED $document_root$fastcgi_path_info;
+        fastcgi_connect_timeout 60;
+        fastcgi_send_timeout 180;
+        fastcgi_read_timeout 180;
+        fastcgi_buffer_size 128k;
+        fastcgi_buffers 4 256k;        
+        fastcgi_busy_buffers_size 256k;
+        fastcgi_temp_file_write_size 256k;
+        fastcgi_intercept_errors on;
+    }
+} 
+

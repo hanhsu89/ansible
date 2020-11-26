@@ -1,0 +1,70 @@
+- name: Download etcd binaries
+  get_url:
+    url: https://github.com/etcd-io/etcd/releases/download/v{{ etcd.version }}/etcd-v{{ etcd.version }}-linux-amd64.tar.gz
+    remote_src: Yes
+    dest: /tmp/
+
+- name: Install etcd binaries
+  unarchive:
+    remote_src: Yes
+    src: /tmp/etcd-v{{ etcd.version }}-linux-amd64.tar.gz
+    dest: /usr/local/bin/
+    mode: 0755
+    extra_opts:
+      - --strip-components=1
+      - etcd-v{{ etcd.version }}-linux-amd64/etcd
+      - etcd-v{{ etcd.version }}-linux-amd64/etcdctl
+
+- name: Remove compress tar.gz file
+  file:
+    path: /tmp/etcd-v{{ etcd.version }}-linux-amd64.tar.gz
+    state: absent
+
+- name: Create etcd neccessary directories
+  file:
+    path: '{{ item }}'
+    state: directory
+  loop:
+    - '{{ etcd.config_dir }}'
+    - '{{ etcd.data_dir }}'
+
+- name: Copy etcd certificates
+  copy:
+    src: '{{ item }}'
+    dest: '{{ etcd.config_dir }}/certs/'
+  loop:
+    - '{{ pki.path }}/ca.pem'
+    - '{{ pki.etcd_path }}/etcd.pem'
+    - '{{ pki.etcd_path }}/etcd-key.pem'
+    - '{{ pki.etcd_path }}/etcd-peer.pem'
+    - '{{ pki.etcd_path }}/etcd-peer-key.pem'
+
+- name: Config etcd discovery url
+  uri:
+    url: https://discovery.etcd.io/new?size={{ etcd.nodes }}
+    method: GET
+    return_content: Yes
+  register: etcd_discovery
+  run_once: True
+
+- name: Get etcd discovery url
+  set_fact:
+    discovery_url: '{{ etcd_discovery.content }}'
+    cacheable: Yes
+
+- name: Create etcd config file
+  template:
+    src: etcd.conf.j2
+    dest: '{{ etcd.config_dir }}/etcd.conf'
+
+- name: Create etcd service
+  template:
+    src: etcd.service.j2
+    dest: /etc/systemd/system/etcd.service
+
+- name: Be sure etcd is running and enabled
+  systemd:
+    name: etcd
+    state: started
+    enabled: Yes
+    daemon_reload: Yes

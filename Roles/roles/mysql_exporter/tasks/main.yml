@@ -1,0 +1,9 @@
+---
+
+- include: install.yml
+  tags:
+   - node_exporter
+
+- include: uninstall.yml
+  tags:
+   - node_exporter_uninstall

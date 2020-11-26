@@ -1,0 +1,47 @@
+---
+- hosts: all
+  strategy: free
+  gather_facts: yes
+  become: yes
+  roles:
+      - { role: test, tags: test }
+      - { role: docker, tags: docker }
+      - { role: ntp, tags: ntp }
+      - { role: packages, tags: packages }
+      - { role: firewall, tags: firewall }
+      - { role: users, tags: user }
+      - { role: common_k8s, tags: commonk8s }
+      - { role: terraform, tags: terraform }
+      - { role: vault, tags: vault }
+      - { role: selinux, tags: selinux }
+      - { role: ssh_login_alert_2, tags: ssh_login }
+      - { role: letsencrypt, tags: ssl }
+      - { role: haproxy, tags: haproxy }
+      - { role: keepalived, tags: keepalived }
+      - { role: redis, tags: redis }
+      - { role: openvpn_server, tags: openvpn_server }
+      - { role: openvpn_client, tags: openvpn_client }
+      - { role: mongodb, tags: mongodb }
+      - { role: kafka, tags: kafka }
+      - { role: consul, tags: consul }
+
+#=== Git
+      - { role: gitlab-runner, tags: gitlab-runner }
+
+
+#=== Prometheus/Grafana with Exporters
+      - { role: prometheus, tags: prometheus }
+      - { role: grafana, tags: grafana }
+      - { role: grafana_loki, tags: grafana_loki }
+      - { role: node_exporter, tags: node_exporter }     
+      - { role: alertmanager, tags: alertmanager }
+      - { role: blackbox_exporter, tags: blackbox_exporter }
+      - { role: snmp_exporter, tags: snmp_exporter }
+      - { role: mongodb_exporter, tags: mongodb_exporter }
+      - { role: bind_exporter, tags: bind_exporter }
+#===
+
+      - { role: bind_dns, tags: bind_dns }
+      - { role: snmp, tags: snmp }
+
+      - { role: firewallcsf, tags: firewallcsf }

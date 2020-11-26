@@ -1,0 +1,48 @@
+---
+- hosts: login
+  roles:
+    - role: config-nginx-kcdn
+      nginx_upstreams:
+          - name: lvtc.cdn.gamota.net
+            strategy: "ip_hash" # "least_conn", etc.
+            keepalive: 16 # optional
+            servers: {
+              "srv1.example.com weight=3 max_fails=3  fail_timeout=30s"
+            }
+      nginx_sites:
+         server:
+             listen: "80"
+             server_name: "lvtc.cdn.gamota.net"
+             root: "/data/www/lvtc.cdn.gamota.net"
+             index: "index.html" #index.php index.html index.htm
+             error_page: ""
+             access_log: "true"
+             error_log: "true"
+             rewrites: |
+                return 301 https://lvtc.cdn.gamota.net;
+             extra_parameters: []
+         
+             proxy_cache_enable: "true"
+             nginx_proxy_enable: "yes"
+             location_parameters:
+             try_files_params: |
+                try_files $uri $uri/ /index.php;
+             location_html: "true"
+             location_php: "true"
+             location_hhvm: "true"
+             nginx_secure_params: |
+                location ^~ /application/cache/ { deny all; }
+                location ^~ /application/ { deny all; }
+                location ^~ /system/ { deny all; }
+             nginx_limit_rate_params: |
+                limit_rate        on;
+                        limit_rate_after  30s;
+             nginx_foreign_cdn_params: |
+                if ($geoip_country_code ~ ^(US|CA)$) {
+                    return 301 http://us.lvtc.cdn.gamota.net$request_uri;
+                }
+             proxy_cache_params: |
+                proxy_cache_valid      200 206 15m;
+                        proxy_cache_valid  301 10m;
+                        proxy_cache_valid  400 403 404 500 502 503 1m;
+                        proxy_cache_key "$scheme$host$uri$is_args$args";

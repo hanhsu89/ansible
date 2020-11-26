@@ -1,0 +1,40 @@
+vrrp_instance VI_1 {
+{% if inventory_hostname == keepalived_nodes[0] %}
+    state MASTER
+    priority {{ keepalived_priority }}
+{% else %}
+    state BACKUP
+    priority {{ keepalived_backup_priority }}
+{% endif %}
+    interface "{{ hostvars[inventory_hostname].viface }}"
+    virtual_router_id {{ keepalived_router_id }}
+    nopreempt  
+    advert_int 1
+    authentication {
+        auth_type PASS
+        auth_pass {{ keepalived_auth_pass }}
+    }
+    virtual_ipaddress {
+        {{ keepalived_virtual_ip }}/{{ keepalived_virtual_mask }} dev "{{ hostvars[inventory_hostname].viface }}"
+    }
+}
+{% for vserver in lvs_virtualservers %}
+
+virtual_server {{ keepalived_virtual_ip }} {{ vserver.virtual_port }} {
+    delay_loop {{ vserver.healthcheck_interval }}
+    lvs_sched {{ vserver.lvs_sched }}
+    lvs_method {{ vserver.lvs_method }}
+    protocol {{ vserver.protocol|upper }}
+{% for rserver in vserver.realservers %}
+
+    real_server {{ rserver.ip }} {{ rserver.port }} {
+        weight {{ rserver.weight }}
+        inhibit_on_failure
+        TCP_CHECK {
+            connect_timeout {{ rserver.healthcheck_timeout }}
+            delay_before_retry {{ rserver.healthcheck_retry }}
+        }
+    }
+{% endfor %}
+}
+{% endfor %}

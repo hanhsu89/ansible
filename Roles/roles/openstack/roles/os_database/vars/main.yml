@@ -1,0 +1,17 @@
+---
+# Centos7
+
+galera_packages_list:
+  - MariaDB-client
+  - MariaDB-server
+  - rsync
+  - galera
+  
+galera_repo:
+  name: MariaDB
+  description: "MariaDB Repo"
+  baseurl: "http://yum.mariadb.org/{{ galera_major_version }}/centos7-amd64"
+  gpgkey: "https://yum.mariadb.org/RPM-GPG-KEY-MariaDB"
+galera_mariadb_server_yum_pkg: mariadb-server
+
+galera_major_version: 10.2 

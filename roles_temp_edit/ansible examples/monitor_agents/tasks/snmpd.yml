@@ -1,0 +1,34 @@
+---
+- name: Install snmpd
+  yum: state=latest name={{ item }}
+  with_items:
+      - net-snmp
+      - net-snmp-libs
+      - net-snmp-utils
+  when: ansible_os_family == "RedHat"
+  sudo: yes
+  tags:
+      - snmpd
+
+- name: Configuration /etc/snmp/snmpd.conf file
+  template: src=snmpd.conf.j2 dest=/etc/snmp/snmpd.conf mode=0600 owner=root group=root
+  when: ansible_os_family == "RedHat"
+  notify:
+      - Restart snmpd
+  sudo: yes
+  tags:
+      - snmpd
+
+- name: Start snmpd service
+  service: name=snmpd state=started
+  when: ansible_os_family == "RedHat"
+  sudo: yes
+  tags:
+      - snmpd
+
+- name: Enable snmpd service
+  service: name=snmpd enabled=yes
+  when: ansible_os_family == "RedHat"
+  sudo: yes
+  tags:
+      - snmpd

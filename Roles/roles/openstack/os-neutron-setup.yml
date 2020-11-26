@@ -1,0 +1,5 @@
+- name: Install & Configure Networking Service 
+  hosts: neutron_all
+  become: True
+  roles:
+    - os_neutron

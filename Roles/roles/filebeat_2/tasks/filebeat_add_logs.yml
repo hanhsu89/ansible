@@ -1,0 +1,17 @@
+---
+
+- name: Config options domain for filebeat
+  template:
+    src: domain.j2
+    dest: "/etc/filebeat/conf.d/{{ item.name }}.yml"
+    force: yes
+    mode: 0644
+    owner: root
+    group: root
+  with_items:
+    - "{{ domain }}"
+
+- name: start service filebeat
+  service:
+    name: filebeat
+    state: restarted

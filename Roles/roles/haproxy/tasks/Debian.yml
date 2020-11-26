@@ -1,0 +1,66 @@
+---
+
+- name: Install Necessary Packages
+  apt:
+    force_apt_get: yes    
+    state: latest
+    name:
+      - make
+      - gcc
+      - git 
+      - ca-certificates 
+      - libc6-dev 
+      - liblua5.3-dev 
+      - libpcre3-dev 
+      - libssl-dev 
+      - libsystemd-dev 
+      - wget 
+      - zlib1g-dev
+  ignore_errors: yes
+
+- name: Git clone haproxy from github
+  git:
+    repo: https://github.com/haproxy/haproxy.git
+    dest: /tmp/haproxy
+    clone: yes
+    recursive: yes
+    force: yes  
+
+- name: Create /etc/haproxy Directory
+  file: 
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - /etc/haproxy
+
+- name: Build and install haproxy with prometheus-exporter
+  shell: "{{ item }}"
+  args:
+    chdir: /tmp/haproxy
+  loop:
+    - make TARGET=linux-glibc USE_LUA=1 USE_OPENSSL=1 USE_PCRE=1 USE_ZLIB=1 USE_SYSTEMD=1 EXTRA_OBJS="contrib/prometheus-exporter/service-prometheus.o"
+    - make install
+
+- name: Create haproxy services file
+  template:
+    src: haproxy.service.j2
+    dest: /etc/systemd/system/haproxy.service
+
+- name: Configure haproxy
+  template:
+    src: haproxy.cfg.j2
+    dest: /etc/haproxy/haproxy.cfg
+
+- name: Be sure haproxy services is running and enabled
+  service:
+    name: haproxy
+    state: started
+    enabled: true
+    daemon_reload: yes
+
+- name: Check status of haproxy service
+  service_facts:
+  register: service_state
+
+- debug:
+    var: service_state.ansible_facts.services["haproxy.service"].state

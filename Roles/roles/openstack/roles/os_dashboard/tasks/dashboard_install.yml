@@ -1,0 +1,23 @@
+---
+- name: Install dashboard packages
+  package:
+    name: "{{ item }}"
+    state: latest
+  register: packages_install
+  until: packages_install is success
+  retries: 5
+  delay: 2
+  with_items: "{{ dashboard_packages }}"
+
+- name: place Horizon local_setting.py
+  template:
+    src: "local_settings.py.j2"
+    dest: "/etc/openstack-dashboard//local_settings.py"
+    backup: yes
+- name: Restart web server and session storage service 
+  systemd:
+    name: "{{ item }}"
+    state: restarted
+  with_items:
+    - httpd
+    - memcached.service

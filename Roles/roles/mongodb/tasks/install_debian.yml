@@ -1,0 +1,87 @@
+---
+
+- name: Fetch percona-release packages from Percona web
+  get_url:
+    url: https://repo.percona.com/apt/percona-release_latest.{{ ansible_distribution_release }}_all.deb
+    dest: /tmp/percona-release_latest.{{ ansible_distribution_release }}_all.deb
+
+- name: Install Package
+  apt:
+    deb: /tmp/percona-release_latest.{{ ansible_distribution_release }}_all.deb
+    force_apt_get: yes  
+
+- name: Enable the repository
+  command: "percona-release enable psmdb-{{ version }} release"
+
+- name: Update apt cache
+  apt:
+    update_cache: yes
+    cache_valid_time: 300
+    force_apt_get: yes
+
+- name: Install Necessary Packages
+  apt:
+    name:
+      - numactl
+      - python-pip
+      - python3-pip
+      - python-pymongo
+    state: present         
+    update_cache: yes
+    force_apt_get: yes
+
+- name: install pymongo
+  pip:
+    name: pymongo
+    state: latest
+
+- name: Install percona-server-mongodb
+  apt:
+    name:
+      - percona-server-mongodb
+      - percona-server-mongodb-mongos
+      - percona-server-mongodb-server
+      - percona-server-mongodb-shell
+      - percona-server-mongodb-tools
+    state: present         
+    update_cache: yes
+    force_apt_get: yes  
+
+- name: Create Data/Log Directory
+  file: 
+    path: "{{ item }}"
+    state: directory
+    owner: mongod
+    group: mongod
+  with_items:
+    - /data
+    - /data/mongodb
+    - /data/log/mongodb       
+    - /var/lib/mongo
+    - /var/run/mongodb
+
+- name: Copy config file to /etc/mongod.conf
+  template:
+    src: mongod.conf.j2
+    dest: /etc/mongod.conf
+    mode: 0644
+
+- name: Copy service file to /lib/systemd/system/
+  template:
+    src: mongod.service.j2
+    dest: /lib/systemd/system/mongod.service
+    mode: 0644
+
+- name: Start MongoDB Service
+  service:
+    name: mongod
+    state: started
+    enabled: yes
+    daemon_reload: true
+  
+- name: Check status of mongod service
+  service_facts:
+  register: service_state
+
+- debug:
+    var: service_state.ansible_facts.services["mongod.service"].state

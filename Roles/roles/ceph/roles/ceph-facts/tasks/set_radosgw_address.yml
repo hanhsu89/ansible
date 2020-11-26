@@ -1,0 +1,48 @@
+---
+- name: set_fact _radosgw_address to radosgw_address_block ipv4
+  set_fact:
+    _radosgw_address: "{{ hostvars[inventory_hostname]['ansible_all_ipv4_addresses'] | ips_in_ranges(hostvars[inventory_hostname]['radosgw_address_block'].split(',')) | first }}"
+  when:
+    - radosgw_address_block is defined
+    - radosgw_address_block != 'subnet'
+    - ip_version == 'ipv4'
+
+- name: set_fact _radosgw_address to radosgw_address_block ipv6
+  set_fact:
+    _radosgw_address: "{{ hostvars[inventory_hostname]['ansible_all_ipv6_addresses'] | ips_in_ranges(hostvars[inventory_hostname]['radosgw_address_block'].split(',')) | last | ipwrap }}"
+  when:
+    - radosgw_address_block is defined
+    - radosgw_address_block != 'subnet'
+    - ip_version == 'ipv6'
+
+- name: set_fact _radosgw_address to radosgw_address
+  set_fact:
+    _radosgw_address: "{{ radosgw_address | ipwrap }}"
+  when:
+    - radosgw_address is defined
+    - radosgw_address != 'x.x.x.x'
+
+- name: tasks for radosgw interface
+  when:
+    - radosgw_address_block == 'subnet'
+    - radosgw_address == 'x.x.x.x'
+    - radosgw_interface != 'interface'
+  block:
+  - name: set_fact _interface
+    set_fact:
+      _interface: "{{ 'ansible_' + (radosgw_interface | replace('-', '_')) }}"
+
+  - name: set_fact _radosgw_address to radosgw_interface - ipv4
+    set_fact:
+      _radosgw_address: "{{ hostvars[inventory_hostname][_interface][ip_version]['address'] }}"
+    when: ip_version == 'ipv4'
+
+  - name: set_fact _radosgw_address to radosgw_interface - ipv6
+    set_fact:
+      _radosgw_address: "{{ hostvars[inventory_hostname][_interface][ip_version][0]['address'] }}"
+    when: ip_version == 'ipv6'
+
+- name: set_fact rgw_instances
+  set_fact:
+    rgw_instances: "{{ rgw_instances|default([]) | union([{'instance_name': 'rgw' + item|string, 'radosgw_address': _radosgw_address, 'radosgw_frontend_port': radosgw_frontend_port|int + item|int}]) }}"
+  with_sequence: start=0 end={{ radosgw_num_instances|int - 1 }}

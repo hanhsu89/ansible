@@ -1,0 +1,18 @@
+[Unit]
+Description=Redis Server
+After=network.target
+PartOf=redis.target
+
+[Service]
+Type=simple
+User=redis
+Group=redis
+PrivateTmp=true
+LimitNOFILE=65536
+PIDFile={{ redis_sock_dir }}/{{ redis_port }}.pid
+ExecStart=/usr/local/bin/redis-server {{ redis_install_dir }}/{{ redis_port }}.conf
+ExecStop=/bin/kill -15 $MAINPID
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target redis.target

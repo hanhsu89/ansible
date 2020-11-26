@@ -1,0 +1,43 @@
+vrrp_instance {{ wan_instance_name }} {
+   state MASTER
+   interface {{ wan_interface }}
+   virtual_router_id {{ wan_vid_router }}
+   priority 100
+   advert_int 1
+
+authentication {
+   auth_type PASS
+   auth_pass {{ wan_pass }}
+}
+
+unicast_src_ip {{ wan_ip_backup }}
+unicast_peer {
+   {{ wan_ip_master }}
+  }
+
+virtual_ipaddress {
+   {{ wan_vip }} dev {{ wan_interface }}
+  }
+}
+
+vrrp_instance {{ lan_instance_name }} {
+   state MASTER
+   interface {{ lan_interface }}
+   virtual_router_id {{ lan_vid_router }}
+   priority 100
+   advert_int 1
+
+authentication {
+   auth_type PASS
+   auth_pass {{ lan_pass }}
+}
+
+unicast_src_ip {{ lan_ip_backup }}
+unicast_peer {
+   {{ lan_ip_master }}
+  }
+
+virtual_ipaddress {
+   {{ lan_vip }} dev {{ lan_interface }}
+  }
+}

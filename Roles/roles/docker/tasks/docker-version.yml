@@ -1,0 +1,30 @@
+---
+
+- name: Uninstall Docker Old
+  yum:
+    name:
+      - docker
+      - docker-client
+      - docker-client-latest
+      - docker-common
+      - docker-latest
+      - docker-latest-logrotate
+      - docker-logrotate
+      - docker-engine  
+    state: absent
+  tags: docker-version
+
+- name: Install Docker by version
+  yum:
+    name:
+      - https://download.docker.com/linux/centos/7/x86_64/stable/Packages/docker-ce-{{ docker_version }}-3.el7.x86_64.rpm
+      - https://download.docker.com/linux/centos/7/x86_64/stable/Packages/docker-ce-cli-{{ docker_version }}-3.el7.x86_64.rpm
+      - https://download.docker.com/linux/centos/7/x86_64/stable/Packages/containerd.io-1.2.6-3.3.el7.x86_64.rpm
+    state: present
+  tags: docker-version
+
+- name: Start Docker service
+  service:
+    name: docker
+    state: started
+  tags: docker-version

@@ -1,0 +1,7 @@
+[DEFAULT]
+
+interface_driver = openvswitch
+
+[agent]
+
+[ovs]

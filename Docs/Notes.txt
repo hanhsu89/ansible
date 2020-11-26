@@ -1,0 +1,29 @@
+http://www.mydailytutorials.com/how-to-copy-files-and-directories-in-ansible-using-copy-and-fetch-modules/
+
+https://www.mydailytutorials.com/introduction-shell-command-module-ansible/
+
+https://www.howtoforge.com/ansible-guide-manage-files-using-ansible/
+
+https://www.mydailytutorials.com/ansible-blockinfile-module-adding-multiple-lines/
+
+#=========== blockinfile
+- hosts: blocks
+  tasks:
+  - name: Ansible Insert multiple lines using blockinfile
+    blockinfile:
+      dest: /home/mdtutorials2/block_output.txt
+      block: |
+        These lines are added by blockinfile module
+        Check out the marker lines
+      backup: yes
+
+//
+Note 1: Use path parameter if you have Ansible version >2.3.
+
+Note 2: If you don’t give the block parameter, then any block with the default markup line will be removed.
+
+Note 3: By default, the block will be inserted at the end of the file.
+
+Note 4: ‘|’ is the literal block character in YAML.
+
+Note 5: Use the backup parameter to create a backup file if something changed. It can help if any failure happened. The backup file includes the timestamp. eg: block_output.txt.8588.2017-03-12@05:44:27      

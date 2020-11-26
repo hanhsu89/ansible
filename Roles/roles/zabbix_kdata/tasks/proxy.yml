@@ -1,0 +1,15 @@
+---
+- name: zabbix_proxy | Install Zabbix proxy
+  yum: name=zabbix-proxy-{{ zabbix_server_db_type }} state=present
+
+- name: zabbix_proxy | Enable Zabbix proxy service
+  service: name=zabbix-proxy state=started enabled=yes
+
+- name: zabbix_proxy | Zabbix server conf file
+  template:
+     src=proxy/zabbix_proxy.conf.j2
+     dest=/etc/zabbix/zabbix_proxy.conf
+     owner=zabbix
+     group=zabbix
+     mode=640
+  notify: restart zabbix_proxy

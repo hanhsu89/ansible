@@ -1,0 +1,20 @@
+---
+
+- name: Uninstall| Stop node_exporter service
+  service:
+    name: node_exporter
+    state: stopped
+  ignore_errors: True
+
+- name: Uninstall| Remove file
+  shell: "rm -rf {{ item }}"
+  ignore_errors: True
+  with_items:
+    - /usr/lib/systemd/system/node_exporter*
+    - /usr/local/bin/node_exporter
+    - /usr/local/src/node_exporter*
+
+- name: Uninstall| Reload systemd to reread configs
+  systemd: 
+    daemon_reload: yes
+  when: ansible_service_mgr == "systemd"

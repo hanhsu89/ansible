@@ -1,0 +1,23 @@
+---
+- include_vars: "{{ ansible_os_family }}.yml"
+
+- include: nrpe.yml
+
+- include: check_linux_stats.yml
+  when: nrpe_check_linux_stats
+
+- include: check_megaraid_sas.yml
+  when: nrpe_check_megaraid_sas
+
+- include: check_mpt_sas.yml
+  when: nrpe_check_mpt_sas
+
+- include: check_mpt_sas2.yml
+  when: nrpe_check_mpt_sas2
+
+- include: check_intel_fakeraid.yml
+  when: nrpe_check_intel_fakeraid
+
+- include: check_smart_array.yaml
+  when: nrpe_check_smart_array
+

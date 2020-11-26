@@ -1,0 +1,97 @@
+---
+
+- name: Check status of mongod service
+  service_facts:
+  register: service_state
+
+- debug:
+    var: service_state.ansible_facts.services["mongod.service"].state
+
+#=== Disk tuning
+- name: Disk tuning for mongodb
+  shell: ionice -c2 -n0 -p `pgrep mongod`
+  args:
+    executable: /bin/bash
+  when: service_state is succeeded
+
+#=== Add some OS tuning using Linux Ulimit
+- name: create /etc/security/limits.d/mongodb.conf
+  copy:
+    src: security-mongodb.conf
+    dest: /etc/security/limits.d/mongodb.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - restart mongodb
+
+#=== tune-up some virtual memory parameters
+- name:  Set vm.dirty_ratio 
+  sysctl:
+    name: vm.dirty_ratio
+    value: '15'
+    state: present
+
+- name:  Set vm.dirty_background_ratio 
+  sysctl:
+    name: vm.dirty_background_ratio
+    value: '5'
+    state: present
+
+#=== Correct swappiness
+- name: Set vm.swappiness
+  sysctl:
+    name: vm.swappiness
+    value: '10'
+    state: present
+
+#=== Tunes network stack
+- name: Set net.core.somaxconn 
+  sysctl:
+    name: net.core.somaxconn
+    value: '4096'
+    state: present
+
+- name: Set net.ipv4.tcp_fin_timeout
+  sysctl:
+    name: net.ipv4.tcp_fin_timeout
+    value: '30'
+    state: present
+
+- name: net.ipv4.tcp_keepalive_intvl
+  sysctl:
+    name: net.ipv4.tcp_keepalive_intvl
+    value: '30'
+    state: present
+
+- name: net.ipv4.tcp_keepalive_time
+  sysctl:
+    name: net.ipv4.tcp_keepalive_time
+    value: '120'
+    state: present
+
+- name: net.ipv4.tcp_max_syn_backlog 
+  sysctl:
+    name: net.ipv4.tcp_max_syn_backlog 
+    value: '4096'
+    state: present
+
+- name: Check transparent_hugepage exists
+  stat:
+    path: /sys/kernel/mm/transparent_hugepage
+  register: transparent_hugepage_exits
+
+- name: Configure transparent_hugepage/enabled never 
+  command: echo 'never' > /sys/kernel/mm/transparent_hugepage/enabled
+  when: transparent_hugepage_exits.stat.exists
+  
+- name: Configure transparent_hugepage/defrag never 
+  command: echo 'never' > /sys/kernel/mm/transparent_hugepage/defrag
+  when: transparent_hugepage_exits.stat.exists
+
+- name: Restart MongoDB Service after Set Tuning Config
+  service:
+    name: mongod
+    state: restarted
+    enabled: yes
+    daemon_reload: true

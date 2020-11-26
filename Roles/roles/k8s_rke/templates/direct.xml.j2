@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<direct>
+{% for hosts in play_hosts %}
+  <rule priority="0" table="filter" ipv="ipv4" chain="INPUT">-p tcp -s {{ hosts }} -j ACCEPT</rule>
+  <rule priority="0" table="filter" ipv="ipv4" chain="INPUT">-p udp -s {{ hosts }} -j ACCEPT</rule>
+
+{% endfor %}
+
+{% for hosts in play_hosts %}
+{% if hostvars[hosts].internal_address != hosts %}
+  <rule priority="0" table="filter" ipv="ipv4" chain="INPUT">-p tcp -s {{ hostvars[hosts].internal_address }} -j ACCEPT</rule>
+  <rule priority="0" table="filter" ipv="ipv4" chain="INPUT">-p udp -s {{ hostvars[hosts].internal_address }} -j ACCEPT</rule>
+
+{% endif %}
+{% endfor %}
+</direct>

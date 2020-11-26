@@ -1,0 +1,46 @@
+---
+# tasks file for ansible-openstack-mariadb
+- name: Add galera repo
+  yum_repository:
+    name: "{{ galera_repo.name }}"
+    description: "{{ galera_repo.description }}"
+    baseurl: "{{ galera_repo.baseurl }}"
+    gpgkey: "{{ galera_repo.gpgkey | default(omit) }}"
+    gpgcheck: yes
+    enabled: yes
+  register: add_repos
+  until: add_repos is success
+  retries: 5
+  delay: 2
+
+- name: Install OpenStack mariadb packages
+  package:
+    name: "{{ item }}"
+    state: "latest"
+  with_items:
+    - mariadb 
+    - mariadb-server 
+    - python2-PyMySQL
+    - MySQL-python
+
+- name: Place mariadb config file
+  template:
+    src: openstack.cnf.j2
+    dest: /etc/my.cnf.d/openstack.cnf
+  notify: restart mariadb
+
+- meta: flush_handlers
+# - name: Copy OpenStack mariadb configuration in place
+#   template:
+#     src: openstack.cnf.j2
+#     dest: /etc/my.cnf.d/openstack.cnf
+#   notify: restart mariadb
+
+# Restart if the config has been updated
+- meta: flush_handlers
+
+- name: Ensure mariabd started and enabled
+  systemd:
+    name: mariadb
+    state: started
+    enabled: true

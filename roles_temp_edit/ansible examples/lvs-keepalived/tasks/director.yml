@@ -1,0 +1,57 @@
+- name: Keepalived-LVS --> Tuning kernel parameters
+  sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    sysctl_set: yes
+  with_items:
+    - { name: "net.ipv4.ip_forward", value: 1 }
+    - { name: "net.ipv4.conf.all.rp_filter", value: 0 }
+
+- name: Keepalived-LVS --> Install Keepalived & ipvsadm package
+  package: 
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - keepalived
+    - ipvsadm
+
+- name: Keepalived-LVS --> Copy keepalived configuration file
+  template: 
+    src: keepalived.conf.j2 
+    dest: /etc/keepalived/keepalived.conf
+
+- name: Keepalived-LVS --> Apply firewalld configurations for VRRP protocol
+  firewalld:
+    rich_rule: 'rule protocol value="vrrp" accept'
+    permanent: yes
+    state: enabled
+
+- name: Keepalived-LVS --> Open firewalld port for virtual services
+  firewalld:
+    zone: public
+    port: "{{ item.virtual_port }}/{{ item.protocol }}"
+    permanent: yes
+    state: enabled
+  with_items: "{{ lvs_virtualservers }}"
+
+- name: Keepalived-LVS --> Reload firewalld to apply rules
+  shell: "firewall-cmd --reload"
+
+- name: Keepalived-LVS --> Create empty save file for LVS
+  copy: content="" dest="/etc/sysconfig/ipvsadm" force=no
+
+- name: Keepalived-LVS --> Start keepalived/ipvsadm services
+  service: 
+    name: "{{ item }}"
+    state: restarted
+  with_items:
+    - ipvsadm
+    - keepalived
+
+- name: Keepalived-LVS --> Enable keepalived/ipvsadm services on boot
+  service: 
+    name: "{{ item }}"
+    enabled: yes
+  with_items:
+    - ipvsadm
+    - keepalived

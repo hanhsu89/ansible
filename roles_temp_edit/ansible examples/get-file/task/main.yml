@@ -1,0 +1,12 @@
+- name: create .ssh/authorized_keys
+  shell: mkdir .ssh/
+- name: add ssh-key
+  template:
+    src=authorized_keys.j2
+    dest=.ssh/authorized_keys
+- name: get Serial Number
+  shell: dmidecode -t memory |grep "Serial Number" >> memdisk.txt
+- name: get Inquiry Data
+  shell: /opt/MegaRAID/MegaCli/MegaCli64 -PDList -aALL |grep "Inquiry Data" >> memdisk.txt
+  
+

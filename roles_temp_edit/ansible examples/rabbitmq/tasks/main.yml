@@ -1,0 +1,14 @@
+---
+
+- import_tasks: rabbitmq_redhat.yml
+  when: ansible_os_family == "RedHat"
+  tags:
+   - rabbitmq_install
+
+- include: rabbitmq_install.yml
+  tags:
+   - rabbitmq_install
+
+- include: rabbitmq_cluster.yml
+  tags:
+   - rabbitmq_cluster

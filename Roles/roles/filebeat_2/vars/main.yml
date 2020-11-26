@@ -1,0 +1,65 @@
+---
+# vars file for zabbix
+
+filebeat_user: ''
+filebeat_password: ''
+
+#APPOTAPAY
+
+web1314:
+  - name: api.gw.ewallet.appotapay.com
+  - name: api.agency-services.ewallet.appota.com
+  - name: muathe.net
+  - name: api.shopcards-services.ewallet.appota.com
+  - name: api.payment-services.ewallet.appotapay.com
+  - name: api.mobiletopup.ewallet.appota.com
+
+web1112:
+  - name: api.resources.ewallet.appota.com
+  - name: api.gw.ewallet.appotapay.com
+  - name: payhub.vn
+  - name: api.payhub.vn
+  - name: api.internal-services.ewallet.appotapay.com
+  - name: api.minigames-service.ewallet.appota.com
+  - name: api.notification-service.ewallet.appota.com
+
+web0910:
+  - name: vi.appota.com
+  - name: market-services.ewallet.appota.com
+  - name: login.appota.com
+  - name: api.foodbook-services.ewallet.appota.com
+  - name: partner.appotapay.com
+  - name: api.payment-gateway.ewallet.appota.com
+  - name: dashboard.ewallet.appota.com
+  - name: api.event-services.ewallet.appota.com
+  - name: api.game-services.ewallet.appota.com
+  - name: api.internal-gw.ewallet.appota.com
+  - name: api.shop-services.ewallet.appota.com
+
+web0506:
+  - name: api.backend.ewallet.appotapay.com
+  - name: api.merchant-services.ewallet.appotapay.com
+  - name: api-report-ewallet.appotapay.com
+  - name: api.user-services.ewallet.appotapay.com
+  - name: api.gift-services.ewallet.appota.com
+  - name: in.ewallet.appotapay.com
+  - name: api.trustgroup-services.ewallet.appota.com
+
+web0304:
+  - name: jobs.appotapay.com
+  - name: report.appotapay.com
+  - name: notification-services.appotapay.com
+  - name: fbbot-ewallet.appota.com
+  - name: pay.appotapay.com
+  - name: topup-billing-services.appotapay.com
+  - name: api.appotapay.com
+
+domain:
+  - name: api.appotacard.com
+  - name: api.report.appotapay.com
+  - name: api.topup-services.appotapay.com
+  - name: appotacard.com.v2
+  - name: appotapay.com.v2
+  - name: api.dashboard-service.ewallet.appota.com
+  - name: sms-services.appotapay.com
+  - name: api.cardstore-services.ewallet.appotapay.com

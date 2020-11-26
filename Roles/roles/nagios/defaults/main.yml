@@ -1,0 +1,27 @@
+# base directory for nagios installation
+nagios_base_dir                         : /etc/nagios
+
+# Default us /usr/lib64/nagios/plugins
+nagios_plugin_path                      : /usr/lib64/nagios/plugins
+
+# nagios object directory
+nagios_object_dir                       : "{{ nagios_base_dir }}/objects"
+
+# nagios private directory
+nagios_private_dir                      : "{{ nagios_base_dir }}/private"
+
+# if true, nagios_object_dir is a cfg_dir and nagios will
+# autoload all files ending in .cfg
+nagios_cfg_dir_enabled                  : false
+
+# id of nagios user
+nagios_user                             : nagios
+
+# id of nagios group
+nagios_group                            : nagios
+
+# Default disable monitor localhost
+disable_monitor_localhost               : true
+
+# Default use check_ping as service dependency
+service_dependency                      : 'check_ping'

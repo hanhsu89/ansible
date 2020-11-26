@@ -1,0 +1,13 @@
+server {{ chrony_server }} iburst
+keyfile {{ chrony_key_file }}
+driftfile {{ chrony_diff_file }}
+logdir /var/log/chrony
+{% if ansible_os_family == "Debian" %}
+commandkey 1
+maxupdateskew 100.0
+rtconutc
+logchange 0.5
+{% else %}
+makestep 1.0 3
+rtcsync
+{% endif %}

@@ -1,0 +1,40 @@
+---
+
+- name: GlusterFS | Install Repo GlusterFS version 5
+  yum:
+    name: centos-release-gluster5
+    state: present
+
+- name: GlusterFS | Disable Repo GlusterFS version 5
+  lineinfile:
+    path: /etc/yum.repos.d/CentOS-Gluster-5.repo
+    regexp: '^enabled=1'
+    line: 'enabled=0'
+
+- name: GlusterFS | Install GlusterFS
+  yum:
+    name:
+     - glusterfs-server
+     - glusterfs-client
+    enablerepo: "centos-gluster5"
+    state: present
+
+- name: GlusterFS | Update /etc/hosts
+  blockinfile:
+    path: /etc/hosts
+    content: |
+       192.168.10.81 gfs-01
+       192.168.10.82 gfs-02
+       192.168.10.83 gfs-03
+
+- name: GlusterFS | Start service GlusterFS
+  service:
+    name: glusterd
+    state: restarted
+    enabled: True
+
+- name: GlusterFS | Allow Glusterd in FirewallD
+  firewalld:
+    service: glusterfs
+    permanent: true
+    state: enabled

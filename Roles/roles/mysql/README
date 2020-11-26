@@ -1,0 +1,44 @@
+Install MariaDB
+(Standalone, Replication, Galera - Percona XtraBackup)
+==================================
+
+
+### Install Standalone 
+------------------------------------
+
+
+### Install Replication
+------------------------------------
+
+
+### Install Galera
+------------
+Opent port in firewall
+  3306 (TCP) is used for MySQL client connections and State Snapshot Transfer that use the mysqldump method.
+  4567 (TCP/UDP) is used by Galera Cluster for replication traffic, multicast replication uses both UDP transport and TCP on this port.
+  4568 (TCP) is used for Incremental State Transfer.
+  4444 (TCP) is used for all other State Snapshot Transfer.
+
+
+### Install Percona XtraBackup
+------------
+=> https://www.percona.com/doc/percona-xtrabackup/8.0/index.html
+
+Percona XtraBackup Series
+  Percona XtraBackup 1.6
+  Percona XtraBackup 2.0
+  Percona XtraBackup 2.1
+  Percona XtraBackup 2.2
+  Percona XtraBackup 2.3
+  Percona XtraBackup 2.4
+  Percona XtraBackup 8.0
+
+1. Update hosts
+  - [xtrabackup]
+    192.168.10.43
+
+2. Update vars:
+  - xtrabackup_version (2.4 => 24, 8.0 => 80)
+
+3. Run: 
+  - ansible-playbook -i hosts site.yml --limit='xtrabackup' --tags=xtrabackup -u root

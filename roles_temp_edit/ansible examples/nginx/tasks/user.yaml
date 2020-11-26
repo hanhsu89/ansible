@@ -1,0 +1,19 @@
+---
+- name: Nginx | Create Group
+  group:
+#    gid: "{{nginx_gid}}"
+    name: "{{ nginx_group }}"
+    state: present
+  sudo: yes
+
+- name: Nginx | Create User
+  user:
+    name: "{{ nginx_user }}"
+#    uid: "{{nginx_uid}}"
+    group: "{{ nginx_group }}"
+    comment: "Nginx user"
+#    home: "{{nginx_www_dir}}"
+    shell: /bin/false
+    state: present
+    system: yes
+  sudo: yes

@@ -1,0 +1,131 @@
+## Zabbix release package
+
+#zabbix_release_centos6                : 'http://repo.zabbix.com/zabbix/3.4/rhel/6/x86_64/zabbix-release-3.4-1.el6.noarch.rpm'
+zabbix_release_centos7                : 'http://repo.zabbix.com/zabbix/3.4/rhel/7/x86_64/zabbix-release-3.4-2.el7.noarch.rpm'
+#zabbix_release_ubuntu16                : 'https://repo.zabbix.com/zabbix/3.4/ubuntu/pool/main/z/zabbix/zabbix-agent_3.4.11-1+xenial_amd64.deb'
+#zabbix_release_ubuntu18                : 'https://repo.zabbix.com/zabbix/3.4/ubuntu/pool/main/z/zabbix/zabbix-agent_3.4.11-1+bionic_amd64.deb'
+#zabbix_release_ubuntu14                : 'http://repo.zabbix.com/zabbix/3.4/ubuntu/pool/main/z/zabbix/zabbix-agent_3.4.11-1+trusty_amd64.deb'
+
+## zabbix Server version
+
+#zabbix_server_major                   : '3'
+#zabbix_server_minor                   : '0'
+#zabbix_server_revision                : '1'
+
+## What compmentes to install
+
+#zabbix_server_front_install           : true  ## Install frontend and dependency
+#zabbix_server_install                 : true  ## Install server
+#zabbix_proxy_install                  : False  ## Install proxy server
+zabbix_agent_install                  : true  ## Install agent
+#zabbix_sender_install                 : False  ## Install sender
+
+## RAID monitor
+zabbix_check_megaraid_sas             : true  ## Use MegaRAID SAS
+zabbix_check_mpt_sas                  : true  ## Use Fusion-MPT SAS
+zabbix_check_mpt_sas2                 : true  ## Use Fusion-MPT SAS
+zabbix_check_php_fpm                  : true  ## Check PHP-FPM
+
+## Zabbix server configuration
+zabbix_server_host                    : "{{ ansible_ssh_host | default(inventory_hostname) }}"
+zabbix_server_name                    : "{{ inventory_hostname }}"
+zabbix_server_port                    : 10051
+zabbix_server_conf                    :
+    ListenIP                          : 0.0.0.0
+    ListenPort                        : "{{ zabbix_server_port }}"
+    LogFile                           : /var/log/zabbix/zabbix_server.log
+    LogFileSize                       : 0
+    PidFile                           : /var/run/zabbix/zabbix_server.pid
+    DBHost                            : localhost
+    DBName                            : "{{ zabbix_server_db_name }}"
+    DBUser                            : "{{ zabbix_server_db_user }}"
+    DBPassword                        : "{{ zabbix_server_db_pass }}"
+    AlertScriptsPath                  : /usr/lib/zabbix/alertscripts
+    ExternalScripts                   : /usr/lib/zabbix/externalscripts
+    FpingLocation                     : /usr/bin/fping
+    Fping6Location                    : /usr/bin/fping6
+
+## Zabbix server frontend
+zabbix_server_front_root              : "/var/www"
+zabbix_server_front_redirect          : True  ## Deploys an html to root of apache to redirect to /zabbix
+zabbix_server_front_apache_conf       : "/etc/zabbix/apache.conf"
+
+## Zabbix server PHP
+zabbix_server_php_date_timezone       : "Asia/Ho_Chi_Minh" ## check http://php.net/manual/en/timezones.php
+zabbix_server_php_max_input_time      : 300
+zabbix_server_php_upload_max_filesize : "2M"
+zabbix_server_php_post_max_size       : "16M"
+zabbix_server_php_memory_limit        : "128M"
+zabbix_server_php_max_execution_time  : 300
+
+
+## Zabbix API Connection (optional)
+zabbix_server_url                     : "http://{{ zabbix_server_host }}/zabbix"
+zabbix_server_front_user              : "Admin"   ## fresh installation default 'Admin' (dont change unless you changed the user)
+zabbix_server_front_pass              : "zabbix"  ## fresh installation default 'Zabbix' (dont change unless you changed the password)
+
+## Server database options
+zabbix_server_db_type                 : 'mysql' ## pgsql or mysql
+zabbix_server_db_name                 : "zabbix"
+zabbix_server_db_user                 : "zabbix"
+zabbix_server_db_pass                 : "READRdXxc&2zgvgzs_blaaaaaa"
+zabbix_server_db_host                 : "localhost"
+zabbix_server_db_port                 : 5432
+zabbix_server_db_intial_dir           : "/usr/share/zabbix-server-{{zabbix_server_db_type}}"
+
+## Proxy database options
+zabbix_proxy_db_host                  : "localhost"
+zabbix_proxy_db_name                  : "zabbix_proxy"
+zabbix_proxy_db_user                  : "zabbix"
+zabbix_proxy_db_pass                  : "READRdXxc&2zgvgzs_blaaaaaa"
+
+## Zabbix agent
+zabbix_agent_conf                     :
+    PidFile                           : /run/zabbix/zabbix_agentd.pid
+    LogFile                           : "/var/log/zabbix/zabbix_agentd.log"
+    LogFileSize                       : 0    ## 0 - disable automatic log rotation.
+    DebugLevel                        : 3    ## (0) no, (1) critical info (2) error info (3) warnings (4) A lots of infor)
+    EnableRemoteCommands              : 0 ## 0 or 1
+    LogRemoteCommands                 : 0 ## 0 or 1
+    Server                            : "{{ zabbix_agent_Server }}"
+    ListenPort                        : 10050
+    ListenIP                          : "0.0.0.0"
+    StartAgents                       : 3
+    Hostname                          : "{{ inventory_hostname }}"
+    #ServerActive
+zabbix_agent_Server                   : 192.168.10.61
+zabbix_agent_Include                  :
+                                        - /etc/zabbix/zabbix_agentd.d/
+## Zabbix agent sudo
+mpt_status_path                       : "/usr/sbin/mpt-status"
+sas2ircu_path                         : "/usr/sbin/sas2ircu"
+mega_cli_path                         : "/opt/MegaRAID/MegaCli/MegaCli64"
+check_mpt_sas2_script_path            : "/etc/zabbix/scripts/check_fusion_mpt_sas2_raid.sh"
+
+## Zabbix agent userparam
+zabbix_agent_dir_custom               : "/etc/zabbix/scripts"
+zabbix_agent_custom_yum               : "perl"
+
+
+## Zabbix sender configuration
+check_esxi_hardware_script            : check-esx-hardware.py
+mpt_status_rpm_file                   : "mpt-status-1.2.0-3.el6.x86_64.rpm"
+
+## Zabbix proxy configuration
+start_pollers                         : 80
+zabbix_proxy_start_ipmi_pollers       : 10
+start_pollers_unreachable             : 80
+start_pingers                         : 10
+start_discoverers                     : 10
+start_http_pollers                    : 10
+vmware_cache_size                     : "100M"
+cache_size                            : "512M"
+start_db_syncers                      : 10
+history_cache_size                    : "100M"
+history_index_cache_size              : "100M"
+time_out                              : 4
+log_slow_queries                      : 1000
+
+## Compilation of variables (No need to change them unless you have issues)
+zabbix_server_version       : "{{zabbix_server_major}}.{{zabbix_server_minor}}.{{zabbix_server_revision}}"
+zabbix_php_db               : "{%if zabbix_server_db_type == 'pgsql' %}POSTGRESQL{% elif zabbix_server_db_type == 'mysql' %}MYSQL{% else %}ERROR_UNKNOWN_DB{% endif %}"

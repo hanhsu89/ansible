@@ -1,0 +1,7 @@
+[database]
+connection = mysql+pymysql://{{ keystone_galera_user }}:{{ keystone_user_password }}@{{ keystone_galera_address }}/{{ keystone_galera_database }}
+
+[token]
+provider = {{ keystone_token_provider }}
+
+

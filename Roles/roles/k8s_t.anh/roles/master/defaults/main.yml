@@ -1,0 +1,4 @@
+# Master vars
+service_cidr: 10.32.0.0/16
+nodeport_range: 30000-32767
+cluster_cidr: 10.64.0.0/16

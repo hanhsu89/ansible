@@ -1,0 +1,53 @@
+---
+- name: Install LibSeLinux
+  yum: name=libselinux-python state=latest
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "6"
+  tags:
+      - pre
+  sudo: yes
+
+- selinux: state=disabled
+  when: ansible_os_family == 'RedHat'
+  tags:
+      - pre
+  sudo: yes
+
+- name: Disable Firewall Iptables
+  service: name=iptables state=stopped enabled=no
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "6"
+  sudo: yes
+  tags:
+      - pre
+
+- name: Nginx | Install epel on CentOS 6
+  yum: state=latest name=epel-release
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "6"
+  sudo: yes
+  tags:
+      - pre
+
+- name: Disable Cer with Centos 6.4
+  command: yum --disablerepo=epel -y update  ca-certificates
+  when: ansible_distribution == 'CentOS' and ansible_distribution_version == '6.4' or ansible_distribution_version == '6.3'
+  sudo: yes
+  tags:
+      - pre
+
+- name: Nginx | Install packages required on CentOS 6
+  yum: state=latest name={{ item }}
+  with_items:
+      - zlib-devel
+      - wget
+      - openssl-devel
+      - pcre
+      - pcre-devel
+      - make
+      - gcc
+      - gcc-c++
+      - curl-devel
+      - tmux
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "6"
+  sudo: yes
+  tags:
+      - pre
+

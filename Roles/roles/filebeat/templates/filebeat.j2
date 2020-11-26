@@ -1,0 +1,29 @@
+path.home: /usr/share/filebeat
+path.config: /etc/filebeat
+path.data: /var/lib/filebeat
+path.logs: /var/log/filebeat
+
+filebeat.registry_file: /var/lib/filebeat/registry
+
+filebeat.config.prospectors:
+  enabled: true
+  path: ${path.config}/conf.d/*.yml
+
+filebeat.config.modules:
+  path: ${path.config}/modules.d/*.yml
+  reload.enabled: false
+
+output.elasticsearch:
+  hosts: ["elasticsearch.appotapay.local:9200"]
+  worker: 5
+  index: "%{[domain]}"
+  username: "user"
+  password: "pass"
+
+# Load template from filebeat to Elasticsearch, if not load set setup.template.enabled: false
+#setup.template:
+#  enabled: true
+#  name: "example-template"
+#  pattern: "*"
+#  settings:
+#    index.number_of_shards: 3

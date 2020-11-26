@@ -1,0 +1,8 @@
+server.port: 5601
+server.host: "192.168.10.50"
+
+xpack.security.enabled: false
+
+elasticsearch.url: "http://127.0.0.1:9200"
+elasticsearch.username: "kibanaserver"
+elasticsearch.password: "kibanaserver"

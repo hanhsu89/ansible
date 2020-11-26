@@ -1,0 +1,98 @@
+---
+
+- name: Create Admin user rights userAdminAnyDatabase
+  mongodb_user:
+    database: admin
+    user: "{{ mongodb_user }}"
+    password: "{{ mongodb_password }}"
+    roles:
+      - db: admin
+        role: userAdminAnyDatabase
+    state: present
+  ignore_errors: true
+  when: primary and primary is defined
+
+- name: Create Root user rights root
+  mongodb_user:
+    database: admin
+    user: "{{ mongodb_user }}"
+    password: "{{ mongodb_password }}"
+    roles:
+      - db: admin
+        role: root
+    state: present
+  ignore_errors: true
+  when: primary and primary is defined
+
+- name: Stop MongoDB Service
+  service:
+    name: mongod
+    state: stopped
+
+- name: Update the /etc/hosts file with node name
+  lineinfile:
+    dest: "/etc/hosts"
+    regexp: ".*\t{{ hostvars[item]['ansible_hostname']}}\t{{ hostvars[item]['ansible_hostname']}}"
+    line: "{{ hostvars[item]['ansible_default_ipv4']['address'] }}\t{{ hostvars[item]['ansible_hostname']}}"
+    state: present
+    backup: yes
+  with_items: "{{groups['mongodb']}}"
+
+# - name: Create keyfile on {{ path_keyfile }}
+#   shell: openssl rand -base64 756 > {{ path_keyfile }}
+#   args:
+#     creates: mongodb.key
+#   when: primary and primary is defined
+
+# - name: chmod keyfile on {{ path_keyfile }}
+#   file:
+#     path: "{{ path_keyfile }}"
+#     owner: mongod
+#     group: mongod
+#     mode: 0600
+#   when: primary and primary is defined
+
+# - name: Enable keyfile security on nodes
+#   lineinfile:
+#     dest: "/etc/mongod.conf"
+#     regexp: "{{ item.regexp }}"
+#     line: "{{ item.line }}"
+#   with_items:
+#     - { regexp: '^#security:', line: 'security:' }
+#     - { regexp: '^#  authorization: "enabled"', line: '  authorization: "enabled"' }
+#     - { regexp: '^#  keyFile: /data/mongodb.key', line: '  keyFile: /data/mongodb.key' }
+#   when: primary and primary is defined
+
+- name: Enable Replicaset on nodes
+  lineinfile: 
+    dest: "/etc/mongod.conf"
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  with_items:
+    - { regexp: '^#replication:', line: 'replication:' }
+    - { regexp: '^#  replSetName: mongodb-rs', line: '  replSetName: {{ replicaSetName }}' }
+
+# - name: Copy keyfile to nodes
+#   template:
+#     src: keyfile.j2
+#     dest: "{{ path_keyfile }}"
+#     owner: mongod
+#     group: mongod
+#     mode: 0600
+
+- name: Start MongoDB Service
+  service:
+    name: mongod
+    state: started
+    enabled: yes
+    daemon_reload: true
+
+- name: Copy script initiate replicaset to MASTER node
+  template: 
+    src: replSetInit.j2
+    dest: /tmp/replSetInit.js
+  when: primary and primary is defined
+
+- name: Initialize the replicaset on MASTER node
+  command: mongo -port {{ mongodb_port }} /tmp/replSetInit.js
+  when: primary and primary is defined

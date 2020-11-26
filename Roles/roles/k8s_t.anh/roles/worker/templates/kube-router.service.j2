@@ -1,0 +1,16 @@
+[Unit]
+Description=Kube-Router
+Documentation=https://kube-router.io
+
+[Service]
+ExecStart=/usr/local/bin/kube-router \
+  --run-router=true \
+  --run-firewall=true \
+  --run-service-proxy=true \
+  --kubeconfig=/etc/kubernetes/config/kube-router.conf \
+  --v=2
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

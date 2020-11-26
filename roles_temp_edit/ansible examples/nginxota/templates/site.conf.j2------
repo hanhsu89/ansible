@@ -1,0 +1,35 @@
+#{{ ansible_managed }}
+
+# Upstream servers
+    {% for upstream in nginx_upstreams %}
+        upstream {{ upstream.name }} {
+    {% if upstream.strategy is defined %}
+            {{ upstream.strategy }};
+    {% endif %}
+    {% for server in upstream.servers %}
+            server {{ server }};
+    {% endfor %}
+    {% if upstream.keepalive is defined %}
+            keepalive {{ upstream.keepalive }};
+    {% endif %}
+        }
+    {% endfor %}
+#--------------------------------------------------------- 
+#{% for key, site in nginx_sites.items() %}
+      #{% if site %}
+      #{% for k1, server  in server.items() %}
+         #{{ server }}
+      #{% endfor %}
+      #{% endif %}
+#{% endfor %}
+#----------------
+# proxy_cache
+{% for site in nginx_sites.keys() %}
+   {% if nginx_sites[site]['proxy_cache_enable'] is defined %}
+        proxy_cache_path {{ nginx_proxy_cache_path }}/{{ nginx_sites[site]['server_name'] }} levels=1:2    keys_zone={{ nginx_sites[site]['server_name'] }}:2000m  inactive=5m  max_size=400g;
+    {% endif %}
+{% endfor %}
+
+
+
+

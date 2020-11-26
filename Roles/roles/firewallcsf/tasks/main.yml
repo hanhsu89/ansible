@@ -1,0 +1,106 @@
+# ---
+# # Tasks file for firewallcsf
+# - name: Disable selinux temporary | RedHat
+#   command: setenforce 0
+#   when: ansible_os_family == 'RedHat'
+#   ignore_errors: True
+
+# - name: Disable selinux after reboot | RedHat
+#   selinux:
+#     state: disabled
+#   when: ansible_os_family == 'RedHat'
+
+# - name: install required yum packages
+#   yum: 
+#     name: {{ item }} 
+#     state: present
+#   with_items:
+#     - epel-release
+#     - wget
+#     - zip 
+#     - unzip
+#     - gcc
+#     - gcc-c++
+#     - make
+#     - perl
+#     - perl-devel
+#     - perl-ExtUtils-Embed
+#     - perl-libwww-perl.noarch 
+#     - perl-LWP-Protocol-https.noarch 
+#     - perl-GDGraph
+#     - zlib
+#     - zlib-devel
+#     - openssl
+#     - openssl-devel
+#     - git
+#     - net-tools
+#     - vim
+#     - bind-utils
+#   when: ansible_distribution == "CentOS"
+
+# - name: Check csf old version if exist
+#   command: "{{ csf_binary }} -v"
+#   register: result
+#   ignore_errors: True
+
+# - name: Download csf source file
+#   get_url: 
+#     url: https://download.configserver.com/csf.tgz dest={{ csf_folder }} timeout=120
+#   when: (result is failed) 
+
+# - name: Decompress csf source file
+#   unarchive: 
+#     src: "{{ csf_folder }}/csf.tgz" 
+#     dest: "{{ csf_folder }}"
+#     remote_src: yes
+
+# - name: Install csf by install script 
+#   command: 
+#     cmd: "bash /usr/src/csf/install.sh"
+#     chdir: "{{csf_folder}}/csf"
+  
+# - name: Update main config file for master
+#   template:
+#     src: csf_master.conf.j2
+#     dest: "{{ csf_config_file }}"
+#     owner: "root"
+#     group: "root"
+#     mode: 600
+#   when: role == "master"
+
+# - name: Update main config file for slave 
+#   template:
+#     src: csf_slave.conf.j2
+#     dest: "{{ csf_config_file }}"
+#     owner: "root"
+#     group: "root"
+#     mode: 600
+#   when: role == "slave"
+
+# - name: Update allow office IPs  
+#   template:
+#     src: csf_allow.conf.j2
+#     dest: "{{ csf_allow_config_file }}"
+#     owner: "root"
+#     group: "root"
+#     mode: 600
+
+# - name: Update deny IPs 
+#   template:
+#     src: csf_deny.conf.j2
+#     dest: "{{ csf_deny_config_file }}"
+#     owner: "root"
+#     group: "root"
+#     mode: 600
+
+# - name: Update allow UI IPs 
+#   template:
+#     src: csf_ui_allow.conf.j2
+#     dest: "{{ csf_allow_ui_file }}"
+#     owner: "root"
+#     group: "root"
+#     mode: 600
+
+# - name: Flush to iptables 
+#   command: "{{ csf_binary }} -ra"
+#   notify: restart csf

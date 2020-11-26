@@ -1,0 +1,89 @@
+server {
+    listen 80;
+    server_name {{domain}};
+    return 301 https://{{domain}}$request_uri;
+
+    location /.well-known/ {
+        log_not_found off;
+        root /usr/local/nginx/html;
+     }
+
+#    location /backend/ {
+#        try_files $uri $uri/ /backend/index.php;
+#    }
+
+}
+
+server {
+    listen 80;
+    server_name {{domain}};
+    root /data/www/{{domain}}/src;
+
+    index index.php index.html index.htm;
+
+    access_log /var/log/nginx/{{domain}}-access.log;
+    error_log /var/log/nginx/{{domain}}-error.log;
+
+    client_max_body_size 20m;
+    port_in_redirect off;
+    set_real_ip_from 10.0.11.0/24;
+    real_ip_header X-Forwarded-For;
+#    include /usr/local/nginx/conf.d/php_deny;
+#    allow 118.70.184.34;
+#    allow 118.70.28.200;
+#    allow 113.190.242.72;
+#    allow 222.252.17.253;
+#    deny all;
+
+    # Enable htpassword
+#    auth_basic              "private site";
+#    auth_basic_user_file    /usr/local/etc/.default.htpasswd;
+
+     location /.well-known/ {
+        log_not_found off;
+        root /usr/local/nginx/html;
+     }
+#----------------------------------------------
+ location ~* \.(js|css|rdf|xml|ico|txt|gif|jpg|png|jpeg)$ {
+        #add_header      Pragma "public";
+        add_header      Cache-Control "public";
+        expires         30d;
+        access_log      off;
+        log_not_found   off;
+    }
+#----------------------------------------------
+
+    location / {
+        try_files $uri $uri/ /index.php;
+    }
+    location /backend/ {
+        try_files $uri $uri/ /backend/index.php;
+    }
+
+    location ~* /.git(.*)? {
+        deny all;
+    }
+
+#----------------------------------------------
+    location ~ \.php$ {
+        fastcgi_pass unix:/var/run/php-fpm/php-fpm.sock;
+        fastcgi_index   index.php;
+        include     fastcgi_params;
+        fastcgi_param   SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_split_path_info ^(.+\.php)(.*)$;
+        fastcgi_param PATH_INFO $fastcgi_path_info;
+        fastcgi_param PATH_TRANSLATED $document_root$fastcgi_path_info;
+        fastcgi_connect_timeout 60;
+        fastcgi_send_timeout 180;
+        fastcgi_read_timeout 180;
+        fastcgi_buffer_size 128k;
+        fastcgi_buffers 4 256k;
+        fastcgi_busy_buffers_size 256k;
+        fastcgi_temp_file_write_size 256k;
+        fastcgi_intercept_errors on;
+    }
+#----------------------------------------------
+	gzip_types text/plain  text/css application/javascript application/x-javascript text/xml application/xml application/xml+ rss text/javascript image/x-icon image/png image/gif;
+        # Some version of IE 6 don't handle compression well on some mime-types, so just disable for them
+        gzip_disable "MSIE [1-6].(?!.*SV1)";
+}

@@ -1,0 +1,7 @@
+[login]
+103.53.171.93 ansible_ssh_user=root ansible_ssh_port=1103
+[appotasg-movies]
+203.162.79.193 ansible_ssh_user=ansiota ansible_ssh_port=1102
+[kdata_cdn_nodes]
+103.53.171.93 ansible_ssh_user=root ansible_ssh_port=1103
+

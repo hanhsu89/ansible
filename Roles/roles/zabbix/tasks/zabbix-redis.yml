@@ -1,0 +1,10 @@
+---
+- name: Create userparameter_redis.conf
+  become: yes
+  command: touch /etc/zabbix/zabbix_agentd.d/userparameter_redis.conf
+
+- name: Config userparameter_redis.conf
+  copy:
+    src=userparameter_redis.conf
+    dest=/etc/zabbix/zabbix_agentd.d/userparameter_redis.conf
+    mode=0644

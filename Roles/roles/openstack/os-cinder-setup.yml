@@ -1,0 +1,7 @@
+---
+- name: Install & Configure Volume Service 
+  hosts: cinder_all
+  gather_facts: True 
+  become: True
+  roles:
+    - os_cinder

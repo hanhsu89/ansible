@@ -1,0 +1,37 @@
+---
+# tasks file for ssh_login_alert
+- name: Install Required Packages
+  become: yes
+  yum:
+    name:
+      - git
+      - curl
+    state: present
+  tags:
+    - ssh_login
+
+- name: Clone git to /opt/ folder
+  become: yes
+  git:
+    repo: git@github.com:hanhsu89/ssh_alert_login_to_tele.git
+    dest: /opt/ssh_alert_login_to_tele
+    force: yes
+  tags:
+    - ssh_login
+
+- name: Copy file config
+  become: yes
+  template:
+    src: credentials.config.j2
+    dest: /opt/ssh_alert_login_to_tele/credentials.config
+    #force: yes
+  tags:
+    - ssh_login
+
+- name: Set Crontab
+  become: yes
+  cron:
+    name: "Set Alert SSH_Login"
+    job: "bash /opt/ssh_alert_login_to_tele/deploy.sh"
+  tags:
+    - ssh_login    

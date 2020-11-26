@@ -1,0 +1,16 @@
+# Nrpe zabbix port
+add_tcp_port                         : "26000"
+add_port_game                     : "26004"
+#nrpe_tcp_port                         : "5666"
+#zabbix-agent_port                     : "10050"
+
+## Nrpe configuration
+#nagios_master_ip                      : "192.168.10.222"
+#nagios_master_ip                     : "192.168.10.61"
+#nagios_master_ip                     : "192.168.40.254"
+#nagios_master_ip                     : "43.239.220.129"
+#nagios_master_ip                     : "103.53.170.125"
+#nagios_master_ip                     : "171.244.35.66"
+
+## Zabbix configuration
+#zabbix-agent_master_ip                : "192.168.10.61"

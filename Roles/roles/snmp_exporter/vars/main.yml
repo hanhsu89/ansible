@@ -1,0 +1,17 @@
+---
+# Variables for SNMP_Exporter
+
+snmp_exporter_version: 0.19.0
+snmp_exporter_web_listen_address: "0.0.0.0:9116"
+snmp_exporter_log_level: info
+
+#===> ansible_architecture
+go_arch_map:
+  i386: '386'
+  x86_64: 'amd64'
+  aarch64: 'arm64'
+  armv7l: 'armv7'
+  armv6l: 'armv6'
+
+go_arch: "{{ go_arch_map[ansible_architecture] | default(ansible_architecture) }}"
+#===> ansible_architecture

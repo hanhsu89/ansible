@@ -1,0 +1,14 @@
+# .bashrc
+
+# User specific aliases and functions
+
+alias rm='rm -i'
+alias cp='cp -i'
+alias mv='mv -i'
+
+export PS1='[\[\e[36;1m\]\u@\[\e[32;1m\]{{ ansible_hostname }}_{{ ansible_default_ipv4.address }}\[\e[31;1m\] \t\[\e[36;1m\]\w\[\e[0m\]]# '
+
+# Source global definitions
+if [ -f /etc/bashrc ]; then
+        . /etc/bashrc
+fi

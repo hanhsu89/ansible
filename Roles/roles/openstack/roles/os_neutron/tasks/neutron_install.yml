@@ -1,0 +1,31 @@
+---
+- name: Install neutron server packages
+  package:
+    name: "{{ item }}"
+    state: latest
+  register: packages_install
+  until: packages_install is success
+  retries: 5
+  delay: 2
+  with_items: "{{ neutron_server_packages }}"
+  when: inventory_hostname in groups['controller']
+
+- name: Controller Node || Update Network config
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: root
+    group: "{{ item.group }}"
+    mode: 0640
+  with_items:
+    - { src: 'neutron.conf.j2', dest: '/etc/neutron/neutron.conf', group: 'neutron'}
+    - { src: 'ml2_conf.ini.j2', dest: '/etc/neutron/plugins/ml2/ml2_conf.ini', group: 'neutron'}
+  tags: neutron_controller_config
+- name: Network node || Restart service
+  systemd:
+    name: "{{ item }}"
+    state: restarted
+  with_items:
+    - neutron-server
+    - neutron-metadata-agent
+  tags: neutron_controller_config

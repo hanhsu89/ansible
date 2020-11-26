@@ -1,0 +1,7 @@
+---
+
+- import_tasks: master.yml
+  tags: master_install
+
+- import_tasks: slave.yml
+  tags: slave_install

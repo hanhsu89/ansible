@@ -1,0 +1,81 @@
+---
+
+- name: Tunning sysctl.conf Linux
+  template: src=sysctl.conf.j2 dest=/etc/sysctl.conf
+  tags: common
+
+- name: Enable ip_conntrack module
+  modprobe:
+    name: ip_conntrack
+    state: present
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"
+  tags: common
+  
+
+- name: Apply new sysctl config 
+  shell: 'sysctl -p'
+  tags: common
+
+- name: Clear cache yum repo old when clone VM
+  command: yum clean all
+  args:
+    warn: no
+  tags: common
+
+#- name: Install epel-repo
+#  yum:
+#    name: epel-release
+#    state: latest
+#  when: ansible_os_family == 'RedHat'
+#  tags: common
+
+- name: Repo Fish shell for CentOS 6
+  get_url:
+    url: https://download.opensuse.org/repositories/shells:fish:release:2/CentOS_6/shells:fish:release:2.repo
+    dest: /etc/yum.repos.d/fish.repo
+    mode: 0640
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "6"
+  tags: common
+
+#- name: Repo Fish shell for CentOS 7
+#  get_url:
+#    url: https://download.opensuse.org/repositories/shells:fish:release:2/CentOS_7/shells:fish:release:2.repo
+#    dest: /etc/yum.repos.d/fish.repo
+#    mode: 0640
+#  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"
+#  tags: common
+
+- name: Install htop, atop, nload, fish, etc ...
+  yum:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - htop
+    - atop
+    - nload
+    - fish
+    - hping3
+    - bind-utils
+    - psmisc
+    - vim
+    - telnet
+    - traceroute
+    - net-tools
+    - byobu
+    - tmux
+    - nano
+    - python-pip
+    - ruby
+  when: ansible_os_family == 'RedHat'
+  ignore_errors: yes
+  tags: common
+- name: Disable SELinux on new host
+  selinux:
+    state: disabled  
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7" and ansible_ssh_port == "22"
+- name: Stop FirewallD temporary if sshport is not 1102
+  systemd:
+    name: firewalld
+    state: stopped
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7" and ansible_ssh_port != "1102"
+  tags: common

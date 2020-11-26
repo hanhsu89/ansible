@@ -1,0 +1,39 @@
+---
+- name: Allow sudo to execute in non TTY environments
+  lineinfile: >
+    dest=/etc/sudoers
+    regexp="^Defaults    requiretty$"
+    line="#Defaults    requiretty"
+
+- name: Allow users to use sudo without a password
+  lineinfile: >
+    dest=/etc/sudoers
+    regexp='%sudo ' 
+    line='%sudo ALL=(ALL) NOPASSWD: ALL'
+    state=present
+    validate='visudo -cf %s'
+
+- name: Change color root user to RED
+  lineinfile: >
+    dest=/root/.bashrc
+    line='force_color_prompt=yes'
+    line='PS1="\[\e[01;31m\]$PS1\[\e[00m\]"'
+    state=present
+
+- name: Restart sshd Service | CentOS
+  systemd:
+    state: restarted
+    daemon_reload: yes
+    name: sshd
+    enabled: yes    
+  ignore_errors: yes
+  when: ansible_os_family == "RedHat"
+
+- name: Restart sshd Service | Ubuntu
+  service:
+    name: sshd
+    state: restarted
+    enabled: yes    
+    daemon_reload: yes
+  ignore_errors: yes
+  when: ansible_os_family == "Debian"

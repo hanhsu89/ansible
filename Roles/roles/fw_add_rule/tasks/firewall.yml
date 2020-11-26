@@ -1,0 +1,19 @@
+---
+
+- name: Add ibtables rule for TCP/{{add_tcp_port}} 
+  lineinfile:
+    dest: /etc/sysconfig/iptables
+    line: '-A INPUT -p tcp --dport {{add_tcp_port}} -j ACCEPT'
+    line: '-A INPUT -p tcp --dport {{add_port_game}} -j ACCEPT'
+    regexp: '^INPUT -i lo -j ACCEPT'
+    insertbefore: '-A INPUT -i lo -j ACCEPT'
+    backup: yes
+  when: firewalld_in_use.rc != 0 and firewalld_is_active.rc != 0 and iptables_add_tcp_port_exists.stdout|int == 0
+  register: iptables_needs_restart
+  become: true
+
+- name: Restart iptables-services for TCP/{{add_tcp_port}}
+  shell: systemctl reload iptables.service
+  ignore_errors: true
+  when: iptables_needs_restart != 0 and firewalld_in_use.rc != 0 and firewalld_is_active.rc != 0
+  become: true

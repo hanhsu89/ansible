@@ -1,0 +1,12 @@
+---
+- name: restart redis sentinel master nodes
+  systemd:
+    name: redis-sentinel
+    state: restarted
+  when: inventory_hostname in groups['redis-master']
+
+- name: restart redis sentinel slave nodes
+  systemd:
+    name: redis-sentinel
+    state: restarted
+  when: inventory_hostname in groups['redis-slave']

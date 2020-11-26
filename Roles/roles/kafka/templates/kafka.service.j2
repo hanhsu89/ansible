@@ -1,0 +1,32 @@
+[Unit]
+Description=Apache Kafka
+Documentation=http://kafka.apache.org/documentation.html
+Requires=network.target remote-fs.target
+After=network.target remote-fs.target zookeeper.service
+
+[Service]
+Type=simple
+User=kafka
+Group=kafka
+Environment=JAVA_HOME={{ java_home }}
+ExecStart={{ kafka_home_dir }}/bin/kafka-server-start.sh {{ kafka_home_dir }}/config/server.properties
+ExecStop={{ kafka_home_dir }}/bin/kafka-server-stop.sh
+Restart=on-failure
+TimeoutStopSec=5
+LimitNOFILE=infinity
+SyslogIdentifier=kafka
+
+UMask=007
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectHome=yes
+ReadOnlyDirectories=/
+ReadWriteDirectories=-/var/lib/kafka
+ReadWriteDirectories=-/var/log/kafka
+ProtectSystem=true
+ReadWriteDirectories=-{{ kafka_home_dir }}
+CapabilityBoundingSet=~CAP_SYS_PTRACE
+
+[Install]
+WantedBy=multi-user.target
+Alias=kafka.service

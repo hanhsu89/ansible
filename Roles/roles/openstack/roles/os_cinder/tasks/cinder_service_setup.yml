@@ -1,0 +1,32 @@
+---
+
+- name: list users
+  shell: "source /root/admin-openrc && openstack user list"
+  register: ulist
+
+- name: Create the service credentials
+  block:
+    - name: Create a cinder user
+      shell: "source /root/admin-openrc && openstack user create --domain default --password {{ cinder_user_password }} cinder"
+    - name: Add the admin role to the cinder user
+      shell: "source /root/admin-openrc && openstack role add --project service --user cinder admin"
+    - name: Create the cinderv2 service entities
+      shell: "source /root/admin-openrc && openstack service create --name cinderv2 --description 'OpenStack Block Storage service' volumev2"
+    - name: Create the cinderv3 service entities  
+      shell: "source /root/admin-openrc && openstack service create --name cinderv3 --description 'OpenStack Block Storage service' volumev3"
+    - name: Create the Block Storage service API endpoints
+      shell: "source /root/admin-openrc && openstack endpoint create --region RegionOne volumev2 http://{{ internal_vip_address|default(groups['controller'][0]):8776/v2/%(project_id)s }}"
+      with_items:
+        - internal
+        - public
+        - admin
+    - name: Create the Block Storage service API endpoints
+      shell: "source /root/admin-openrc && openstack endpoint create --region RegionOne volumev3 {{ item }} http://{{ internal_vip_address|default(groups['controller'][0]) }}:8776/v3/%(project_id)s"
+      with_items:
+        - internal
+        - public
+        - admin
+  when: not ansible_check_mode and ulist.stdout.find("cinder") < 0
+
+
+  

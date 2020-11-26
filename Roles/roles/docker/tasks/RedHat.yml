@@ -1,0 +1,71 @@
+---
+- name: Install python-apt Package
+  yum:
+    name:
+      - python-apt
+    state: present
+
+- name: Uninstall Docker Old
+  yum:
+    name:
+      - docker
+      - docker-client
+      - docker-client-latest
+      - docker-common
+      - docker-latest
+      - docker-latest-logrotate
+      - docker-logrotate
+      - docker-engine  
+    state: absent
+
+#============= Install Docker latest ============
+- name: Install Required Packages
+  yum:
+    name:
+      - yum-utils
+      - device-mapper-persistent-data
+      - lvm2
+    state: present
+
+- name: Add Docker Repo
+  get_url:
+    url: https://download.docker.com/linux/centos/docker-ce.repo
+    dest: /etc/yum.repos.d/docer-ce.repo
+  become: yes
+
+- name: Install Docker
+  yum:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+    state: present
+
+
+#===== Docker Compose ====
+- name: Install prerequisites for docker-compose
+  yum:
+    name:
+      - python3-pip
+      - python3-setuptools
+      - virtualenv
+    state: present
+
+- name: Install docker-compose
+  get_url:
+    url: https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-Linux-x86_64
+    dest: "{{ docker_compose_path }}"
+    mode: 'u+x,g+x'
+
+- name: Start Docker service
+  service:
+    name: docker
+    state: started
+    enabled: yes
+
+- name: Check status of docker service
+  service_facts:
+  register: service_state
+
+- debug:
+    var: service_state.ansible_facts.services["docker.service"].state

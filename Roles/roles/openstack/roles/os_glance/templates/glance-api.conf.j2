@@ -1,0 +1,38 @@
+
+[DEFAULT]
+log_file = /var/log/glance/glance-api.log
+image_cache_max_size = {{ glance_image_cache_max_size }}
+image_cache_stall_time = {{ glance_image_cache_stall_time }}
+image_cache_dir = /var/lib/glance/glance-cache
+
+
+[database]
+connection = mysql+pymysql://{{ glance_galera_user }}:{{ glance_user_password }}@{{ glance_galera_address }}/{{ glance_galera_database }}
+
+[keystone_authtoken]
+auth_type = {{ glance_keystone_auth_plugin }}
+auth_url = {{ keystone_service_adminurl }}
+www_authenticate_uri = {{ keystone_service_internaluri }}
+project_domain_id = {{ glance_service_project_domain_id }}
+project_name = {{ glance_service_project_name }}
+username = {{ glance_service_user_name }}
+password = {{ glance_service_password }}
+
+memcached_servers = {{ memcached_servers }}
+
+token_cache_time = 300
+
+{% if glance_ceilometer_enabled %}
+[oslo_messaging_notifications]
+driver = messagingv2
+transport_url = rabbit://openstack:{{ glance_oslomsg_notify_password }}@{{ host }}
+{% endif %}
+
+[paste_deploy]
+flavor = keystone
+
+[glance_store]
+stores = file,http,cinder
+default_store = {{ glance_default_store }}
+filesystem_store_datadir = /var/lib/glance/images/
+

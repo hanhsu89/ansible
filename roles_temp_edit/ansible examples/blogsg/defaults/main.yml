@@ -1,0 +1,23 @@
+---
+#------ssh_runner
+user_deploy: "deploy"
+ip_runner: "192.168.10.81"
+deploy_home: "/home/deploy"
+
+#------ssh_web
+runner_user_home: /data/production/blogsg/rong
+
+#-----setup_register
+url: https://git.appota.com/
+registration_token: iZmdt9hp8n-jSBYr89Mu
+executor: docker
+description: asda
+tag_list: docker, development
+docker_image: docker:latest
+docker_volumes: /var/run/docker.sock:/var/run/docker.sock
+
+#------nginx
+domain: thienha.gamota.com
+
+#-----haproxy
+use_backend: use_backend backend_game_pages if { ssl_fc_sni {{domain}} }

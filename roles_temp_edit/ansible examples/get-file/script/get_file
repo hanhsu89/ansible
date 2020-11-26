@@ -1,0 +1,7 @@
+#!/bin/bash
+for host in `cat host.txt`
+do
+   echo $host
+   `scp root@$host:/root/memdisk.txt $host.txt`
+done
+

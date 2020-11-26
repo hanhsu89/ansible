@@ -1,0 +1,20 @@
+---
+
+- name: restart ntp server
+  systemd:
+    name: "chronyd"
+    state: restarted
+  register: service_restarted
+  until: service_restarted is success
+  retries: 5
+  delay: 1
+
+- name: restart rabbitmq-server
+  systemd:
+    name: "rabbitmq-server"
+    state: "restarted"
+    enabled: True
+  register: service_restarted
+  until: service_restarted|success
+  retries: 5
+  delay: 1

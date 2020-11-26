@@ -1,0 +1,14 @@
+---
+- name: MariaDB | Import initial images
+  shell: mysql -uroot "{{ zabbix_server_db_name }}" < "{{ zabbix_server_sql_path }}"/images.sql
+  register: mysql_images
+  changed_when: "mysql_images.rc == 0"
+  failed_when: "mysql_images.rc != 0 and 'Duplicate entry' not in mysql_images.stderr"
+  tags: mysql_server
+
+- name: MariaDB | Import initial data
+  shell: mysql -uroot "{{ zabbix_server_db_name }}" < "{{ zabbix_server_sql_path }}"/data.sql
+  register: mysql_data
+  changed_when: "mysql_data.rc == 0"
+  failed_when: "mysql_data.rc != 0 and 'Duplicate entry' not in mysql_data.stderr"
+  tags: mysql_server

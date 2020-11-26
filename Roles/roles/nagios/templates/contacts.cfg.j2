@@ -1,0 +1,91 @@
+###############################################################################
+# CONTACTS.CFG - SAMPLE CONTACT/CONTACTGROUP DEFINITIONS
+#
+#
+# NOTES: This config file provides you with some example contact and contact
+#        group definitions that you can reference in host and service
+#        definitions.
+#
+#        You don't need to keep these definitions in a separate file from your
+#        other object definitions.  This has been done just to make things
+#        easier to understand.
+#
+###############################################################################
+
+
+###############################################################################
+###############################################################################
+#
+# CONTACT TEMPLATES
+#
+###############################################################################
+###############################################################################
+
+# Generic contact definition template - This is NOT a real contact, just a template!
+
+define contact {
+    name                            base-contact
+    service_notification_period     24x7
+    host_notification_period        24x7
+    service_notification_options    w,u,c,r,f,s
+    host_notification_options       d,u,r,f,s
+    service_notification_commands   notify-service-by-email-update
+    host_notification_commands      notify-host-by-email-update
+    register                        0
+}
+
+define contact {
+    name                            telegram-contact
+    service_notification_period     24x7
+    host_notification_period        24x7
+    service_notification_options    w,u,c,r,f,s
+    host_notification_options       d,u,r,f,s
+    service_notification_commands   notify-service-by-telegram
+    host_notification_commands      notify-host-by-telegram
+    register                        0
+}
+
+###############################################################################
+###############################################################################
+#
+# CONTACTS
+#
+###############################################################################
+###############################################################################
+
+# Just one contact defined by default - the Nagios admin (that's you)
+# This contact definition inherits a lot of default values from the 'generic-contact'
+# template which is defined elsewhere.
+{% for user in nagios_contacts %}
+define contact {
+    contact_name                {{ user.name }}
+    alias                       {{ user.alias }}
+    {% if user.email is defined %}
+    use                         base-contact
+    email                       {{ user.email }}
+    {% endif %}
+    {% if user.pager is defined %}
+    use                         telegram-contact
+    pager                       {{ user.pager }}
+    {% endif %}
+}
+{% endfor %}
+
+###############################################################################
+#
+# CONTACT GROUPS
+#
+###############################################################################
+###############################################################################
+
+# We only have one contact in this simple configuration file, so there is
+# no need to create more than one contact group.
+
+{% for contact_group in nagios_contact_groups %}
+define contactgroup {
+    contactgroup_name           {{ contact_group.name }}
+    alias                       {{ contact_group.alias }}
+    members                     {{ nagios_contacts | selectattr(contact_group.name, 'defined') | map(attribute='name') | join(',') }}
+}
+
+{% endfor %}

@@ -1,0 +1,7 @@
+---
+# handlers file for clamav
+- name: restart freshclam
+  systemd:
+    name: freshclam
+    state: restarted
+    daemon_reload: yes

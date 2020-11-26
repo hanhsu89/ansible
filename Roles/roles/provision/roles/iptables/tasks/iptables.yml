@@ -1,0 +1,33 @@
+---
+
+
+- name: Upload rules
+  template: src=iptables.sh dest=/tmp/iptables.sh
+  tags:
+    - iptables
+    - update_iptables
+
+
+- name: Remove leading whitespaces from iptables rules
+  shell: cat /tmp/iptables.sh | sed -e 's/^[ \t]*//' > /opt/iptables.sh
+  register: iptables_rules
+  sudo: yes
+  tags:
+    - iptables
+    - update_iptables
+
+
+- name: Reload iptables
+  command: sh /opt/iptables.sh
+  when: iptables_rules.changed
+  sudo: yes
+  tags:
+    - iptables
+    - update_iptables
+
+
+- name: Start iptables
+  service: name=iptables state=started enabled=yes
+  tags:
+    - iptables
+    - update_iptables

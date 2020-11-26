@@ -1,0 +1,15 @@
+---
+- name: zabbix_sender | Install Zabbix sender
+  yum: name=zabbix-sender state=present
+
+- name: zabbix_sender | Install pywbem
+  yum: name=pywbem state=present
+
+- name: zabbix_sender | Copy check ESXi hardware srcipt
+  action:
+    module: template
+    src: "sender/{{ check_esxi_hardware_script }}"
+    dest: "{{ zabbix_external_scrpits }}/{{ check_esxi_hardware_script }}"
+    owner: root
+    group: root
+    mode: "0755"

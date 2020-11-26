@@ -1,0 +1,17 @@
+---
+
+- include: keystone_install.yml
+  tags: keystone_install
+
+- include: keystone_db_setup.yml
+  when: inventory_hostname == os_controller_primary_node
+  tags: keystone_db
+
+- include: keystone_fernet.yml
+  tags: keystone_fernet
+
+- meta: flush_handlers
+
+- include: keystone_service_bootstrap.yml
+  when: inventory_hostname == os_controller_primary_node
+  tags: keystone_bootstrap

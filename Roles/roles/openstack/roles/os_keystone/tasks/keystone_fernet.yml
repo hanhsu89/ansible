@@ -1,0 +1,45 @@
+---
+- name: Check if fernet keys already exist
+  stat:
+    path: "{{ keystone_fernet_tokens_key_repository }}/0"
+  register: _fernet_keys
+
+- name: Create fernet keys for keystone
+  command: >
+    keystone-manage fernet_setup 
+      --keystone-user "{{ keystone_system_user_name }}" 
+      --keystone-group "{{ keystone_system_user_group }}"
+  register: _fernet_setup
+  when: not _fernet_keys.stat.exists
+
+- name: Rotate fernet keys for Keystone
+  command: >
+    keystone-manage fernet_rotate
+      --keystone-user "{{ keystone_system_user_name }}" 
+      --keystone-group "{{ keystone_system_user_group }}"
+  become: yes
+  when: _fernet_keys.stat.exists
+
+- name: Check if credential keys already exist
+  stat:
+    path: "{{ keystone_credential_key_repository }}/0"
+  register: _credential_keys
+
+- name: Create credential keys for Keystone
+  command: >
+    keystone-manage credential_setup
+      --keystone-user "{{ keystone_system_user_name }}"
+      --keystone-group "{{ keystone_system_user_group }}"
+  become: yes
+  register: create_credential_keys
+  when:
+    - not _credential_keys.stat.exists
+
+- name: Rotate credential keys for Keystone
+  command: >
+    keystone-manage credential_rotate
+      --keystone-user "{{ keystone_system_user_name }}"
+      --keystone-group "{{ keystone_system_user_group }}"
+  become: yes
+  when: create_credential_keys is skipped
+

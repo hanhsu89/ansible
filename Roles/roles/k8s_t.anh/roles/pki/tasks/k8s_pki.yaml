@@ -1,0 +1,263 @@
+- name: Generate apiserver private key
+  openssl_privatekey:
+    path: '{{ pki_k8s_path }}/apiserver-key.pem'
+
+- name: Generate apiserver CSR
+  openssl_csr:
+    path: '{{ pki_k8s_path }}/apiserver.csr'
+    privatekey_path: '{{ pki_k8s_path }}/apiserver-key.pem'
+    basic_constraints: "CA:FALSE"
+    basic_constraints_critical: True
+    key_usage:
+      - digitalSignature
+      - keyEncipherment
+    key_usage_critical: True
+    extended_key_usage:
+      - serverAuth
+    common_name: 'apiserver'
+    country_name: '{{ country }}'
+    locality_name: '{{ location }}'
+    organization_name: '{{ organization }}'
+    organizational_unit_name: '{{ organization_unit }}'
+    subject_alt_name:
+      - DNS:*.{{ root_dns }}
+      - DNS:localhost
+      - DNS:kubernetes
+      - DNS:kubernetes.default
+      - DNS:kubernetes.default.svc
+      - DNS:kubernetes.default.svc.cluster
+      - DNS:kubernetes.default.svc.cluster.local
+      - IP:127.0.0.1
+
+- name: Generate apiserver certificate
+  openssl_certificate:
+    path: '{{ pki_k8s_path }}/apiserver.pem'
+    csr_path: '{{ pki_k8s_path }}/apiserver.csr'
+    ownca_path: '{{ pki_path }}/ca.pem'
+    ownca_privatekey_path: '{{ pki_path }}/ca-key.pem'
+    provider: ownca
+    ownca_not_after: +{{ expire_days }}
+
+- name: Generate apiserver-etcd-client private key
+  openssl_privatekey:
+    path: '{{ pki_k8s_path }}/apiserver-etcd-client-key.pem'
+
+- name: Generate apiserver-etcd-client CSR
+  openssl_csr:
+    path: '{{ pki_k8s_path }}/apiserver-etcd-client.csr'
+    privatekey_path: '{{ pki_k8s_path }}/apiserver-etcd-client-key.pem'
+    basic_constraints: "CA:FALSE"
+    basic_constraints_critical: True
+    key_usage:
+      - digitalSignature
+      - keyEncipherment
+    key_usage_critical: True
+    extended_key_usage:
+      - clientAuth
+    common_name: 'apiserver-etcd-client'
+    country_name: '{{ country }}'
+    locality_name: '{{ location }}'
+    organization_name: 'system:masters'
+    organizational_unit_name: '{{ organization_unit }}'
+
+- name: Generate apiserver-etcd-client certificate
+  openssl_certificate:
+    path: '{{ pki_k8s_path }}/apiserver-etcd-client.pem'
+    csr_path: '{{ pki_k8s_path }}/apiserver-etcd-client.csr'
+    ownca_path: '{{ pki_path }}/ca.pem'
+    ownca_privatekey_path: '{{ pki_path }}/ca-key.pem'
+    provider: ownca
+    ownca_not_after: +{{ expire_days }}
+
+- name: Generate apiserver-kubelet-client private key
+  openssl_privatekey:
+    path: '{{ pki_k8s_path }}/apiserver-kubelet-client-key.pem'
+
+- name: Generate apiserver-kubelet-client CSR
+  openssl_csr:
+    path: '{{ pki_k8s_path }}/apiserver-kubelet-client.csr'
+    privatekey_path: '{{ pki_k8s_path }}/apiserver-kubelet-client-key.pem'
+    basic_constraints: "CA:FALSE"
+    basic_constraints_critical: True
+    key_usage:
+      - digitalSignature
+      - keyEncipherment
+    key_usage_critical: True
+    extended_key_usage:
+      - clientAuth
+    common_name: 'apiserver-kubelet-client'
+    country_name: '{{ country }}'
+    locality_name: '{{ location }}'
+    organization_name: 'system:masters'
+    organizational_unit_name: '{{ organization_unit }}'
+
+- name: Generate apiserver-kubelet-client certificate
+  openssl_certificate:
+    path: '{{ pki_k8s_path }}/apiserver-kubelet-client.pem'
+    csr_path: '{{ pki_k8s_path }}/apiserver-kubelet-client.csr'
+    ownca_path: '{{ pki_path }}/ca.pem'
+    ownca_privatekey_path: '{{ pki_path }}/ca-key.pem'
+    provider: ownca
+    ownca_not_after: +{{ expire_days }}
+
+- name: Generate admin private key
+  openssl_privatekey:
+    path: '{{ pki_k8s_path }}/admin-key.pem'
+
+- name: Generate admin CSR
+  openssl_csr:
+    path: '{{ pki_k8s_path }}/admin.csr'
+    privatekey_path: '{{ pki_k8s_path }}/admin-key.pem'
+    basic_constraints: "CA:FALSE"
+    basic_constraints_critical: True
+    key_usage:
+      - digitalSignature
+      - keyEncipherment
+    key_usage_critical: True
+    extended_key_usage:
+      - clientAuth
+    common_name: 'admin'
+    country_name: '{{ country }}'
+    locality_name: '{{ location }}'
+    organization_name: 'system:masters'
+    organizational_unit_name: '{{ organization_unit }}'
+
+- name: Generate admin certificate
+  openssl_certificate:
+    path: '{{ pki_k8s_path }}/admin.pem'
+    csr_path: '{{ pki_k8s_path }}/admin.csr'
+    ownca_path: '{{ pki_path }}/ca.pem'
+    ownca_privatekey_path: '{{ pki_path }}/ca-key.pem'
+    provider: ownca
+    ownca_not_after: +{{ expire_days }}
+
+- name: Generate kube-controller-manager private key
+  openssl_privatekey:
+    path: '{{ pki_k8s_path }}/kube-controller-manager-key.pem'
+
+- name: Generate kube-controller-manager CSR
+  openssl_csr:
+    path: '{{ pki_k8s_path }}/kube-controller-manager.csr'
+    privatekey_path: '{{ pki_k8s_path }}/kube-controller-manager-key.pem'
+    basic_constraints: "CA:FALSE"
+    basic_constraints_critical: True
+    key_usage:
+      - digitalSignature
+      - keyEncipherment
+    key_usage_critical: True
+    extended_key_usage:
+      - serverAuth
+      - clientAuth
+    common_name: 'system:kube-controller-manager'
+    country_name: '{{ country }}'
+    locality_name: '{{ location }}'
+    organization_name: 'system:kube-controller-manager'
+    organizational_unit_name: '{{ organization_unit }}'
+
+- name: Generate kube-controller-manager certificate
+  openssl_certificate:
+    path: '{{ pki_k8s_path }}/kube-controller-manager.pem'
+    csr_path: '{{ pki_k8s_path }}/kube-controller-manager.csr'
+    ownca_path: '{{ pki_path }}/ca.pem'
+    ownca_privatekey_path: '{{ pki_path }}/ca-key.pem'
+    provider: ownca
+    ownca_not_after: +{{ expire_days }}
+
+- name: Generate kube-scheduler private key
+  openssl_privatekey:
+    path: '{{ pki_k8s_path }}/kube-scheduler-key.pem'
+
+- name: Generate kube-scheduler CSR
+  openssl_csr:
+    path: '{{ pki_k8s_path }}/kube-scheduler.csr'
+    privatekey_path: '{{ pki_k8s_path }}/kube-scheduler-key.pem'
+    basic_constraints: "CA:FALSE"
+    basic_constraints_critical: True
+    key_usage:
+      - digitalSignature
+      - keyEncipherment
+    key_usage_critical: True
+    extended_key_usage:
+      - serverAuth
+      - clientAuth
+    common_name: 'system:kube-scheduler'
+    country_name: '{{ country }}'
+    locality_name: '{{ location }}'
+    organization_name: 'system:kube-scheduler'
+    organizational_unit_name: '{{ organization_unit }}'
+
+- name: Generate kube-scheduler certificate
+  openssl_certificate:
+    path: '{{ pki_k8s_path }}/kube-scheduler.pem'
+    csr_path: '{{ pki_k8s_path }}/kube-scheduler.csr'
+    ownca_path: '{{ pki_path }}/ca.pem'
+    ownca_privatekey_path: '{{ pki_path }}/ca-key.pem'
+    provider: ownca
+    ownca_not_after: +{{ expire_days }}
+
+- name: Generate service accounts private key
+  openssl_privatekey:
+    path: '{{ pki_k8s_path }}/sa-key.pem'
+
+- name: Generate service accounts CSR
+  openssl_csr:
+    path: '{{ pki_k8s_path }}/sa.csr'
+    privatekey_path: '{{ pki_k8s_path }}/sa-key.pem'
+    basic_constraints: "CA:FALSE"
+    basic_constraints_critical: True
+    key_usage:
+      - digitalSignature
+      - keyEncipherment
+    key_usage_critical: True
+    extended_key_usage:
+      - clientAuth
+    common_name: 'service accounts'
+    country_name: '{{ country }}'
+    locality_name: '{{ location }}'
+    organization_name: '{{ organization }}'
+    organizational_unit_name: '{{ organization_unit }}'
+
+- name: Generate service accounts certificate
+  openssl_certificate:
+    path: '{{ pki_k8s_path }}/sa.pem'
+    csr_path: '{{ pki_k8s_path }}/sa.csr'
+    ownca_path: '{{ pki_path }}/ca.pem'
+    ownca_privatekey_path: '{{ pki_path }}/ca-key.pem'
+    provider: ownca
+    ownca_not_after: +{{ expire_days }}
+
+- name: Generate kubelet private key
+  openssl_privatekey:
+    path: '{{ pki_k8s_path }}/{{ item }}-key.pem'
+  loop: "{{ groups['worker'] }}"
+
+- name: Generate kubelet CSR
+  openssl_csr:
+    path: '{{ pki_k8s_path }}/{{ item }}.csr'
+    privatekey_path: '{{ pki_k8s_path }}/{{ item }}-key.pem'
+    basic_constraints: "CA:FALSE"
+    basic_constraints_critical: True
+    key_usage:
+      - digitalSignature
+      - keyEncipherment
+    key_usage_critical: True
+    extended_key_usage:
+      - clientAuth
+    common_name: 'system:node:{{ item }}'
+    country_name: '{{ country }}'
+    locality_name: '{{ location }}'
+    organization_name: 'system:nodes'
+    organizational_unit_name: '{{ organization_unit }}'
+    subject_alt_name:
+      - DNS:*.{{ root_dns }}
+  loop: "{{ groups['worker'] }}"
+
+- name: Generate kubelet certificate
+  openssl_certificate:
+    path: '{{ pki_k8s_path }}/{{ item }}.pem'
+    csr_path: '{{ pki_k8s_path }}/{{ item }}.csr'
+    ownca_path: '{{ pki_path }}/ca.pem'
+    ownca_privatekey_path: '{{ pki_path }}/ca-key.pem'
+    provider: ownca
+    ownca_not_after: +{{ expire_days }}
+  loop: "{{ groups['worker'] }}"

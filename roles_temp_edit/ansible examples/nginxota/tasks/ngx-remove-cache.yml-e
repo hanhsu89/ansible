@@ -1,0 +1,29 @@
+---
+- name: remove_nginx_cache_uri
+  file: path="{{ item }}" state=absent
+  with_items: "{{ ngx_remove_cache_uris.keys() }}"
+  #when: ngx_remove_cache_uris is defined 
+  when: ngx_remove_cache == "uri"
+
+- name: remove_nginx_cache_uri_extra_var
+  file: path="{{ remove_cache_uri }}" state=absent
+  when: ansible_extra_var is defined
+
+
+- name: remove_nginx_cache_all
+  ##shell: rm -rvf "{{ item.value.remove_cache_all}}/*"
+  #with_dict: "{{nginx_remove_caches}}"
+  file: path="{{ item }}" state=absent
+  with_items: "{{ ngx_remove_cache_uris.keys() }}"
+  when: ngx_remove_cache_uris is defined 
+
+- name: list caches to remove
+  shell: ls -1 "{{ ngx_proxy_cache_path }}/{{ ngx_remove_cache_all }}"
+  register: contents
+- debug: msg="{{ contents }}"
+
+- name: remove all caches
+  file: path="{{ ngx_remove_cache_path }}/{{ ngx_remove_cache_all }}/{{ item }}" state=absent
+  with_items: contents.stdout_lines
+  when: ngx_remove_cache == "all"
+

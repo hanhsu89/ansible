@@ -1,0 +1,86 @@
+- name: Create kubernetes neccessary directories
+  file:
+    path: /var/lib/kubernetes
+    state: directory
+    recurse: yes
+
+- name: Download and install Kubernetes Controller binaries
+  get_url:
+    url: '{{ item }}'
+    dest: /usr/local/bin/
+    mode: 0755
+  loop:
+    - https://storage.googleapis.com/kubernetes-release/release/v{{ k8s_version }}/bin/linux/amd64/kube-apiserver
+    - https://storage.googleapis.com/kubernetes-release/release/v{{ k8s_version }}/bin/linux/amd64/kube-controller-manager
+    - https://storage.googleapis.com/kubernetes-release/release/v{{ k8s_version }}/bin/linux/amd64/kube-scheduler
+
+- name: Copy CA certificate to k8s servers
+  copy:
+    src: '{{ pki_path }}/{{ item }}'
+    dest: '/etc/kubernetes/certs/'
+  loop:
+    - ca.pem
+    - ca-key.pem
+    - front-proxy-ca.pem
+
+- name: Copy k8s certificate to servers
+  copy:
+    src: '{{ pki_k8s_path }}/{{ item }}'
+    dest: '/etc/kubernetes/certs/'
+  loop:
+    - apiserver.pem
+    - apiserver-key.pem
+    - apiserver-etcd-client.pem
+    - apiserver-etcd-client-key.pem
+    - apiserver-kubelet-client.pem
+    - apiserver-kubelet-client-key.pem
+    - sa.pem
+    - sa-key.pem
+
+- name: Copy front proxy certificate to servers
+  copy:
+    src: '{{ pki_front_proxy }}/{{ item }}'
+    dest: '/etc/kubernetes/certs/'
+  loop:
+    - front-proxy-client.pem
+    - front-proxy-client-key.pem
+
+- name: Copy kubeconfig to servers
+  copy:
+    src: '{{ kubeconfig_dir }}/{{ item }}'
+    dest: '/etc/kubernetes/config/'
+  loop:
+    - kube-controller-manager.conf
+    - kube-scheduler.conf
+
+- name: Create Kubernetes API Server service
+  template:
+    src: kube-apiserver.service.j2
+    dest: /etc/systemd/system/kube-apiserver.service
+
+- name: Create Kubernetes Controller Manager service
+  template:
+    src: kube-controller-manager.service.j2
+    dest: /etc/systemd/system/kube-controller-manager.service
+
+- name: Create Kubernetes Scheduler service
+  template:
+    src: kube-scheduler.service.j2
+    dest: /etc/systemd/system/kube-scheduler.service
+
+- name: Be sure controller services is running and enabled
+  systemd:
+    name: '{{ item }}'
+    state: started
+    enabled: Yes
+    daemon_reload: Yes
+  loop:
+    - kube-apiserver
+    - kube-controller-manager
+    - kube-scheduler
+
+- name: Create RBAC for kubelet
+  shell: kubectl apply -f {{ playbook_dir }}/rbac/kubelet.yaml
+  delegate_to: localhost
+  become: False
+  run_once: True

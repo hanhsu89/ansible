@@ -1,0 +1,2375 @@
+---
+users:
+  - name: thucnk
+    servers:
+      #[zabbix]
+      - 103.53.170.253
+      #[appotapay-blackhole]
+      - 192.168.35.137
+      - 192.168.35.139
+      - 192.168.35.140
+
+      #[appcheckin]
+      - 192.168.35.91
+      - 192.168.35.92
+      - 192.168.35.93
+      - 192.168.35.94
+      - 192.168.35.95
+
+      #[phpmyadmin-proxy]
+      - 103.53.170.240
+      #[gamehub-sopcast-temp]
+      - 10.0.0.66
+
+      #[appota-login-static]
+      - 192.168.13.85
+
+      #[appota-login-db]
+      - 192.168.13.110
+      - 192.168.13.111
+      - 192.168.13.112
+      - 192.168.13.113
+      - 192.168.13.114
+      - 192.168.13.115
+      - 192.168.13.116
+      - 192.168.13.117
+      - 192.168.13.118
+      - 192.168.13.119
+      - 192.168.13.120
+      - 192.168.13.121
+      - 192.168.13.122
+      - 192.168.13.123
+      #[appota-login-dns]
+      - 192.168.13.80
+      - 192.168.13.79
+
+      #[appota-login-web]
+      - 192.168.13.11
+      - 192.168.13.12
+      - 192.168.13.13
+      - 192.168.13.14
+      - 192.168.13.21
+      - 192.168.13.22
+      - 192.168.13.23
+      - 192.168.13.24
+      - 192.168.13.31
+      - 192.168.13.32
+      - 192.168.13.33
+      - 192.168.13.34
+      - 192.168.13.41
+      - 192.168.13.42
+      - 192.168.13.43
+      - 192.168.13.44
+      - 192.168.13.51
+      - 192.168.13.52
+      - 192.168.13.53
+      - 192.168.13.54
+
+      # [appota-dev-env]
+      - 192.168.41.254 # Dev Internet gateway
+      # [SEO]
+      - 43.239.220.196
+      - 43.239.220.197
+    groups: sudo
+    authorized_keys:
+      - thucnk.pub
+
+  - name: autodep
+    servers:
+      #[appota-dns]
+      - 10.0.0.200
+      - 10.0.0.201
+
+      #[Appota-login]
+      - 10.0.0.125
+      - 10.0.0.135
+      - 10.0.0.138
+
+      #[Appota-web]
+      - 10.0.0.1
+      - 10.0.0.30
+      - 10.0.0.31
+      - 10.0.0.33
+      - 10.0.0.34
+      - 10.0.0.38
+      - 10.0.0.42
+      - 10.0.0.43
+      - 10.0.0.48
+      - 10.0.0.50
+      - 10.0.0.51
+
+      #[Appota-db]
+      - 10.0.0.10
+      - 10.0.0.25
+      - 10.0.0.27
+      - 10.0.0.29
+      - 10.0.0.36
+      - 10.0.0.37
+      - 10.0.0.44
+      - 10.0.0.45
+      - 10.0.0.46
+      - 10.0.0.47
+      - 10.0.0.49
+      - 10.0.0.52
+      - 10.0.0.55
+      - 10.0.0.56
+      - 10.0.0.70
+      - 10.0.0.71
+      - 10.0.0.72
+      - 10.0.0.78
+      - 10.0.0.93
+      - 10.0.0.100
+      - 10.0.0.205 # appotahn-data2
+
+      #[appota-login-web]
+      - 192.168.13.11
+      - 192.168.13.12
+      - 192.168.13.13
+      - 192.168.13.14
+      - 192.168.13.21
+      - 192.168.13.22
+      - 192.168.13.23
+      - 192.168.13.24
+      - 192.168.13.31
+      - 192.168.13.32
+      - 192.168.13.33
+      - 192.168.13.34
+      - 192.168.13.41
+      - 192.168.13.42
+      - 192.168.13.43
+      - 192.168.13.44
+      - 192.168.13.51
+      - 192.168.13.52
+      - 192.168.13.53
+      - 192.168.13.54
+
+      #[appota-login-db]
+      - 192.168.13.110
+      - 192.168.13.111
+      - 192.168.13.112
+      - 192.168.13.113
+      - 192.168.13.114
+      - 192.168.13.115
+      - 192.168.13.116
+      - 192.168.13.117
+      - 192.168.13.118
+      - 192.168.13.119
+      - 192.168.13.120
+      - 192.168.13.121
+      - 192.168.13.122
+      - 192.168.13.123
+
+      #[appota-login-dns]
+      - 192.168.13.80  #DNS1
+      - 192.168.13.79  #DNS2
+
+      # Kubernetes
+      - 192.168.14.41
+      - 192.168.14.42
+      - 192.168.14.11
+      - 192.168.14.21
+      - 192.168.14.22
+      - 192.168.14.23
+      - 192.168.14.31
+      - 192.168.14.32
+      # Test
+      - 192.168.122.2
+
+      #[k8s-appota-id]
+      - 192.168.14.77 #k8s-master1
+      - 192.168.14.78 #k8s-master2
+      - 192.168.14.79 #k8s-master3
+      - 192.168.14.80 #k8s-worker1
+      - 192.168.14.81 #k8s-worker2
+      - 192.168.14.82 #k8s-worker3
+      - 192.168.14.83 #k8s-worker4
+
+      # appota-thumbor
+      - 103.53.171.143
+      - 103.53.171.60
+
+      #[gamehub-sopcast-temp]
+      - 10.0.0.6
+      - 10.0.0.225
+      - 10.0.0.7
+      - 10.0.0.72
+      - 10.0.0.76
+      - 10.0.0.66
+      - 10.0.0.226
+      - 10.0.0.227
+      - 10.0.0.228
+      - 10.0.0.229
+
+
+      #[gamota-analytics]
+      - 103.53.171.216
+      - 192.168.40.122
+      - 192.168.40.123
+
+      #[Gamota-sdk]
+      - 192.168.40.74 #gamota-sdk-sv1
+      - 192.168.40.75 #gamota-sdk-sv2
+      - 192.168.40.40 #gamota-sdk-cron
+      - 192.168.40.120 #gamota-sdk-mongodb1
+      - 192.168.40.121 #gamota-sdk-mongodb2
+      - 192.168.40.118 #gamota-sdk-mongodb3
+      - 192.168.40.117 #gamota-sdk-mongodb4
+      - 192.168.40.173 #gamota-sdk-db
+
+     #[Appota-pay-test]
+      - 103.53.171.151
+      #[Appotapay-lb]
+      - 10.0.0.65 #Appotapay-Lb1
+      - 192.168.35.106 #VIP appotapay-prod-lb1 10.0.0.81
+      - 192.168.35.108 #VIP appotapay-prod-lb2
+
+      #[Appotapay-dns]
+      - 192.168.35.1 #appotapay-dns1
+      - 192.168.35.2 #appotapay-dns2
+
+      #[Appotapay-web]
+      - 192.168.35.57 #appotapay-web1
+      - 192.168.35.58 #appotapay-web2
+      - 192.168.35.47 #appotapay-web3 (hhvm payhub.vn)
+      - 192.168.35.124 #appotapay-web4
+      - 192.168.35.42 #appotapay-prod-web5
+      - 192.168.35.197 #appotapay-prod-web6
+      - 192.168.35.9 #appotapay-prod-web7
+      - 192.168.35.107 #appotapay-prod-web8
+      - 192.168.35.209 #appotapay-prod-web9
+      - 192.168.35.210 #appotapay-prod-web10
+      - 192.168.35.211 #appotapay-prod-web11
+      - 192.168.35.212 #appotapay-prod-web12
+      - 192.168.35.213 #appotapay-prod-web13
+      - 192.168.35.214 #appotapay-prod-web14
+      - 192.168.35.54 #appotapay-prod-web15
+      - 192.168.35.55 #appotapay-prod-web16
+      - 192.168.35.115 # Appotapay-card-core1
+      - 192.168.35.56 #Appotapay-card-core2
+
+      #[Appotapay-db]
+      - 192.168.35.6  #Ewallet-mongodb1
+      - 192.168.35.7  #Ewallet-mongodb2
+      - 192.168.35.8  #Ewallet-mongodb3
+      - 192.168.35.18 #appotapay-db1
+      - 192.168.35.19 #appotapay-db2
+      - 192.168.35.142    #appotapay-db3 (master)
+
+      - 192.168.35.10 #ewallet-db1 (master)
+      - 192.168.35.11 #ewallet-db2
+      - 192.168.35.12 #ewallet-db3
+
+      - 192.168.35.31 #appotapay-report-db1
+      - 192.168.35.32 #appotapay-report-db2
+      - 192.168.35.33 #appotapay-report-db3
+
+      #[Appotapay-mem]
+      - 192.168.35.121 #appotapay-mem1
+      - 192.168.35.122 #Appotapay-mem2
+      - 192.168.35.20 #Appotapay-Prod-Mem1
+      - 192.168.35.21 #Appotapay-Prod-Mem2
+      - 192.168.35.22 #Appotapay-Prod-Mem3
+
+      #[Appota-tea-blogs]
+      - 103.53.171.42
+
+      #[Appota-logs]
+      - 43.239.223.147
+
+      #[Appota-memservices]
+      - 10.0.0.16
+      - 10.0.0.23
+      - 10.0.0.60
+      - 10.0.0.61
+      - 10.0.0.123
+
+      #[Appvnsg]
+      - 10.0.0.6 #appvnsg-db2
+      - 10.0.0.8 #appvnsg-db1
+      - 10.0.0.12 #appvnsg-mongo1
+      - 10.0.0.9 #Appvnsg-mongo2
+      - 10.0.0.22 #appvnsg-backend1
+      - 10.0.0.25 #appvnsg-backend2
+      - 10.0.0.26 #appvnsg-backend3
+      - 10.0.0.27 #appvnsg-backend4
+      - 10.0.0.103 #appvnsg-lb3
+      - 10.0.0.104 #appvnsg-lb4
+      - 10.0.0.240 #appvnsg-dns
+      - 10.0.0.113 #appvnsg-lb1
+      - 10.0.0.114 #appvnsg-lb2
+
+
+      #[appvn-vdc2-store]
+      - 10.0.0.71 # storage1
+      - 10.0.0.72 # storage2
+      - 10.0.0.73 # storage3
+      - 10.0.0.74 # storage4
+
+      #[appota-dev-env]
+      - 192.168.41.57  # Dev lb1
+      - 192.168.41.56  # Dev mysql
+      - 192.168.41.63  # Dev web1-php5
+      - 192.168.41.153  # Dev web1-php7
+
+    groups: sudo
+    authorized_keys:
+      - autodep.pub
+#--------------------------
+# Chungbd
+  - name: chungbd
+    servers:
+      # [teatv-posgresql DO]
+      - 178.128.179.255
+      # [gamota_fbtools]
+      - 10.0.11.37
+      # [gamota_vnpt]
+      - 192.168.40.80
+      # [gamota_egn]
+      - 192.168.40.131
+      - 192.168.40.132
+      #[zabbix]
+      - 103.53.170.253
+      # [SEO]
+      - 43.239.220.196
+      - 43.239.220.197
+      #[dev-appota]
+      - 103.53.170.63
+      - 103.53.171.153
+      - 103.53.171.198
+      - 103.53.170.59
+      - 103.53.170.58
+      - 103.53.170.64
+      - 103.53.171.200
+
+      #[phpmyadmin-proxy]
+      - 103.53.170.240
+      # ELK CDN
+      - 203.162.79.203
+
+      # Kafka CDN
+      - 103.53.169.153
+      - 103.53.169.154
+      - 103.53.169.155
+      - 103.53.169.156
+      # [Gamota-nap]
+      - 192.168.40.245 #gamota-lb-nap1
+      - 192.168.40.246 #gamota-lb-nap2
+      - 192.168.40.111 # gamota-nap-backend1
+      - 192.168.40.112 # gamota-nap-backend2
+      - 192.168.40.66 # Gamota nap redis1
+      - 192.168.40.67 # Gamota nap redis1
+      - 192.168.40.68 # Gamota nap redis1
+      - 192.168.40.42 #gamota-lb-db1
+      - 192.168.40.41 #gamota-lb-db2
+      - 192.168.40.170
+      - 192.168.40.171
+      #[mobifone-gamota-nap]
+      - 192.168.40.116
+      #[dev-mysql-appota]
+      - 103.53.170.56
+
+      #[apptoko]
+      - 10.0.0.16
+
+      #[appota-vdco-lb]
+      - 10.0.0.95 # appota-vdco-lb
+
+      # [blogsg]
+      - 10.0.11.44 #HAproxy1
+      - 10.0.11.45 #HAproxy2
+      - 10.0.11.59 #K8s Master1
+      - 10.0.11.60 #K8s Master2
+      - 10.0.11.61 #K8s Master3
+      - 10.0.11.62 #K8s Worker1
+      - 10.0.11.63 #K8s Worker2
+      - 10.0.11.64 #K8s Worker3
+      - 10.0.11.52 #ELK
+      - 10.0.11.53 #Glusterfs1
+      - 10.0.11.54 #Glusterfs2
+      - 10.0.11.55 #Glusterfs3
+      - 10.0.11.56 #gateway internet
+      - 10.0.11.65 #gamota glusterfs1
+      - 10.0.11.66 #gamota glusterfs2
+      - 10.0.11.67 #gamota glusterfs3
+      - 10.0.11.69  #K8s Worker4
+      
+      - 10.0.11.11 # blogsg-lb1
+      - 10.0.11.12 # blogsg-lb2
+      - 10.0.11.23 # blogsg-web3
+      - 10.0.11.24 # blogsg-web4
+      - 10.0.11.147 # blogsg-web5
+      - 10.0.11.26 # blogsg-web6
+      - 10.0.11.168 # blogsg-web7
+      - 10.0.11.169 # blogsg-web8
+      - 10.0.11.31 # blogsg-db1
+      - 10.0.11.33 # blogsg-db3
+      - 10.0.11.35 # blogsg-db5
+      - 10.0.11.34 # blogsg-db5
+      - 10.0.11.36 # blogsg-db6
+      - 10.0.11.148 # blogsg-db2
+      - 103.53.171.208
+
+      # [blogsg-worker5]
+      - 10.0.11.70
+
+      # [blogsg-worker6]
+      - 10.0.11.71
+                  
+      #[appota-static]
+      - 123.30.235.253
+      - 43.239.220.178
+      - 10.0.0.32
+      #[appota-data]
+      - 10.0.0.89
+      - 10.0.0.90
+      - 10.0.0.91
+      - 10.0.0.92
+      #[gamehub-sopcast-temp]
+      - 10.0.0.7
+      - 10.0.0.6
+      - 10.0.0.225
+      - 10.0.0.72
+      - 10.0.0.76
+      - 10.0.0.66
+      - 10.0.0.226
+      - 10.0.0.227
+      - 10.0.0.228
+      - 10.0.0.229
+      - 10.0.0.230
+      - 10.0.0.231
+      - 10.0.0.233
+      - 10.0.0.248
+      - 10.0.0.241
+
+      #[Appotapay-lb]
+      - 192.168.35.35
+      - 192.168.35.36
+      - 192.168.35.3 # appotapay-lb-db1
+      - 192.168.35.4 # appotapay-lb-db2
+      - 192.168.35.37 # appotapay-lb-internal1
+      - 192.168.35.38 # appotapay-lb-internal2
+      #[Appotapay-web]
+      - 192.168.35.57 #appotapay-web1
+      - 192.168.35.58 #appotapay-web2
+      - 192.168.35.47 #appotapay-web3 (hhvm payhub.vn)
+      - 192.168.35.124 #appotapay-web4
+      - 192.168.35.42 #appotapay-prod-web5
+      - 192.168.35.197 #appotapay-prod-web6
+      - 192.168.35.9 #appotapay-prod-web7
+      - 192.168.35.107 #appotapay-prod-web8
+      - 192.168.35.209 #appotapay-prod-web9
+      - 192.168.35.210 #appotapay-prod-web10
+      - 192.168.35.211 #appotapay-prod-web11
+      - 192.168.35.212 #appotapay-prod-web12
+      - 192.168.35.213 #appotapay-prod-web13
+      - 192.168.35.214 #appotapay-prod-web14
+      - 192.168.35.54 #appotapay-prod-web15
+      - 192.168.35.55 #appotapay-prod-web16
+      - 192.168.35.115 # Appotapay-card-core1
+      - 192.168.35.56 #Appotapay-card-core2
+      - 192.168.35.218 #Appotapay-prod-web18
+      - 192.168.35.219 #Appotapay-prod-web19
+      #[Appotapay NFS]
+      - 192.168.35.84 #NFS1
+      - 192.168.35.85 #Backup NFS
+
+      #[Appotapay-internet-gw]
+      - 192.168.35.215 # appotapay-internet-gw1
+      - 192.168.35.216 # appotapay-internet-gw2
+      #[Appotapay-db]
+      - 192.168.35.6 #Ewallet-mongodb1
+      - 192.168.35.7 #Ewallet-mongodb2
+      - 192.168.35.8 #Ewallet-mongodb3
+
+      - 192.168.35.18 #appotapay-db1
+      - 192.168.35.19 #appotapay-db2
+      - 192.168.35.142 #appotapay-db3 (master)
+
+      - 192.168.35.14 #mobile shop db1
+      - 192.168.35.15 #mobile shop db2
+
+      - 192.168.35.10 #ewallet-db1 (master)
+      - 192.168.35.11 #ewallet-db2
+      - 192.168.35.12 #ewallet-db3
+      - 192.168.35.26 #ewallet-db-delay1
+      - 192.168.35.27 #ewallet-db-delay3
+      - 192.168.35.28 #ewallet-db-delay3
+      - 192.168.35.51 #ewallet-db4 (master) 
+      - 192.168.35.52 #ewallet-db5
+      - 192.168.35.53 #ewallet-db6
+
+      - 192.168.35.31 #appotapay-report-db1
+      - 192.168.35.32 #appotapay-report-db2
+      - 192.168.35.33 #appotapay-report-db3
+
+      #[Appotapay-mem]
+      - 192.168.35.20 #Appotapay-Prod-Mem1
+      - 192.168.35.21 #Appotapay-Prod-Mem2
+      - 192.168.35.22 #Appotapay-Prod-Mem3
+      #[Appotapay-Runner]
+      - 192.168.35.234  #Pay-Runner
+      #[Appotapay-dns]
+      - 192.168.35.1
+      - 192.168.35.2
+      #[Appotapay-ELK]
+      - 192.168.35.29 #Node client
+      - 192.168.35.30 #Node master
+      - 192.168.35.59 #Node master-02
+      - 192.168.35.60 #Node master-03
+      - 192.168.35.43 #Node data
+      - 192.168.35.44 #Node data
+      - 192.168.35.45 #Node data
+      #[Appotapay-Kubernetes]
+      - 192.168.35.150 #Appotapay-Kubernetes-Master-01
+      - 192.168.35.151 #Appotapay-Kubernetes-Master-02
+      - 192.168.35.152 #Appotapay-Kubernetes-Master-03
+      - 192.168.35.153 #Appotapay-Kubernetes-Worker-01
+      - 192.168.35.154 #Appotapay-Kubernetes-Worker-02
+
+      - 192.168.35.123 #Appotapay-Kubernetes-Rancher
+      - 192.168.35.125 #Appotapay-Kubernetes-Master-01
+      - 192.168.35.126 #Appotapay-Kubernetes-Master-02
+      - 192.168.35.127 #Appotapay-Kubernetes-Master-03
+
+      - 192.168.35.128 #Appotapay-Kubernetes-Worker-01
+      - 192.168.35.129 #Appotapay-Kubernetes-Worker-02
+      - 192.168.35.130 #Appotapay-Kubernetes-Worker-03
+
+      - 192.168.35.131 #Appotapay-Kubernetes-LB-01
+      - 192.168.35.132 #Appotapay-Kubernetes-LB-02
+
+      - 192.168.35.133 #Appotapay-Kubernetes-GlusterFS-01
+      - 192.168.35.134 #Appotapay-Kubernetes-GlusterFS-02
+      - 192.168.35.135 #Appotapay-Kubernetes-GlusterFS-03
+
+      #[Congcf]
+      - 192.168.35.61 #Mongo-congcf1
+      - 192.168.35.62 #Mongo-congcf2
+      - 192.168.35.63 #Mongo-congcf3 
+
+      #[appota-login-web]
+      - 192.168.13.11
+      - 192.168.13.12
+      - 192.168.13.13
+      - 192.168.13.14
+      - 192.168.13.15
+      - 192.168.13.16
+      - 192.168.13.21
+      - 192.168.13.22
+      - 192.168.13.23
+      - 192.168.13.24
+      - 192.168.13.31
+      - 192.168.13.32
+      - 192.168.13.33
+      - 192.168.13.34
+      - 192.168.13.41
+      - 192.168.13.42
+      - 192.168.13.43
+      - 192.168.13.44
+      - 192.168.13.51
+      - 192.168.13.52
+      - 192.168.13.53
+      - 192.168.13.54
+
+      #[appota-login-static]
+      - 192.168.13.85
+      - 192.168.13.180
+      - 192.168.13.4
+      - 192.168.13.252
+      
+      #[appota-login-dns]
+      - 192.168.13.80
+      - 192.168.13.79
+
+      #[appota-login proxy]
+      - 192.168.13.68
+      
+      #[appota-login-elk]
+      - 192.168.13.249
+
+      #[appota-login-runner]
+      - 192.168.13.70
+
+      #[appota-login-db]
+      - 192.168.13.110
+      - 192.168.13.111
+      - 192.168.13.112
+      - 192.168.13.113
+      - 192.168.13.114
+      - 192.168.13.115
+      - 192.168.13.116
+      - 192.168.13.117
+      - 192.168.13.118
+      - 192.168.13.119
+      - 192.168.13.120
+      - 192.168.13.121
+      - 192.168.13.122
+      - 192.168.13.123
+      - 192.168.13.201
+      - 192.168.13.202
+      #[appota-login-remote]
+      - 192.168.13.180
+      #[appota-login-nat-gateway]
+      - 192.168.13.251
+      - 192.168.13.252
+
+      # Viettel freedata
+      - 210.211.100.183
+      - 210.211.100.184
+
+      #appota-thumbor
+      - 103.53.171.143
+      - 103.53.171.60
+
+      #[gamota-analytics]
+      - 103.53.171.216
+      - 192.168.40.122
+      - 192.168.40.123
+        # [gamota-shop]
+      - 192.168.40.235
+      - 192.168.40.236
+      - 192.168.40.237
+      - 192.168.40.210
+      - 192.168.40.213
+      - 192.168.40.170
+      - 192.168.40.171
+
+      # [gamota_postgres]
+      - 192.168.40.126
+      - 192.168.40.127
+
+       #[Gamota-sdk]
+      - 192.168.40.74 #gamota-sdk-sv1
+      - 192.168.40.75 #gamota-sdk-sv2
+      - 192.168.40.40 #gamota-sdk-cron
+      - 192.168.40.120 #gamota-sdk-mongodb1
+      - 192.168.40.121 #gamota-sdk-mongodb2
+      - 192.168.40.118 #gamota-sdk-mongodb3
+      - 192.168.40.117 #gamota-sdk-mongodb4
+      - 192.168.40.175 #gamota-sdk-log
+
+      - 192.168.40.43 #gamota-lb-db1
+      - 192.168.40.41 #gamota-lb-db2
+      - 192.168.40.209 #gamota-lb-public1
+      - 192.168.40.28 #gamota-lb-public2
+
+      - 192.168.40.232 #Gamota-vip
+      - 192.168.40.231 #Gamota-vip2
+      - 192.168.40.233 #gamota-shop-web1
+      - 192.168.40.227 #gamota-redis1
+      - 192.168.40.228 #gamota-redis2
+      - 192.168.40.229 #gamota-redis3
+      - 192.168.40.28
+      - 192.168.40.231
+      - 192.168.40.232
+      - 192.168.40.227
+      - 192.168.40.228
+      - 192.168.40.229
+      - 192.168.40.220
+      - 192.168.40.223
+      - 192.168.40.119
+      - 192.168.40.238 # Gamota MongoDB Instant Game
+
+      #[Appvnsg]
+      - 10.0.0.6 #appvnsg-db2
+      - 10.0.0.8 #appvnsg-db1
+      - 10.0.0.23 #appvnsg-db3
+      - 10.0.0.12 #appvnsg-mongo1
+      - 10.0.0.9 #Appvnsg-mongo2
+      - 10.0.0.22 #appvnsg-backend1
+      - 10.0.0.25 #appvnsg-backend2
+      - 10.0.0.26 #appvnsg-backend3
+      - 10.0.0.27 #appvnsg-backend4
+      - 10.0.0.103 #appvnsg-lb3
+      - 10.0.0.104 #appvnsg-lb4
+      - 10.0.0.240 #appvnsg-dns
+      - 10.0.0.113 #appvnsg-lb1
+      - 10.0.0.114 #appvnsg-lb2
+      - 10.0.0.157 #runner
+
+      #[appvn-sg-k8s]
+      - 10.0.0.140 #HAProxy1 
+      - 10.0.0.141 #HAProxy2
+      - 10.0.0.143 #node-master1
+      - 10.0.0.144 #node-master2
+      - 10.0.0.145 #node-master3
+      - 10.0.0.151 #node-worker1
+      - 10.0.0.152 #node-worker2
+      - 10.0.0.153 #node-worker3
+      - 10.0.0.161 #gfs-1
+      - 10.0.0.162 #gfs-2
+      - 10.0.0.163 #gfs-3
+      - 10.0.0.164 #elk
+      
+      #[appvn-vdc2-store]
+      - 10.0.0.71 # storage1
+      - 10.0.0.72 # storage2
+      - 10.0.0.73 # storage3
+      - 10.0.0.74 # storage4
+      - 10.0.0.80 # storage4-appvn
+
+      #[appvnprod]
+      - 103.53.170.241 #teatv-net
+      - 192.168.43.7 #db1
+      - 192.168.43.8 #db2
+      - 192.168.43.9 #db3
+      - 192.168.43.127 #appvnprod web-backend3
+      - 192.168.43.129 #redis
+      - 192.168.43.108 #backend1
+      - 192.168.43.109 #backend2
+      - 192.168.43.110 #lb1
+      - 192.168.43.111 #lb2
+      - 192.168.43.10 #lb db1
+      - 192.168.43.11 #lb db2
+      - 192.168.43.12 #Redis1
+      - 192.168.43.13 #Redis2
+      - 192.168.43.15  #Redis3
+        #[appvnprod-store]
+      - 103.53.171.38 #nginx 1
+      - 103.53.171.40 #nginx 2
+      - 103.53.171.41 #nginx 3
+
+      #[appota-dev-env]
+      - 192.168.41.57  # Dev lb1
+      - 192.168.41.56  # Dev mysql
+      - 192.168.41.63 # Dev web1-php5
+      - 192.168.41.153 # Dev web1-php7
+      - 192.168.41.58 # Dev mongo
+      - 192.168.41.42 # Dev mongodb_nap_42
+      - 192.168.41.41 # Dev mongodb_nap_41
+      - 192.168.41.200 # Dev Rancher Mariadb
+      - 192.168.41.210 # Dev Rancher NFS
+      - 192.168.41.254 # Dev Internet gateway
+      - 192.168.41.43 # Runner
+      - 192.168.41.44 # K8s-Master-01
+      - 192.168.41.45 # K8s-Master-02
+      - 192.168.41.46 # K8s-Master-03
+      - 192.168.41.47 # K8s-Master-01
+      - 192.168.41.48 # K8s-Worker-02
+      - 192.168.41.49 # K8s-Worker-03
+      - 192.168.41.53 # K8s-Worker-04
+      - 192.168.41.50 # K8s-Haproxy  
+      - 192.168.41.51 # Glusterfs-1
+      - 192.168.41.52 # Glusterfs-2
+
+      - 192.168.40.240 
+      #[Movie]
+      - 10.0.0.51
+      - 10.0.0.52
+      - 10.0.0.53
+      - 10.0.0.54
+      - 10.0.0.55
+      - 10.0.0.56
+      - 10.0.0.57
+      - 10.0.0.58
+
+       # [Gamota-nap]
+      - 192.168.40.111
+      - 192.168.40.112
+      - 192.168.40.2 # Gamota Internet gateway 1
+      - 192.168.40.3 # Gamota Internet gateway 2
+      - 192.168.40.66 # Gamota nap redis1
+      - 192.168.40.67 # Gamota nap redis1
+      - 192.168.40.68 # Gamota nap redis1
+
+      - 192.168.40.173 #gamota-sdk-db
+
+        #[appota-dns-fpt]
+      - 103.53.170.250 # appota-dns-fpt1
+      - 103.53.170.251 # appota-dns-fpt2
+
+      # [blogsg]
+      - 10.0.11.11 # blogsg-lb1
+      - 10.0.11.12 # blogsg-lb2
+      - 10.0.11.23 # blogsg-web3
+      - 10.0.11.24 # blogsg-web4
+      - 10.0.11.147 # blogsg-web5
+      - 10.0.11.26 # blogsg-web6
+      - 10.0.11.168 # blogsg-web7
+      - 10.0.11.169 # blogsg-web8
+      - 10.0.11.31 # blogsg-db1
+      - 10.0.11.33 # blogsg-db3
+      - 10.0.11.35 # blogsg-db5
+      - 10.0.11.34 # blogsg-db5
+      - 10.0.11.36 # blogsg-db6
+      - 10.0.11.148 # blogsg-db2
+
+        # [appotasg-store]
+      - 10.0.0.40 # appotasg-store1
+      - 10.0.0.41 # appotasg-store2
+      - 10.0.0.42 # appotasg-store3
+      - 10.0.0.43 # appotasg-store4
+
+      # [aphim-store-k7x]
+      - 10.0.0.71 # k71.tv69.mobi
+      - 10.0.0.72 # k71.tv69.mobi
+      - 10.0.0.73 # k71.tv69.mobi
+      - 10.0.0.74 # k71.tv69.mobi
+      #[appota-thumbor]
+      - 103.53.171.143
+      - 103.53.171.60
+
+
+      #[gsm]
+      - 10.0.0.180 # GSM
+      - 103.53.170.50 # GSM-upload
+      - 103.53.171.72  # GSM
+
+      # [Metronet-NTL]
+      - 14.225.5.248
+
+      # [Onclan]
+      - 192.168.28.166 # Onclan-web1
+      - 192.168.28.168 # Onclan-proxy1
+
+      # [Oceanbank]
+      - 103.53.171.147
+      # [Kdata-speedtest]
+      - 43.239.221.124
+      - 43.239.223.121
+      - 103.109.39.19
+      - 128.199.220.2
+
+      # STG env
+      - 103.53.170.59
+      - 103.53.170.58
+      - 103.53.171.198
+
+      # Other VM
+      - 103.53.171.22
+      - 103.53.171.117
+      - 103.53.171.157
+      - 103.53.171.110
+      - 103.53.171.95
+      - 103.53.170.38
+    groups: sudo
+    authorized_keys:
+      - chungbd.pub
+
+#-----------------------------
+# quydo
+  - name: quydo
+    servers:
+      #[gamehub-sopcast-temp]
+      - 171.244.35.67
+
+      #[Appota-tea-blogs]
+      - 103.53.171.42
+
+    groups: sudo
+    authorized_keys:
+      - quydo.pub
+
+# chinv
+  - name: chinv
+    servers:
+      #[Appota-login]
+      - 10.0.0.125
+      - 10.0.0.135
+      - 10.0.0.138
+
+      #[Appota-memservices]
+      - 10.0.0.16
+      - 10.0.0.23
+      - 10.0.0.60
+      - 10.0.0.61
+      - 10.0.0.123
+    groups: sudo
+    authorized_keys:
+      - chinv.pub
+
+# nhuttq
+  - name: nhuttq
+    servers:
+      #[ELK CDN]
+      - 43.239.220.16
+      - 43.239.220.31
+      - 43.239.220.38
+      - 43.239.220.39
+      # Kafka CDN
+      - 103.53.169.153
+      - 103.53.169.154
+      - 103.53.169.155
+      - 103.53.169.156
+
+      # ELK CDN
+      - 203.162.79.203
+      #[appota-login-sg]
+      - 192.168.13.11
+      - 192.168.13.12
+      - 192.168.13.13
+      - 192.168.13.14
+      - 192.168.13.21
+      - 192.168.13.22
+      - 192.168.13.23
+      - 192.168.13.24
+      - 192.168.13.31
+      - 192.168.13.32
+      - 192.168.13.33
+      - 192.168.13.34
+      - 192.168.13.41
+      - 192.168.13.42
+      - 192.168.13.43
+      - 192.168.13.44
+      - 192.168.13.51
+      - 192.168.13.52
+      - 192.168.13.53
+      - 192.168.13.54
+
+      #[appota-login-db]
+      - 192.168.13.110  #Mysql1
+      - 192.168.13.111  #Mysql2
+      - 192.168.13.112  #Mysql3
+      - 192.168.13.113  #Mongo-SSD1
+      - 192.168.13.114  #Mongo-SSD2
+      - 192.168.13.115  #Mongo-SSD3
+      - 192.168.13.116  #Mongo-SAS1
+      - 192.168.13.117  #Mongo-SAS2
+      - 192.168.13.118  #Mongo-SAS3
+      # [Kdata-speedtest]
+      - 43.239.221.124
+      - 43.239.223.121
+      - 103.109.39.19
+      - 128.199.220.2
+    groups: sudo
+    authorized_keys:
+      - nhuttq.pub
+
+#-------------------------
+# cuonglq
+  - name: cuonglq
+    servers:
+      # [teatv-posgresql DO]
+      - 178.128.179.255
+      # [gamota_fbtools]
+      - 10.0.11.37
+      # [gamota_vnpt]
+      - 192.168.40.80
+      - 192.168.40.240
+      # [SEO]
+      - 43.239.220.196
+      - 43.239.220.197
+      #[dev-appota]
+      - 103.53.170.63
+      - 103.53.171.153
+      - 103.53.171.198
+      - 103.53.170.59
+      - 103.53.170.58
+      - 103.53.170.64
+      - 103.53.171.200
+
+      #[ELK CDN]
+      - 43.239.220.16
+      - 43.239.220.31
+      - 43.239.220.38
+      - 43.239.220.39
+      #mysql-dev
+      - 103.53.170.56
+      #runner
+      - 192.168.40.208
+      #[appcheckin]
+      - 192.168.35.91 
+      - 192.168.35.92
+      - 192.168.35.93
+      - 192.168.35.94
+      - 192.168.35.95
+
+      #[teatv-net]
+      - 103.53.170.241
+
+      #[phpmyadmin-proxy]
+      - 103.53.170.240
+
+      # Kafka CDN
+      - 103.53.169.153
+      - 103.53.169.154
+      - 103.53.169.155
+      - 103.53.169.156
+
+      # ELK CDN
+      - 203.162.79.203
+      #[mobifone-gamota-nap]
+      - 192.168.40.116
+      #[dev-mysql-appota]
+      - 103.53.170.56
+
+      #[apptoko]
+      - 10.0.0.16
+      #[appvnprod-db]
+      - 192.168.43.7
+      - 192.168.43.8
+      - 192.168.43.9
+      #[appota-vdco-lb]
+      - 10.0.0.95 # appota-vdco-lb
+
+      # [blogsg]
+      - 10.0.11.44 #HAproxy1
+      - 10.0.11.45 #HAproxy2
+      - 10.0.11.59 #K8s Master1
+      - 10.0.11.60 #K8s Master2
+      - 10.0.11.61 #K8s Master3
+      - 10.0.11.62 #K8s Worker1
+      - 10.0.11.63 #K8s Worker2
+      - 10.0.11.64 #K8s Worker3
+      - 10.0.11.52 #ELK
+      - 10.0.11.53 #Glusterfs1
+      - 10.0.11.54 #Glusterfs2
+      - 10.0.11.55 #Glusterfs3
+      - 10.0.11.56 #gateway internet
+      - 10.0.11.65 #gamota glusterfs1
+      - 10.0.11.66 #gamota glusterfs2
+      - 10.0.11.67 #gamota glusterfs3
+      
+      - 10.0.11.11 # blogsg-lb1
+      - 10.0.11.12 # blogsg-lb2
+      - 10.0.11.23 # blogsg-web3
+      - 10.0.11.24 # blogsg-web4
+      - 10.0.11.147 # blogsg-web5
+      - 10.0.11.26 # blogsg-web6
+      - 10.0.11.168 # blogsg-web7
+      - 10.0.11.169 # blogsg-web8
+      - 10.0.11.31 # blogsg-db1
+      - 10.0.11.33 # blogsg-db3
+      - 10.0.11.35 # blogsg-db5
+      - 10.0.11.34 # blogsg-db5
+      - 10.0.11.36 # blogsg-db6
+      - 10.0.11.148 # blogsg-db2
+      - 103.53.171.208
+
+      # [blogsg-worker4]
+      - 10.0.11.69
+
+      # [blogsg-worker5]
+      - 10.0.11.70
+
+      # [blogsg-worker6]
+      - 10.0.11.71
+
+      #[appota-static]
+      - 123.30.235.253
+      - 43.239.220.178
+      - 10.0.0.32
+
+      #[Congcf]
+      - 192.168.35.61 #Mongo-congcf1
+      - 192.168.35.62 #Mongo-congcf2
+      - 192.168.35.63 #Mongo-congcf3
+
+      #[Appotapay NFS]
+      - 192.168.35.84 #NFS1
+      - 192.168.35.85 #Backup NFS
+
+      #[Appotapay-lb]
+      - 192.168.35.35
+      - 192.168.35.36
+      - 192.168.35.3 # appotapay-lb-db1
+      - 192.168.35.4 # appotapay-lb-db2
+      - 192.168.35.37 # appotapay-lb-internal1
+      - 192.168.35.38 # appotapay-lb-internal2
+      - 192.168.35.112 # lb db report
+      #[Appotapay-web]
+      - 192.168.35.57 #appotapay-web1
+      - 192.168.35.58 #appotapay-web2
+      - 192.168.35.47 #appotapay-web3 (hhvm payhub.vn)
+      - 192.168.35.124 #appotapay-web4
+      - 192.168.35.42 #appotapay-prod-web5
+      - 192.168.35.197 #appotapay-prod-web6
+      - 192.168.35.9 #appotapay-prod-web7
+      - 192.168.35.107 #appotapay-prod-web8
+      - 192.168.35.209 #appotapay-prod-web9
+      - 192.168.35.210 #appotapay-prod-web10
+      - 192.168.35.211 #appotapay-prod-web11
+      - 192.168.35.212 #appotapay-prod-web12
+      - 192.168.35.213 #appotapay-prod-web13
+      - 192.168.35.214 #appotapay-prod-web14
+      - 192.168.35.54 #appotapay-prod-web15
+      - 192.168.35.55 #appotapay-prod-web16
+      - 192.168.35.115 # Appotapay-card-core1
+      - 192.168.35.56 #Appotapay-card-core2
+      - 192.168.35.218 #Appotapay-prod-web18 
+      - 192.168.35.219 #Appotapay-prod-web19
+      #[Appotapay-internet-gw]
+      - 192.168.35.215 # appotapay-internet-gw1
+      - 192.168.35.216 # appotapay-internet-gw2
+      #[Appotapay-db]
+      - 192.168.35.70 #report-mongodb1 
+      - 192.168.35.71 #report-mongodb2 
+      - 192.168.35.72 #report-mongodb3 
+      - 192.168.35.137 #blackhole ewallet1
+      - 192.168.35.139 #blackhole ewallet2
+      - 192.168.35.140 #blackhole card
+
+      - 192.168.35.6 #Ewallet-mongodb1
+      - 192.168.35.7 #Ewallet-mongodb2
+      - 192.168.35.8 #Ewallet-mongodb3
+
+      - 192.168.35.18 #appotapay-db1
+      - 192.168.35.19 #appotapay-db2
+      - 192.168.35.142 #appotapay-db3 (master)
+
+      - 192.168.35.14 #mobile shop db1
+      - 192.168.35.15 #mobile shop db2
+
+      - 192.168.35.10 #ewallet-db1 (master)
+      - 192.168.35.11 #ewallet-db2
+      - 192.168.35.12 #ewallet-db3
+      - 192.168.35.26 #ewallet-db-delay1
+      - 192.168.35.27 #ewallet-db-delay3
+      - 192.168.35.28 #ewallet-db-delay3
+      - 192.168.35.51 #ewallet-db4 (master) 
+      - 192.168.35.52 #ewallet-db5
+      - 192.168.35.53 #ewallet-db6
+
+      - 192.168.35.31 #appotapay-report-db1
+      - 192.168.35.32 #appotapay-report-db2
+      - 192.168.35.33 #appotapay-report-db3
+
+      #[Appotapay-Kong]
+      - 192.168.35.143 #Kong1
+      - 192.168.35.144 #Kong2
+      - 192.168.35.145 #Kong3
+
+      #[Appotapay-mem]
+      - 192.168.35.20 #Appotapay-Prod-Mem1
+      - 192.168.35.21 #Appotapay-Prod-Mem2
+      - 192.168.35.22 #Appotapay-Prod-Mem3
+      #[Appotapay-Runner]
+      - 192.168.35.234  #Pay-Runner
+      #[Appotapay-dns]
+      - 192.168.35.1
+      - 192.168.35.2
+      #[Appotapay-ELK]
+      - 192.168.35.29 #Node client
+      - 192.168.35.30 #Node master
+      - 192.168.35.59 #Node master-02
+      - 192.168.35.60 #Node master-03
+      - 192.168.35.43 #Node data
+      - 192.168.35.44 #Node data
+      - 192.168.35.45 #Node data
+
+      #[Appotapay-Kubernetes]
+      - 192.168.35.150 #Appotapay-Kubernetes-Master-01
+      - 192.168.35.151 #Appotapay-Kubernetes-Master-02
+      - 192.168.35.152 #Appotapay-Kubernetes-Master-03
+      - 192.168.35.153 #Appotapay-Kubernetes-Worker-01
+      - 192.168.35.154 #Appotapay-Kubernetes-Worker-02
+
+      - 192.168.35.123 #Appotapay-Kubernetes-Rancher
+      - 192.168.35.125 #Appotapay-Kubernetes-Master-01
+      - 192.168.35.126 #Appotapay-Kubernetes-Master-02
+      - 192.168.35.127 #Appotapay-Kubernetes-Master-03
+
+      - 192.168.35.128 #Appotapay-Kubernetes-Worker-01
+      - 192.168.35.129 #Appotapay-Kubernetes-Worker-02
+      - 192.168.35.130 #Appotapay-Kubernetes-Worker-03
+
+      - 192.168.35.131 #Appotapay-Kubernetes-LB-01
+      - 192.168.35.132 #Appotapay-Kubernetes-LB-02
+
+      - 192.168.35.133 #Appotapay-Kubernetes-GlusterFS-01
+      - 192.168.35.134 #Appotapay-Kubernetes-GlusterFS-02
+      - 192.168.35.135 #Appotapay-Kubernetes-GlusterFS-03
+
+      #[appota-login-web]
+      - 192.168.13.11
+      - 192.168.13.12
+      - 192.168.13.13
+      - 192.168.13.14
+      - 192.168.13.15
+      - 192.168.13.16
+      - 192.168.13.21
+      - 192.168.13.22
+      - 192.168.13.23
+      - 192.168.13.24
+      - 192.168.13.31
+      - 192.168.13.32
+      - 192.168.13.33
+      - 192.168.13.34
+      - 192.168.13.41
+      - 192.168.13.42
+      - 192.168.13.43
+      - 192.168.13.44
+      - 192.168.13.51
+      - 192.168.13.52
+      - 192.168.13.53
+      - 192.168.13.54
+
+      #[appota-login-db]
+      - 192.168.13.110
+      - 192.168.13.111
+      - 192.168.13.112
+      - 192.168.13.113
+      - 192.168.13.114
+      - 192.168.13.115
+      - 192.168.13.116
+      - 192.168.13.117
+      - 192.168.13.118
+      - 192.168.13.119
+      - 192.168.13.120
+      - 192.168.13.121
+      - 192.168.13.122
+      - 192.168.13.123
+      - 192.168.13.201
+      - 192.168.13.202
+      #[appota-login-remote]
+      - 192.168.13.180
+      - 192.168.13.4
+      - 192.168.13.252
+      #[appota-login-nat-gateway]
+      - 192.168.13.251
+      - 192.168.13.252
+      
+      #[appota-login proxy]
+      - 192.168.13.68
+
+      #[appota-login-static]
+      - 192.168.13.85
+
+      #[appota-login-elk]
+      - 192.168.13.249
+
+      #[appota-login-dns]
+      - 192.168.13.80
+      - 192.168.13.79
+
+      #[appota-login-runner]
+      - 192.168.13.70
+
+      # Kubernetes
+      - 192.168.14.41
+      - 192.168.14.42
+      - 192.168.14.11
+      - 192.168.14.21
+      - 192.168.14.22
+      - 192.168.14.23
+      - 192.168.14.31
+      - 192.168.14.32
+      # Test
+      - 192.168.122.2
+
+      # k8s-appota-login
+      - 10.0.0.211
+      - 10.0.0.212
+      - 10.0.0.213
+      - 10.0.0.214
+      - 10.0.0.215
+      - 10.0.0.216
+      - 10.0.0.217
+
+      #[k8s-appota-id]
+      - 192.168.14.77 #k8s-master1
+      - 192.168.14.78 #k8s-master2
+      - 192.168.14.79 #k8s-master3
+      - 192.168.14.80 #k8s-worker1
+      - 192.168.14.81 #k8s-worker2
+      - 192.168.14.82 #k8s-worker3
+      - 192.168.14.83 #k8s-worker4
+
+      # Viettel freedata
+      - 210.211.100.183
+      - 210.211.100.184
+
+      # VNPT Freedata
+      - 14.225.5.248
+
+      #appota-thumbor
+      - 103.53.171.143
+      - 103.53.171.60
+
+      #[appota-data]
+      - 10.0.0.89
+      - 10.0.0.90
+      - 10.0.0.91
+      - 10.0.0.92
+
+      #[gamehub-sopcast-temp]
+      - 10.0.0.6
+      - 10.0.0.225
+      - 10.0.0.7
+      - 10.0.0.72
+      - 10.0.0.76
+      - 10.0.0.66
+      - 10.0.0.226
+      - 10.0.0.227
+      - 10.0.0.228
+      - 10.0.0.229
+      - 10.0.0.230
+      - 10.0.0.231
+      - 10.0.0.233
+      - 10.0.0.248
+      - 10.0.0.241
+   
+      #[appvnsg-dns2]
+      - 10.0.0.242
+            
+      #[gamota-analytics]
+      - 103.53.171.216
+      - 192.168.40.122
+      - 192.168.40.123
+
+       #[Gamota-sdk]
+      - 192.168.40.131  # Mongo EGN
+      - 192.168.40.132  # Mongo EGN
+      - 192.168.40.128
+      - 192.168.40.74 #gamota-sdk-sv1
+      - 192.168.40.75 #gamota-sdk-sv2
+      - 192.168.40.40 #gamota-sdk-cron
+      - 192.168.40.120 #gamota-sdk-mongodb1
+      - 192.168.40.121 #gamota-sdk-mongodb2
+      - 192.168.40.118 #gamota-sdk-mongodb3
+      - 192.168.40.117 #gamota-sdk-mongodb4
+      - 192.168.40.173 #gamota-sdk-db
+      - 192.168.40.175 #gamota-sdk-log
+
+      - 192.168.40.209 #gamota-lb-public1
+      - 192.168.40.28 #gamota-lb-public2
+
+      - 192.168.40.233 #gamota-shop-web1
+      - 192.168.40.234 #gamota-shop-web1
+
+      - 192.168.40.232 #Gamota-vip
+      - 192.168.40.231 #Gamota-vip2
+      - 192.168.40.238 # Gamota MongoDB Instant Game
+      - 192.168.40.28
+      - 192.168.40.231
+      - 192.168.40.232
+      - 192.168.40.227
+      - 192.168.40.228
+      - 192.168.40.229
+      - 192.168.40.220
+      - 192.168.40.223
+      - 192.168.40.119
+      - 192.168.40.126
+      - 192.168.40.127
+      
+      #[gamota-shop-db4]
+      - 192.168.40.241 #gamota-shop-db4
+
+      # [Gamota-nap]
+      - 192.168.40.245 #gamota-lb-nap1
+      - 192.168.40.246 #gamota-lb-nap2
+      - 192.168.40.111 # gamota-nap-backend1
+      - 192.168.40.112 # gamota-nap-backend2
+      - 192.168.40.66 # Gamota nap redis1
+      - 192.168.40.67 # Gamota nap redis1
+      - 192.168.40.68 # Gamota nap redis1
+      - 192.168.40.42 #gamota-lb-db1
+      - 192.168.40.41 #gamota-lb-db2
+      - 192.168.40.170
+      - 192.168.40.171
+      # [gamota-cuonglq]
+      - 192.168.40.119 #ansible_ssh_port=1102
+      
+      # [gamota-shop]
+      - 192.168.40.235
+      - 192.168.40.236
+      - 192.168.40.237
+      - 192.168.40.210
+      - 192.168.40.213
+      - 192.168.40.170
+      - 192.168.40.171
+      - 192.168.40.227 #gamota-redis1
+      - 192.168.40.228 #gamota-redis2
+      - 192.168.40.229 #gamota-redis3
+      # [gamota_egn]
+      - 192.168.40.131
+      - 192.168.40.132
+      #[appota-thumbor]
+      - 103.53.171.143
+      - 103.53.171.60
+
+      #[Appota-tea-blogs]
+      - 103.53.171.42
+
+      #[Appota-logs]
+      - 43.239.223.147
+
+      #[Appota-memservices]
+      - 10.0.0.16
+      - 10.0.0.23
+      - 10.0.0.60
+      - 10.0.0.61
+      - 10.0.0.123
+
+      #[Appvnsg]
+      - 10.0.0.6 #appvnsg-db2
+      - 10.0.0.8 #appvnsg-db1
+      - 10.0.0.23 #appvnsg-db3
+      - 10.0.0.12 #appvnsg-mongo1
+      - 10.0.0.9 #Appvnsg-mongo2
+      - 10.0.0.22 #appvnsg-backend1
+      - 10.0.0.25 #appvnsg-backend2
+      - 10.0.0.26 #appvnsg-backend3
+      - 10.0.0.27 #appvnsg-backend4
+      - 10.0.0.103 #appvnsg-lb3
+      - 10.0.0.104 #appvnsg-lb4
+      - 10.0.0.240 #appvnsg-dns
+      - 10.0.0.113 #appvnsg-lb1
+      - 10.0.0.114 #appvnsg-lb2
+      - 10.0.0.157 #runner
+
+      #[appvn-sg-k8s]
+      - 10.0.0.140 #HAProxy1 
+      - 10.0.0.141 #HAProxy2
+      - 10.0.0.143 #node-master1
+      - 10.0.0.144 #node-master2
+      - 10.0.0.145 #node-master3
+      - 10.0.0.151 #node-worker1
+      - 10.0.0.152 #node-worker2
+      - 10.0.0.153 #node-worker3
+      - 10.0.0.161 #gfs-1
+      - 10.0.0.162 #gfs-2
+      - 10.0.0.163 #gfs-3
+      - 10.0.0.164 #elk
+      
+      #[appvn-vdc2-store]
+      - 10.0.0.71 # storage1
+      - 10.0.0.72 # storage2
+      - 10.0.0.73 # storage3
+      - 10.0.0.74 # storage4
+
+      #[appvnprod]
+      - 192.168.43.7 #db1
+      - 192.168.43.8 #db2
+      - 192.168.43.9 #db3
+      - 192.168.43.127 #appvnprod web-backend3
+      - 192.168.43.129 #redis
+      - 192.168.43.108 #backend1
+      - 192.168.43.109 #backend2
+      - 192.168.43.110 #lb1
+      - 192.168.43.111 #lb2
+      - 192.168.43.10 #lb db1
+      - 192.168.43.11 #lb db2
+      - 192.168.43.12 #Redis1
+      - 192.168.43.13 #Redis2
+      - 192.168.43.15  #Redis3
+        #[appvnprod-store]
+      - 103.53.171.38 #nginx 1
+      - 103.53.171.40 #nginx 2
+      - 103.53.171.41 #nginx 3
+      - 10.0.0.80 # storage4-appvn
+      
+      #[appota-dev-env]
+      - 192.168.41.57  # Dev lb1
+      - 192.168.41.56  # Dev mysql
+      - 192.168.41.63  # Dev web1-php5
+      - 192.168.41.153  # Dev web1-php7
+      - 192.168.41.58  # Dev mongo
+      - 192.168.41.42 # Dev mongodb_nap_42
+      - 192.168.41.41 # Dev mongodb_nap_41
+      - 192.168.41.200 # Dev Rancher Mariadb
+      - 192.168.41.210 # Dev Rancher NFS
+      - 192.168.41.254 # Dev Internet gateway
+      - 192.168.41.43 # Runner
+      - 192.168.41.44 # K8s-Master-01
+      - 192.168.41.45 # K8s-Master-02
+      - 192.168.41.46 # K8s-Master-03
+      - 192.168.41.47 # K8s-Worker-01
+      - 192.168.41.48 # K8s-Worker-02
+      - 192.168.41.49 # K8s-Worker-03
+      - 192.168.41.53 # K8s-Worker-04
+      - 192.168.41.50 # K8s-Haproxy
+      - 192.168.41.51 # Glusterfs-1
+      - 192.168.41.52 # Glusterfs-2
+
+      #[gitlab-runner]
+      - 192.168.41.11
+
+      #[Movie]
+      - 10.0.0.51
+      - 10.0.0.52
+      - 10.0.0.53
+      - 10.0.0.54
+      - 10.0.0.55
+      - 10.0.0.56
+      - 10.0.0.57
+      - 10.0.0.58
+
+      #[Gamota-nap]
+      - 192.168.40.111
+      - 192.168.40.112
+      - 192.168.40.2 # Gamota Internet gateway 1
+      - 192.168.40.3 # Gamota Internet gateway 2
+      - 192.168.40.66 # Gamota nap redis1
+      - 192.168.40.67 # Gamota nap redis1
+      - 192.168.40.68 # Gamota nap redis1
+
+        #[appota-dns-fpt]
+      - 103.53.170.250 # appota-dns-fpt1
+      - 103.53.170.251 # appota-dns-fpt2
+
+      # [blogsg]
+      - 10.0.11.11 # blogsg-lb1
+      - 10.0.11.12 # blogsg-lb2
+      - 10.0.11.23 # blogsg-web3
+      - 10.0.11.24 # blogsg-web4
+      - 10.0.11.147 # blogsg-web5
+      - 10.0.11.26 # blogsg-web6
+      - 10.0.11.168 # blogsg-web7
+      - 10.0.11.169 # blogsg-web8
+      - 10.0.11.31 # blogsg-db1
+      - 10.0.11.33 # blogsg-db3
+      - 10.0.11.35 # blogsg-db5
+      - 10.0.11.34 # blogsg-db5
+      - 10.0.11.36 # blogsg-db6
+      - 10.0.11.148 # blogsg-db2
+
+      # [appotasg-store]
+      - 10.0.0.40 # appotasg-store1
+      - 10.0.0.41 # appotasg-store2
+      - 10.0.0.42 # appotasg-store3
+      - 10.0.0.43 # appotasg-store4
+
+      # [aphim-store-k7x]
+      - 10.0.0.71 # k71.tv69.mobi
+      - 10.0.0.72 # k71.tv69.mobi
+      - 10.0.0.73 # k71.tv69.mobi
+      - 10.0.0.74 # k71.tv69.mobi
+
+      #[gsm]
+      - 10.0.0.180 # GSM
+      - 103.53.170.50 # GSM-upload
+      - 103.53.171.72  # GSM
+
+      # [Onclan]
+      - 192.168.28.166 # Onclan-web1
+      - 192.168.28.168 # Onclan-proxy1
+
+      # [dev]
+      - 192.168.41.57
+      - 192.168.41.56
+      - 192.168.41.63
+      - 192.168.41.153
+      - 192.168.41.58
+      - 192.168.41.42
+      - 192.168.41.41
+      - 192.168.41.200
+      - 192.168.41.210
+      - 192.168.41.254
+
+      # [Oceanbank]
+      - 103.53.171.147
+      - 103.53.171.143
+      - 103.53.171.60
+      # [Kdata-speedtest]
+      - 43.239.221.124
+      - 43.239.223.121
+      - 103.109.39.19
+      - 128.199.220.2
+
+      # STG env
+      - 103.53.170.59
+      - 103.53.170.58
+      - 103.53.171.198
+
+      # Other VM
+      - 103.53.171.22
+      - 103.53.171.117
+      - 103.53.171.157
+      - 103.53.171.110
+      - 103.53.171.95
+      - 103.53.170.38
+    groups: sudo
+    authorized_keys:
+      - cuonglq.pub
+
+#-------------------------
+# thinhnt
+  - name: thinhnt
+    servers:
+      #[onclan]
+      - 192.168.28.166 # Onclan-web1
+    groups: sudo
+    authorized_keys:
+      - thinhnt.pub
+
+#-------------------------
+# manhbt
+  - name: manhbt
+    servers:
+      # [appota-dev-env]
+      - 192.168.41.254 # Dev Internet gateway
+ 
+      # [Gamota-nap]
+      - 192.168.40.245 #gamota-lb-nap1
+      - 192.168.40.246 #gamota-lb-nap2
+      - 192.168.40.111 # gamota-nap-backend1
+      - 192.168.40.112 # gamota-nap-backend2
+      - 192.168.40.66 # Gamota nap redis1
+      - 192.168.40.67 # Gamota nap redis1
+      - 192.168.40.68 # Gamota nap redis1
+      - 192.168.40.42 #gamota-lb-db1
+      - 192.168.40.41 #gamota-lb-db2
+      - 192.168.40.170
+      - 192.168.40.171
+
+      - 192.168.40.240
+    
+      #[Appotapay NFS]
+      - 192.168.35.84 #NFS1
+      - 192.168.35.85 #Backup NFS
+
+      #[Appotapay-lb]
+      - 192.168.35.35
+      - 192.168.35.36
+      - 192.168.35.3 # appotapay-lb-db1
+      - 192.168.35.4 # appotapay-lb-db2
+      - 192.168.35.37 # appotapay-lb-internal1
+      - 192.168.35.38 # appotapay-lb-internal2
+      #[Appotapay-web]
+      - 192.168.35.57 #appotapay-web1
+      - 192.168.35.58 #appotapay-web2
+      - 192.168.35.47 #appotapay-web3 (hhvm payhub.vn)
+      - 192.168.35.124 #appotapay-web4
+      - 192.168.35.42 #appotapay-prod-web5
+      - 192.168.35.197 #appotapay-prod-web6
+      - 192.168.35.9 #appotapay-prod-web7
+      - 192.168.35.107 #appotapay-prod-web8
+      - 192.168.35.209 #appotapay-prod-web9
+      - 192.168.35.210 #appotapay-prod-web10
+      - 192.168.35.211 #appotapay-prod-web11
+      - 192.168.35.212 #appotapay-prod-web12
+      - 192.168.35.213 #appotapay-prod-web13
+      - 192.168.35.214 #appotapay-prod-web14
+      - 192.168.35.54 #appotapay-prod-web15
+      - 192.168.35.55 #appotapay-prod-web16
+      - 192.168.35.115 # Appotapay-card-core1
+      - 192.168.35.56 #Appotapay-card-core2
+      - 192.168.35.218 #Appotapay-prod-web18
+      - 192.168.35.219 #Appotapay-prod-web19
+      #[Appotapay-internet-gw]
+      - 192.168.35.215 # appotapay-internet-gw1
+      - 192.168.35.216 # appotapay-internet-gw2
+      #[Appotapay-db]
+      - 192.168.35.70 #report-mongodb1
+      - 192.168.35.71 #report-mongodb2
+      - 192.168.35.72 #report-mongodb3
+      - 192.168.35.137 #blackhole ewallet1
+      - 192.168.35.139 #blackhole ewallet2
+      - 192.168.35.140 #blackhole card
+
+      - 192.168.35.6 #Ewallet-mongodb1
+      - 192.168.35.7 #Ewallet-mongodb2
+      - 192.168.35.8 #Ewallet-mongodb3
+
+      - 192.168.35.18 #appotapay-db1
+      - 192.168.35.19 #appotapay-db2
+      - 192.168.35.142 #appotapay-db3 (master)
+
+      - 192.168.35.14 #mobile shop db1
+      - 192.168.35.15 #mobile shop db2
+
+      - 192.168.35.10 #ewallet-db1 (master)
+      - 192.168.35.11 #ewallet-db2
+      - 192.168.35.12 #ewallet-db3
+      - 192.168.35.26 #ewallet-db-delay1
+      - 192.168.35.27 #ewallet-db-delay3
+      - 192.168.35.28 #ewallet-db-delay3
+      - 192.168.35.51 #ewallet-db4 (master)
+      - 192.168.35.52 #ewallet-db5
+      - 192.168.35.53 #ewallet-db6
+      - 192.168.35.31 #appotapay-report-db1
+      - 192.168.35.32 #appotapay-report-db2
+      - 192.168.35.33 #appotapay-report-db3
+
+      #[Appotapay-Kong]
+      - 192.168.35.143 #Kong1
+      - 192.168.35.144 #Kong2
+      - 192.168.35.145 #Kong3
+
+      #[Appotapay-mem]
+      - 192.168.35.20 #Appotapay-Prod-Mem1
+      - 192.168.35.21 #Appotapay-Prod-Mem2
+      - 192.168.35.22 #Appotapay-Prod-Mem3
+      #[Appotapay-Runner]
+      - 192.168.35.234  #Pay-Runner
+      #[Appotapay-dns]
+      - 192.168.35.1
+      - 192.168.35.2
+      #[Appotapay-ELK]
+      - 192.168.35.29 #Node client
+      - 192.168.35.30 #Node master
+      - 192.168.35.59 #Node master-02
+      - 192.168.35.60 #Node master-03
+      - 192.168.35.43 #Node data
+      - 192.168.35.44 #Node data
+      - 192.168.35.45 #Node data
+
+      #[Appotapay-Kubernetes]
+      - 192.168.35.150 #Appotapay-Kubernetes-Master-01
+      - 192.168.35.151 #Appotapay-Kubernetes-Master-02
+      - 192.168.35.152 #Appotapay-Kubernetes-Master-03
+      - 192.168.35.153 #Appotapay-Kubernetes-Worker-01
+      - 192.168.35.154 #Appotapay-Kubernetes-Worker-02
+
+      - 192.168.35.123 #Appotapay-Kubernetes-Rancher
+      - 192.168.35.125 #Appotapay-Kubernetes-Master-01
+      - 192.168.35.126 #Appotapay-Kubernetes-Master-02
+      - 192.168.35.127 #Appotapay-Kubernetes-Master-03
+
+      - 192.168.35.128 #Appotapay-Kubernetes-Worker-01
+      - 192.168.35.129 #Appotapay-Kubernetes-Worker-02
+      - 192.168.35.130 #Appotapay-Kubernetes-Worker-03
+
+      - 192.168.35.131 #Appotapay-Kubernetes-LB-01
+      - 192.168.35.132 #Appotapay-Kubernetes-LB-02
+
+      - 192.168.35.133 #Appotapay-Kubernetes-GlusterFS-01
+      - 192.168.35.134 #Appotapay-Kubernetes-GlusterFS-02
+      - 192.168.35.135 #Appotapay-Kubernetes-GlusterFS-03
+    groups: sudo
+    authorized_keys:
+      - manhbt.pub
+
+#-------------------------
+  - name: trinhvv
+    servers:
+      # [Kdata-speedtest]
+      - 43.239.221.124
+      - 43.239.223.121
+      - 103.109.39.19
+      - 128.199.220.2
+    groups: sudo
+    authorized_keys:
+      - trinhvv.pub
+#-------------------------
+  - name: hanhnn
+    servers:
+      # [teatv-posgresql DO]
+      - 178.128.179.255
+      # [gamota_fbtools]
+      - 10.0.11.37
+      # [gamota_vnpt]
+      - 192.168.40.80
+      # [SEO]
+      - 43.239.220.196
+      - 43.239.220.197
+      #[dev-appota]
+      - 103.53.170.63
+      - 103.53.171.153
+      - 103.53.171.198
+      - 103.53.170.59
+      - 103.53.170.58
+      - 103.53.170.64
+      - 103.53.171.200
+
+      #[appvnprod]
+      - 103.53.170.241 #teatv-net
+      - 192.168.43.7 #db1
+      - 192.168.43.8 #db2
+      - 192.168.43.9 #db3
+      - 192.168.43.127 #appvnprod web-backend3
+      - 192.168.43.129 #redis
+      - 192.168.43.108 #backend1
+      - 192.168.43.109 #backend2
+      - 192.168.43.110 #lb1
+      - 192.168.43.111 #lb2
+      - 192.168.43.10 #lb db1
+      - 192.168.43.11 #lb db2
+      - 192.168.43.12 #Redis1
+      - 192.168.43.13 #Redis2
+      - 192.168.43.15  #Redis3
+      - 10.0.0.80 # storage4-appvn
+      
+      #mysql-dev
+      - 103.53.170.56
+
+      #[DEV]
+      - 192.168.41.43 #runner dev
+      - 192.168.41.44 # K8s-Master-01
+      - 192.168.41.45 # K8s-Master-02
+      - 192.168.41.46 # K8s-Master-03
+      - 192.168.41.47 # K8s-Worker-01
+      - 192.168.41.48 # K8s-Worker-02
+      - 192.168.41.49 # K8s-Worker-03
+      - 192.168.41.53 # K8s-Worker-04
+      - 192.168.41.50 # K8s-Haproxy
+      - 192.168.41.51 # Glusterfs-1
+      - 192.168.41.52 # Glusterfs-2
+      - 192.168.41.58 # Dev mongo
+      - 192.168.41.42 # Dev mongodb_nap_42
+      - 192.168.41.41 # Dev mongodb_nap_41
+      - 192.168.41.200 # Dev Rancher Mariadb
+      - 192.168.41.210 # Dev Rancher NFS
+      - 192.168.41.254 # Dev Internet gateway
+      
+      - 192.168.40.208 #runner gamota
+      - 192.168.40.210 
+      - 192.168.40.213 
+      - 192.168.40.131  # Mongo EGN
+      - 192.168.40.132  # Mongo EGN
+
+      #[gitlab-runner]
+      - 192.168.41.11
+      
+      #[Appvnsg]
+      - 10.0.0.6 #appvnsg-db2
+      - 10.0.0.8 #appvnsg-db1
+      - 10.0.0.23 #appvnsg-db3
+      - 10.0.0.12 #appvnsg-mongo1
+      - 10.0.0.9 #Appvnsg-mongo2
+      - 10.0.0.22 #appvnsg-backend1
+      - 10.0.0.25 #appvnsg-backend2
+      - 10.0.0.26 #appvnsg-backend3
+      - 10.0.0.27 #appvnsg-backend4
+      - 10.0.0.103 #appvnsg-lb3
+      - 10.0.0.104 #appvnsg-lb4
+      - 10.0.0.240 #appvnsg-dns
+      - 10.0.0.113 #appvnsg-lb1
+      - 10.0.0.114 #appvnsg-lb2
+      - 10.0.0.157 #runner
+
+      # [blogsg]
+      - 10.0.11.44 #HAproxy1
+      - 10.0.11.45 #HAproxy2
+      - 10.0.11.59 #K8s Master1
+      - 10.0.11.60 #K8s Master2
+      - 10.0.11.61 #K8s Master3
+      - 10.0.11.62 #K8s Worker1
+      - 10.0.11.63 #K8s Worker2
+      - 10.0.11.64 #K8s Worker3
+      - 10.0.11.52 #ELK
+      - 10.0.11.53 #Glusterfs1
+      - 10.0.11.54 #Glusterfs2
+      - 10.0.11.55 #Glusterfs3
+      - 10.0.11.65 #gamota glusterfs1
+      - 10.0.11.66 #gamota glusterfs2
+      - 10.0.11.67 #gamota glusterfs3
+
+      - 10.0.11.11 # blogsg-lb1
+      - 10.0.11.12 # blogsg-lb2
+      - 10.0.11.23 # blogsg-web3
+      - 10.0.11.24 # blogsg-web4
+      - 10.0.11.147 # blogsg-web5
+      - 10.0.11.26 # blogsg-web6
+      - 10.0.11.168 # blogsg-web7
+      - 10.0.11.169 # blogsg-web8
+      - 10.0.11.31 # blogsg-db1
+      - 10.0.11.33 # blogsg-db3
+      - 10.0.11.35 # blogsg-db5
+      - 10.0.11.34 # blogsg-db5
+      - 10.0.11.36 # blogsg-db6
+      - 10.0.11.148 # blogsg-db2
+      - 103.53.171.208
+
+      # [blogsg-worker4]
+      - 10.0.11.69
+
+      # [blogsg-worker5]
+      - 10.0.11.70
+
+      # [blogsg-worker6]
+      - 10.0.11.71
+
+      # [gamota_postgres]
+      - 192.168.40.126
+      - 192.168.40.127
+
+      # [id.gamota]
+      - 192.168.40.128 
+
+      # [GSM]
+      - 103.53.171.72  # GSM
+      - 103.53.170.50
+      # [gamota-shop]
+      - 192.168.40.209 #gamota-lb1
+      - 192.168.40.210 #gamota-lb2
+      - 192.168.40.233 #gamota-shop-web1
+      - 192.168.40.234 #gamota-shop-web2
+      - 192.168.40.235 #gamota-shop-db1
+      - 192.168.40.236 #gamota-shop-d41
+      - 192.168.40.237 #gamota-shop-d41
+      - 192.168.40.213 #gamota-shop-d41
+      - 192.168.40.211 #gamota-redis141
+      - 192.168.40.212 #gamota-redis241
+
+      - 192.168.40.28
+      - 192.168.40.231
+      - 192.168.40.232
+      - 192.168.40.227
+      - 192.168.40.228
+      - 192.168.40.229
+      - 192.168.40.220
+      - 192.168.40.223
+      - 192.168.40.119
+
+      #[gamota-shop-db4]
+      - 192.168.40.241 #gamota-shop-db4
+
+      # [gamota-sdk]
+      - 192.168.40.74 #gamota-sdk-sv1
+      - 192.168.40.75 #gamota-sdk-sv2
+      - 192.168.40.40 #gamota-sdk-cron
+      - 192.168.40.120 #gamota-sdk-mongodb1
+      - 192.168.40.121 #gamota-sdk-mongodb2
+      - 192.168.40.118 #gamota-sdk-mongodb3
+      - 192.168.40.117 #gamota-sdk-mongodb4
+      - 192.168.40.175 #gamota-sdk-log
+
+      # [gamota_egn]
+      - 192.168.40.131
+      - 192.168.40.132     
+       
+      # [gamota-services]
+      - 103.53.171.90 #gamota-service1
+      - 103.53.171.164 #gamota-storage
+      - 103.53.171.80 #gamota-service-db
+      - 103.53.171.79 #gamota-service-web
+
+      #[Congcf]
+      - 192.168.35.61 #Mongo-congcf1
+      - 192.168.35.62 #Mongo-congcf2
+      - 192.168.35.63 #Mongo-congcf3
+
+      #[appvn-sg-k8s]
+      - 10.0.0.140 #HAProxy1 
+      - 10.0.0.141 #HAProxy2
+      - 10.0.0.143 #node-master1
+      - 10.0.0.144 #node-master2
+      - 10.0.0.145 #node-master3
+      - 10.0.0.151 #node-worker1
+      - 10.0.0.152 #node-worker2
+      - 10.0.0.153 #node-worker3
+      - 10.0.0.161 #gfs-1
+      - 10.0.0.162 #gfs-2
+      - 10.0.0.163 #gfs-3
+      - 10.0.0.164 #elk
+
+      #[gw]
+      - 10.0.11.56
+
+      #[appvnsg-dns2]
+      - 10.0.0.242
+
+    groups: sudo
+    authorized_keys:
+      - hanhnn.pub
+
+#-------------------------
+# quyvn
+  - name: quyvn
+    servers:
+      # [gamota_fbtools]
+      - 10.0.11.37
+      # [gamota_vnpt]
+      - 192.168.40.80
+      # [SEO]
+      - 43.239.220.196
+      - 43.239.220.197
+      #[DEV]
+      - 192.168.41.43 #runner dev
+      - 192.168.41.44 # K8s-Master-01
+      - 192.168.41.45 # K8s-Master-02
+      - 192.168.41.46 # K8s-Master-03
+      - 192.168.41.47 # K8s-Worker-01
+      - 192.168.41.48 # K8s-Worker-02
+      - 192.168.41.49 # K8s-Worker-03
+      - 192.168.41.53 # K8s-Worker-04
+      - 192.168.41.50 # K8s-Haproxy
+      - 192.168.41.51 # Glusterfs-1
+      - 192.168.41.52 # Glusterfs-2
+      - 192.168.41.58 # Dev mongo
+      - 192.168.41.42 # Dev mongodb_nap_42
+      - 192.168.41.41 # Dev mongodb_nap_41
+      - 192.168.41.200 # Dev Rancher Mariadb
+      - 192.168.41.210 # Dev Rancher NFS
+      - 192.168.41.254 # Dev Internet gateway
+      - 192.168.41.56  # Dev mysql
+
+      #[gitlab-runner]
+      - 192.168.41.11
+      
+      #[dev-appota]
+      - 103.53.170.63
+      - 103.53.171.153
+      - 103.53.171.198
+      - 103.53.170.59
+      - 103.53.170.58
+      - 103.53.170.64
+      - 103.53.171.200
+
+      # [AppotaPay]
+      - 192.168.35.143 #Kong1
+      - 192.168.35.144 #Kong2
+      - 192.168.35.145 #Kong3
+
+      # [Blogsg]
+      - 10.0.11.53 # DB dev
+      - 10.0.11.33 # DB prod
+      - 10.0.11.35 # DB prod
+      - 10.0.11.36 # DB prod
+      - 10.0.11.34
+      - 10.0.11.147 # blogsg-web5
+      - 10.0.11.44 #HAproxy k8s
+      - 10.0.11.45 #HAproxy2
+      - 10.0.11.59 #K8s Master1
+      - 10.0.11.60 #K8s Master2
+      - 10.0.11.61 #K8s Master3
+      - 10.0.11.62 #K8s Worker1
+      - 10.0.11.63 #K8s Worker2
+      - 10.0.11.64 #K8s Worker3
+      - 10.0.11.52 #ELK
+      - 10.0.11.53 #Glusterfs1
+      - 10.0.11.54 #Glusterfs2
+      - 10.0.11.55 #Glusterfs3
+      - 10.0.11.56 #Gateway Internet blogsg
+      - 10.0.11.65 #gamota glusterfs1
+      - 10.0.11.66 #gamota glusterfs2
+      - 10.0.11.67 #gamota glusterfs3
+
+      # [blogsg-worker4]
+      - 10.0.11.69
+
+      # [blogsg-worker5]
+      - 10.0.11.70
+
+      # [blogsg-worker6]
+      - 10.0.11.71
+
+      #[Appvnsg]
+      - 10.0.0.6 #appvnsg-db2
+      - 10.0.0.8 #appvnsg-db1
+      - 10.0.0.23 #appvnsg-db3
+      - 10.0.0.12 #appvnsg-mongo1
+      - 10.0.0.9 #Appvnsg-mongo2
+      - 10.0.0.22 #appvnsg-backend1
+      - 10.0.0.25 #appvnsg-backend2
+      - 10.0.0.26 #appvnsg-backend3
+      - 10.0.0.27 #appvnsg-backend4
+      - 10.0.0.103 #appvnsg-lb3
+      - 10.0.0.104 #appvnsg-lb4
+      - 10.0.0.240 #appvnsg-dns
+      - 10.0.0.113 #appvnsg-lb1
+      - 10.0.0.114 #appvnsg-lb2
+      - 10.0.0.157 #runner
+      
+      #[appvnsg-dns2]
+      - 10.0.0.242
+
+       #[appvnprod]
+      - 192.168.43.7 #db1
+      - 192.168.43.8 #db2
+      - 192.168.43.9 #db3
+
+      - 192.168.43.127 #appvnprod web-backend3
+      - 192.168.43.129 #redis
+      - 192.168.43.108 #backend1
+      - 192.168.43.109 #backend2
+      - 192.168.43.110 #lb1
+      - 192.168.43.111 #lb2
+      - 192.168.43.10 #lb db1
+      - 192.168.43.11 #lb db2
+      - 192.168.43.12 #Redis1
+      - 192.168.43.13 #Redis2
+      - 192.168.43.15  #Redis3
+      - 10.0.0.80 # storage4-appvn
+      
+      #[Gamota-sdk]
+      - 192.168.40.74 #gamota-sdk-sv1
+      - 192.168.40.75 #gamota-sdk-sv2
+
+      # [gamota-shop]
+      - 192.168.40.208 #gamota-runner 
+      - 192.168.40.209 #gamota-lb1
+      - 192.168.40.210 #gamota-lb2
+      - 192.168.40.232 #Gamota-vip
+      - 192.168.40.231 #Gamota-vip2
+      - 192.168.40.233 #gamota-shop-web1
+      - 192.168.40.234 #gamota-shop-web2
+      - 192.168.40.235 #gamota-shop-db1
+      - 192.168.40.236 #gamota-shop-d41
+      - 192.168.40.237 #gamota-shop-d41
+      - 192.168.40.213
+      - 192.168.40.237 #gamota-shop-d41
+      - 192.168.40.211 #gamota-redis141
+      - 192.168.40.212 #gamota-redis241
+      - 192.168.40.40
+
+      - 192.168.40.28
+      - 192.168.40.231
+      - 192.168.40.232
+      - 192.168.40.227
+      - 192.168.40.228
+      - 192.168.40.229
+      - 192.168.40.220
+      - 192.168.40.223
+      - 192.168.40.119
+      - 192.168.40.175 #gamota-sdk-log
+
+      #[gamota-shop-db4]
+      - 192.168.40.241 #gamota-shop-db4
+
+      # [gamota_postgres]
+      - 192.168.40.126
+      - 192.168.40.127
+      # [gamota_egn]
+      - 192.168.40.131
+      - 192.168.40.132
+      #[Congcf]
+      - 192.168.35.61 #Mongo-congcf1
+      - 192.168.35.62 #Mongo-congcf2
+      - 192.168.35.63 #Mongo-congcf3
+
+      #[appvn-sg-k8s]
+      - 10.0.0.140 #HAProxy1 
+      - 10.0.0.141 #HAProxy2
+      - 10.0.0.143 #node-master1
+      - 10.0.0.144 #node-master2
+      - 10.0.0.145 #node-master3
+      - 10.0.0.151 #node-worker1
+      - 10.0.0.152 #node-worker2
+      - 10.0.0.153 #node-worker3
+      - 10.0.0.161 #gfs-1
+      - 10.0.0.162 #gfs-2
+      - 10.0.0.163 #gfs-3
+      - 10.0.0.164 #elk
+
+      # [GSM]
+      - 103.53.171.72  # GSM
+      - 103.53.170.50
+      #[gamehub-sopcast-temp]
+      - 10.0.0.6
+      - 10.0.0.225
+      - 10.0.0.7
+      - 10.0.0.72
+      - 10.0.0.76
+      - 10.0.0.66
+      - 10.0.0.226
+      - 10.0.0.227
+      - 10.0.0.228
+      - 10.0.0.229
+      - 10.0.0.230
+      - 10.0.0.231
+      - 10.0.0.233
+      - 10.0.0.248
+      - 10.0.0.241
+
+      #[appota-login-nat-gateway]
+      - 192.168.13.251
+      - 192.168.13.252
+
+    groups: 'sudo'
+    authorized_keys:
+      - quyvn.pub
+#-------------------------
+# thuntt 
+  - name: thuntt
+    servers:
+      # [AppotaPay]
+      - 192.168.35.143 #Kong1
+      - 192.168.35.144 #Kong2
+      - 192.168.35.145 #Kong3
+
+      #[appvnsg-k8s]
+      - 10.0.0.140
+      - 10.0.0.141
+      - 10.0.0.143
+      - 10.0.0.144
+      - 10.0.0.145
+      - 10.0.0.151
+      - 10.0.0.152
+      - 10.0.0.153
+      - 10.0.0.161
+      - 10.0.0.162
+      - 10.0.0.163
+      - 10.0.0.164
+      - 10.0.0.240
+      - 10.0.0.242
+
+      #[appvnsg-vm]
+      - 10.0.0.103
+      - 10.0.0.104
+      - 10.0.0.113
+      - 10.0.0.114
+      - 10.0.0.6
+      - 10.0.0.8
+      - 10.0.0.23
+      - 10.0.0.12
+      - 10.0.0.9
+      - 10.0.0.147
+      - 10.0.0.157
+
+      #[blogsg-k8s]
+      - 10.0.11.44 #HAproxy1
+      - 10.0.11.45 #HAproxy2
+      - 10.0.11.59 #K8s Master1
+      - 10.0.11.60 #K8s Master2
+      - 10.0.11.61 #K8s Master3
+      - 10.0.11.62 #K8s Worker1
+      - 10.0.11.63 #K8s Worker2
+      - 10.0.11.64 #K8s Worker3
+      - 10.0.11.69 #K8s Worker4
+      - 10.0.11.70 #K8s Worker5
+      - 10.0.11.71 #K8s Worker6
+      - 10.0.11.52 #ELK
+      - 10.0.11.53 #Glusterfs1
+      - 10.0.11.54 #Glusterfs2
+      - 10.0.11.55 #Glusterfs3
+      - 10.0.11.56 #GW Internet
+      - 10.0.11.65  #gamota-gluster-01
+      - 10.0.11.66  #gamota-gluster-02
+      - 10.0.11.67  #gamota-gluster-03
+
+      #[blogsg-vm]
+      - 10.0.11.11  #blogsg-lb1
+      - 10.0.11.12  #blogsg-lb2
+      - 10.0.11.26  #blogsg-web6
+      - 10.0.11.33  #blogsg-db3
+      - 10.0.11.34  #blog-g-db4
+      - 10.0.11.35  #blogsg-db5
+      - 10.0.11.36  #blogsg-db6
+      - 10.0.11.168 #blogsg-web7
+      #- 10.0.11.169 #blogsg-web8
+
+            
+    groups: 'sudo'      
+    authorized_keys:
+      - thuntt.pub
+
+# thucnk
+  - name: thucnk
+    servers:
+      # [Free Data]
+      - 210.211.100.183 #freedata1
+      - 210.211.100.184 #freedata1
+    groups: 'sudo'      
+    authorized_keys:
+      - thucnk.pub
+
+
+#-------------------------
+# deploy
+  - name: deploy
+    servers:
+      # [gamota_vnpt]
+      - 192.168.40.80
+      # [blogsg]
+      - 10.0.11.23 # blogsg-web3
+      - 10.0.11.24 # blogsg-web4
+      - 10.0.11.147 # blogsg-web5
+      - 10.0.11.26 # blogsg-web6
+      - 10.0.11.168 # blogsg-web7
+      - 10.0.11.169 # blogsg-web8
+
+      #[appvnprod]
+      - 192.168.43.7 #db1
+      - 192.168.43.8 #db2
+      - 192.168.43.9 #db3
+
+      - 192.168.43.127 #appvnprod web-backend3
+      - 192.168.43.129 #redis
+      - 192.168.43.108 #backend1
+      - 192.168.43.109 #backend2
+      - 192.168.43.110 #lb1
+      - 192.168.43.111 #lb2
+      - 192.168.43.10 #lb db1
+      - 192.168.43.11 #lb db2
+      - 192.168.43.12 #Redis1
+      - 192.168.43.13 #Redis2
+      - 192.168.43.15  #Redis3
+        #[appvnprod-store]
+      - 103.53.171.38 #nginx 1
+      - 103.53.171.40 #nginx 2
+      - 103.53.171.41 #nginx 3
+
+      #[Appvnsg]
+      - 10.0.0.6 #appvnsg-db2
+      - 10.0.0.8 #appvnsg-db1
+      - 10.0.0.12 #appvnsg-mongo1
+      - 10.0.0.9 #Appvnsg-mongo2
+      - 10.0.0.22 #appvnsg-backend1
+      - 10.0.0.25 #appvnsg-backend2
+      - 10.0.0.26 #appvnsg-backend3
+      - 10.0.0.27 #appvnsg-backend4
+
+
+      #[Appotapay-web]
+      - 192.168.35.57 #appotapay-web1
+      - 192.168.35.58 #appotapay-web2
+      - 192.168.35.47 #appotapay-web3 (hhvm payhub.vn)
+      - 192.168.35.124 #appotapay-web4
+      - 192.168.35.42 #appotapay-prod-web5
+      - 192.168.35.197 #appotapay-prod-web6
+      - 192.168.35.9 #appotapay-prod-web7
+      - 192.168.35.107 #appotapay-prod-web8
+      - 192.168.35.209 #appotapay-prod-web9
+      - 192.168.35.210 #appotapay-prod-web10
+      - 192.168.35.211 #appotapay-prod-web11
+      - 192.168.35.212 #appotapay-prod-web12
+      - 192.168.35.213 #appotapay-prod-web13
+      - 192.168.35.214 #appotapay-prod-web14
+      - 192.168.35.54 #appotapay-prod-web15
+      - 192.168.35.55 #appotapay-prod-web16
+      - 192.168.35.115 # Appotapay-card-core1
+      - 192.168.35.56 #Appotapay-card-core2
+      - 192.168.35.218 #Appotapay-prod-web18 
+      - 192.168.35.219 #Appotapay-prod-web19 
+      - 192.168.35.84 #Appotapay static 
+
+      #[mobifone-gamota-nap]
+      - 192.168.40.116
+
+      - 192.168.13.24 #appota-login-backend24
+      # Gamota
+      - 192.168.40.128
+      - 192.168.40.74 # gamota-sdk5-backend1
+      - 192.168.40.75 # gamota-sdk5-backend2
+      - 192.168.40.111 # gamota-nap-backend1
+      - 192.168.40.112 # gamota-nap-backend2
+
+      #[appota-login-web]
+      - 192.168.13.21
+      - 192.168.13.22
+      - 192.168.13.23
+      - 192.168.13.24
+      - 192.168.13.31
+      - 192.168.13.32
+      - 192.168.13.33
+      - 192.168.13.34
+
+      #[appota-login-static]
+      - 192.168.13.85
+
+      #[gamota-nap-backend]
+      - 192.168.40.111
+      - 192.168.40.112
+
+      #[gamota-shop-backend]
+      - 192.168.40.233
+      - 192.168.40.234
+
+      #[gamota-vip-backend]
+      - 192.168.40.232
+      - 192.168.40.231 #Gamota-vip2
+      #[gamota-sdk]
+      - 192.168.40.74
+      - 192.168.40.75
+      - 192.168.40.40
+      # [Kdata-speedtest]
+      - 43.239.221.124
+      - 43.239.223.121
+      - 103.109.39.19
+      - 128.199.220.2
+
+    groups: ''      # no sudo
+    authorized_keys:
+      - deploy.pub
+
+
+
+#----REMOVE USER------------
+absent_users:
+      - thuandd
+      - dungnm
+      - nampv
+      - vietld
+      - longnh
+      - dont
+      - khanhpt
+      - diepdh
+      - kiennd
+      - longdv
+      - sonpd
+      - manhnv
+      - anpn
+      - hoanpv

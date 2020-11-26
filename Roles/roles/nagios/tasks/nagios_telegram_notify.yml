@@ -1,0 +1,20 @@
+---
+- name: CentOS install python pip
+  become: yes
+  yum: name=python2-pip state=present
+  when: ansible_os_family == "RedHat"
+
+- name: Pip install twx.botapi
+  become: yes
+  pip: name=twx.botapi state=present
+  when: ansible_os_family == "RedHat"
+
+- name: Copy nagios_telegram.py script
+  become: yes
+  copy: >
+    src=nagios_telegram.py
+    dest=/usr/local/bin/nagios_telegram.py
+    mode=0755
+    owner=root
+    group=root
+  when: ansible_os_family == "RedHat"

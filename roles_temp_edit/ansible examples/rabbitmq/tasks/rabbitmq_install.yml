@@ -1,0 +1,48 @@
+---
+
+- name: Enable management plugins
+  command: 'rabbitmq-plugins enable rabbitmq_management'
+
+- name: Install rabbitmq_admin binary
+  template:
+    src=rabbitmqadmin.j2
+    dest=/usr/bin/rabbitmqadmin
+    mode=0755
+
+- name: Change owner rabbitmq data folder
+  file:
+    path: /var/lib/rabbitmq
+    owner: rabbitmq
+    group: rabbitmq
+    recurse: yes
+
+- name: Start RabbitMQ and enable start with system
+  service: name=rabbitmq-server state=restarted enabled=yes
+
+- name: Creat User demo for RabbitMQ
+  rabbitmq_user:
+    user: demo
+    password: changeme
+    vhost: /
+    configure_priv: .*
+    read_priv: .*
+    write_priv: .*
+    state: present
+
+- name: Allow Port FirewallD
+  firewalld:
+    port: "{{ item }}"
+    permanent: true
+    state: enabled
+  with_items:
+    - 25672/tcp
+    - 4369/tcp
+    - 15672/tcp
+    - 5672/tcp
+  when: ansible_os_family == "RedHat" and ansible_distribution_major_version == '7'
+
+- name: Reload FirewallD
+  systemd:
+    name: firewalld
+    state: reloaded
+  when: ansible_os_family == "RedHat" and ansible_distribution_major_version == '7'

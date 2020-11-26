@@ -1,0 +1,6 @@
+---
+- name: restart master nodes
+  systemd:
+    name: redis-server
+    state: restarted
+  when: inventory_hostname in groups['redis-master']

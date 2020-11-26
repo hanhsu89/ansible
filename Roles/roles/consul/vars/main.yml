@@ -1,0 +1,25 @@
+---
+# vars file for consul
+CONSUL_VERSION: "1.8.5"
+
+consul_user: consul
+consul_group: consul
+
+datacenter: "DC1"
+domain: "fwork"
+consul_logfile: /var/log/consul.log
+consul_data_dir: /var/lib/consul
+consul_config_dir: /etc/consul.d/
+consul_ip: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
+consul_hostname: "{{ hostvars[inventory_hostname]['ansible_hostname'] }}"
+
+#===> ansible_architecture
+go_arch_map:
+  i386: '386'
+  x86_64: 'amd64'
+  aarch64: 'arm64'
+  armv7l: 'armv7'
+  armv6l: 'armv6'
+
+go_arch: "{{ go_arch_map[ansible_architecture] | default(ansible_architecture) }}"
+#===> ansible_architecture

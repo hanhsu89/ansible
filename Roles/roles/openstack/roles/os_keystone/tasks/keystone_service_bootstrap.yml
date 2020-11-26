@@ -1,0 +1,48 @@
+---
+
+# - name: Bootstrap keystone admin and endpoint
+#   command: >
+#    keystone-manage bootstrap \
+#      --bootstrap-password {{ keystone_auth_admin_password }} \
+#      --bootstrap-region-id RegionOne \
+#      --bootstrap-admin-url http://http://{{ internal_vip_address|default(groups['controller'][0]) }}:5000/v3/ \
+#      --bootstrap-public-url http://{{ internal_vip_address|default(groups['controller'][0]) }}:5000/v3/ \
+#      --bootstrap-internal-url http://{{ internal_vip_address|default(groups['controller'][0]) }}:5000/v3/
+#   #no_log: true
+#   become: yes
+#   become_user: "{{ keystone_system_user_name }}"
+#   changed_when: false
+#   register: add_service
+#   #failed_when: add_service.rc != 1 and add_service.rc != 0
+#   until: add_service is success
+#   retries: 5
+#   delay: 10
+- name: setup bootstrap keystone
+  block:
+   - name: Bootstrap keystone admin and endpoint
+     shell:
+       cmd: |
+        keystone-manage bootstrap --bootstrap-password {{ keystone_auth_admin_password }}\
+          --bootstrap-admin-url http://controller:5000/v3/ \
+          --bootstrap-internal-url http://controller:5000/v3/ \
+          --bootstrap-public-url http://controller:5000/v3/ \
+          --bootstrap-region-id RegionOne
+ 
+   - name: list projects
+     raw:  "source /root/admin-openrc && openstack project list"
+     register: plist
+     when: not ansible_check_mode
+
+   - block:
+     - raw: "source /root/admin-openrc && openstack project create --domain default --description 'Service Project' service"
+#     - raw: "source /root/admin-openrc && openstack project create --domain default --description 'Demo Project' demo"
+#     - raw: "source /root/admin-openrc && openstack user create --domain default --password {{ demo_password }} demo"
+#     - raw: "source /root/admin-openrc && openstack role create user"
+#     - raw: "source /root/admin-openrc && openstack role add --project demo --user demo user"
+     when: not ansible_check_mode and plist.stdout.find("service") < 0
+  run_once: true  
+  ignore_errors: true
+
+- name: test keystone token
+  tags: test
+  raw: "source /root/admin-openrc && openstack --os-auth-url http://controller:5000/v3 token issue | grep '^| id'"

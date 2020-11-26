@@ -1,0 +1,14 @@
+---
+# default blacklist to be downloaded
+# Find all options at https://github.com/StevenBlack/hosts/tree/master/alternates
+hosts_blacklist_name: gambling-porn-social
+
+hosts_custom:
+  address: 127.0.0.1
+  hostnames:
+    - demo.local
+    - proxy.local
+
+hosts_whitelist:
+    - www.twitter.com
+    - twitter.com

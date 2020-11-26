@@ -1,0 +1,66 @@
+---
+# If a node becomes unreachable Ansible will continue, but for setting up
+# the storage cluster we need all nodes to be up
+# https://github.com/ansible/ansible/issues/18782#issuecomment-318457240
+- name: Check all hosts accessible
+  assert:
+    that:
+      - ansible_play_hosts == ansible_play_hosts_all
+
+- name: retrieve gluster-pod IPs
+  command: >
+    {{ k8s_heketi_gluster_kubectl }}
+    get pods
+    --namespace={{ k8s_heketi_gluster_namespace }}
+    -o jsonpath='{.items[?(@.spec.containers[*].name=="glusterfs")].status.podIP}'
+  register: _k8s_heketi_gluster_ips
+  run_once: true
+
+- name: retrieve heketi service
+  command: >
+    {{ k8s_heketi_gluster_kubectl }}
+    get service
+    heketi
+    --namespace={{ k8s_heketi_gluster_namespace }}
+    -o
+    jsonpath='{.spec.clusterIP}:{.spec.ports[?(@.name=="heketi")].port}'
+  register: _k8s_heketi_gluster_endpoint
+  run_once: true
+
+- name: assert heketi service obtained
+  assert:
+    msg: Failed to obtain heketi service IP and port
+    that: "_k8s_heketi_gluster_endpoint.stdout | length > 3"
+  run_once: true
+
+- name: set fact get_heketi_endpoint
+  set_fact:
+    heketi_endpoint: "{{ _k8s_heketi_gluster_endpoint.stdout }}"
+  run_once: true
+
+- name: set fact glusternode_count
+  set_fact:
+    glusterpod_count: "{{ (_k8s_heketi_gluster_ips | length) | int }}"
+  run_once: true
+
+# volumtype (replication factor): <VolumeDurability>:number eg. none:1, replicate:2, replicate:3 , disperse:???
+# in jinja2 - means remove any whitespace before this bracket
+- name: set fact volumetype
+  set_fact:
+    volumetype: "{% if (glusterpod_count | int) == 1 %}none:1
+                 {%- elif (glusterpod_count | int) == 2 %}replicate:2
+                 {%- else %}replicate:3{% endif %}"
+  when: volumetype is undefined
+  run_once: true
+
+- name: render storage-class
+  template:
+    src: storage-class.yml.j2
+    dest: "~/kubernetes-yaml/heketi/storage-class.yml"
+
+- name: create storage-class
+  command: >
+    {{ k8s_heketi_gluster_kubectl }}
+    apply -f
+    ~/kubernetes-yaml/heketi/storage-class.yml
+  run_once: true

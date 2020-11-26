@@ -1,0 +1,21 @@
+{
+  "listener": [{
+    "tcp": {
+      "address" : "0.0.0.0:8200",
+      "tls_disable" : 1
+    }
+  }],
+  "api_addr": "http://0.0.0.0:8200",
+  "cluster_addr":"http://0.0.0.0:8201",
+  "storage": {
+     "mysql": {
+       "address":"{{ db_host }}:{{ db_port }}",
+       "database":"{{ db_name }}",
+       "username":"{{ db_user }}",
+       "password":"{{ db_pass }}"
+     }
+  },
+  "max_lease_ttl": "10h",
+  "default_lease_ttl": "10h",
+  "ui":true
+}

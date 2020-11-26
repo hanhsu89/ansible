@@ -1,0 +1,74 @@
+#jinja2: lstrip_blocks: True, trim_blocks: True
+#---------------------------------------------------------------------
+# Global settings
+#---------------------------------------------------------------------
+global
+  log         {{ haproxy.log_setting }}
+  chroot      /var/lib/haproxy
+  pidfile     /var/run/haproxy.pid
+  user        haproxy
+  group       haproxy
+  daemon
+  cpu-map 1-{{ ansible_processor_count // 2 }} 0-{{ (ansible_processor_count // 2) - 1 }}
+  nbproc {{ ansible_processor_count // 2 }}
+
+#---------------------------------------------------------------------
+# Default settings
+#---------------------------------------------------------------------
+defaults
+  mode                    tcp
+  log                     global
+  option                  tcp-smart-accept
+  option                  tcp-smart-connect
+  option                  tcplog
+  option                  dontlognull
+  option                  log-health-checks
+  option                  tcp-check
+  retries                 3
+  timeout queue           1m
+  timeout connect         10s
+  timeout client          1m
+  timeout server          1m
+  timeout check           10s
+
+#---------------------------------------------------------------------
+# Etcd frontend
+#---------------------------------------------------------------------
+frontend etcd
+  bind :2379
+  mode tcp
+  option tcplog
+  use_backend etcd
+  default_backend etcd
+
+#---------------------------------------------------------------------
+# Kubernetes APIs frontend
+#---------------------------------------------------------------------
+frontend k8s_apis
+  bind :6443
+  mode tcp
+  option tcplog
+  use_backend k8s_apis
+  default_backend k8s_apis
+
+#---------------------------------------------------------------------
+# Etcd backend
+#---------------------------------------------------------------------
+backend etcd
+  balance roundrobin
+  mode    tcp
+  option  tcp-check
+  {% for host in groups['master'] -%}
+  server {{ host }} {{ hostvars[host]['ansible_default_ipv4']['address'] }}:2379 check inter 5 rise 3 fall 2
+  {% endfor %}
+
+#---------------------------------------------------------------------
+# Kubernetes APIs backend
+#---------------------------------------------------------------------
+backend k8s_apis
+  balance roundrobin
+  mode    tcp
+  option  tcp-check
+  {% for host in groups['master'] -%}
+  server {{ host }} {{ hostvars[host]['ansible_default_ipv4']['address'] }}:6443 check inter 5 rise 3 fall 2
+  {% endfor -%}

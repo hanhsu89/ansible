@@ -1,0 +1,47 @@
+---
+os_controller_primary_node: "{{ groups['controller'][0] }}"
+# install package nova
+nova_server_packages:
+    - openstack-nova-api 
+    - openstack-nova-conductor
+    - openstack-nova-console
+    - openstack-nova-novncproxy
+    - openstack-nova-scheduler
+    - openstack-nova-placement-api
+nova_compute_packages:
+    - openstack-nova-compute
+nova_db_setup_host: "{{ ('database' in groups) | ternary(groups['database'][0], 'localhost') }}"
+
+# config db 
+galera_root_user: root
+galera_root_password: Jd0Hs5XHmFrJzPTW
+## nova
+nova_database: nova
+nova_galera_user: nova
+nova_user_password: Jd0Hs5XHmFrJzPTW
+
+## nova-api
+nova_api_database: nova_api
+## nova-placement
+nova_placement_database: placement
+nova_placement_galera_user: placement
+nova_placement_password: Jd0Hs5XHmFrJzPTW
+## nova-cel0
+nova_cell0_database: nova_cell0
+# config temoplate
+## nova.conf 
+nova_enabled_apis: osapi_compute,metadata
+metadata_secret: Jd0Hs5XHmFrJzPTW
+#internal_vip_address: "{% if groups['controller']|length == 3 %}{{ cluster_virtual_ip_address }}{% else %}{{ hostvars[groups['controller'][0]]['inventory_hostname'] }}{% endif %}"
+neutron_password: Jd0Hs5XHmFrJzPTW 
+nova_libvirt_inject_partition: 10
+nova_libvirt_inject_password: True
+nova_libvirt_inject_key: yes
+nova_password: Jd0Hs5XHmFrJzPTW
+rabbitmq_auth_password: Jd0Hs5XHmFrJzPTW
+nova_ceilometer_enabled: false
+nova_virt_type: kvm
+nova_api_password: Jd0Hs5XHmFrJzPTW
+nova_controller_setup_host: "{{ ('controller' in groups) | ternary(groups['controller'][0], 'controller') }}"
+memcached_servers: "{% for host in groups['memcached'] %}{{ hostvars[host]['ansible_host'] }}:{{ memcached_port }}{% if not loop.last %},{% endif %}{% endfor %}"
+

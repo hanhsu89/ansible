@@ -1,0 +1,18 @@
+---
+
+- name: Create redis cluster
+  shell: |
+    echo yes | redis-cli -a {{ redis_masterauth }} --cluster create {{ groups['redis'] | product(['6379', '9736']) | map('join', ':') | join(' ') }} --cluster-replicas 1
+  args:
+    executable: /bin/bash
+  run_once: True
+  register: create_redis_custer
+  when: primary and primary is defined
+
+- name: Verify cluster created successfully
+  assert:
+    that:
+      - "'All 16384 slots covered.' in create_redis_custer.stdout"
+    success_msg: "Cluster created successfully"
+    fail_msg: "Cluster created unsuccessfully"
+  when: primary and primary is defined    

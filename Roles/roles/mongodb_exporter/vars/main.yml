@@ -1,0 +1,32 @@
+---
+
+mongodb_exporter_version: '0.11.2'
+
+# Exporter repository/download URL
+mongodb_exporter_base_url: https://github.com/percona/mongodb_exporter
+mongodb_exporter_release_url: "{{ mongodb_exporter_base_url }}/releases/download/v{{ mongodb_exporter_version }}/mongodb_exporter-{{ mongodb_exporter_version }}.{{ ansible_system |lower }}-amd64.tar.gz"
+
+
+# OS user/group to run exporter under
+mongodb_exporter_system_user: mongodb_exporter
+mongodb_exporter_system_groups: mongodb_exporter
+
+
+# Path to directory that contains exporter binary
+mongodb_exporter_bin_dir:
+  dest: /usr/local/bin
+  owner: root
+  group: root
+  mode: "0755"
+
+
+# Address to listen on for web interface and telemetry
+mongodb_exporter_web_listen_address: :9216
+
+
+# Path under which to expose metrics
+mongodb_exporter_web_telemetry_path: /metrics
+
+
+# MongoDB URI in format [mongodb://][user:pass@]host1[:port1][,host2[:port2],...][/database][?options]
+mongodb_exporter_mongodb_uri: mongodb://127.0.0.1:27017

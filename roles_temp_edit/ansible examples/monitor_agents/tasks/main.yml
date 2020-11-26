@@ -1,0 +1,4 @@
+---
+- include: snmpd.yml
+- include: nrpe.yml
+- include: extra_plugins_config.yml

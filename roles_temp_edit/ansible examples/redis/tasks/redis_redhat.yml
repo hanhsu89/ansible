@@ -1,0 +1,45 @@
+---
+
+- name: Disable selinux temporary
+  command: setenforce 0
+  ignore_errors: True
+
+- name: Disable selinux after reboot
+  selinux:
+    state: disabled
+
+- name: install required yum packages
+  yum:
+    name:
+      - wget
+      - gcc
+      - gcc-c++
+      - make
+    state: present
+
+- name: Optimize sysctl
+  blockinfile:
+    path: /etc/sysctl.conf
+    block: |
+      vm.overcommit_memory = 1
+      net.core.somaxconn = 65535
+      net.ipv4.tcp_max_syn_backlog = 8192
+      net.ipv4.tcp_fin_timeout = 15
+      net.ipv4.tcp_keepalive_time = 300
+      net.ipv4.tcp_keepalive_probes = 5
+      net.ipv4.tcp_keepalive_intvl = 15
+      net.ipv4.tcp_max_tw_buckets = 1440000
+      net.ipv4.tcp_tw_recycle = 1
+      net.ipv4.tcp_tw_reuse = 1
+
+- name: Optimize limits.conf
+  blockinfile:
+    path: /etc/security/limits.conf
+    content: |
+      *   soft    nofile          65536
+      *   hard    nofile          65536
+
+- name: Apply sysctl and disable transparent_hugepage
+  shell: |
+      sysctl -p
+      echo never > /sys/kernel/mm/transparent_hugepage/enabled

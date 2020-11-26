@@ -1,0 +1,216 @@
+---
+
+- name: Install sudo on Centos
+  yum:
+    name: sudo
+    state: latest
+  when: ansible_os_family == 'RedHat'
+  tags:
+    - install-sudo
+    - users
+    - accounts
+
+
+- name: Install sudo on Ubuntu
+  apt:
+    name: sudo
+    state: latest
+  when: ansible_os_family == 'Debian'
+  tags:
+    - install-sudo
+    - users
+    - accounts
+
+- name: Create sudo group
+  group: name=sudo state=present
+  tags:
+    - users
+    - accounts
+
+
+- name: Update accounts
+  user:
+    name: "{{ item.name }}"
+    groups: "{{ item.groups }}"
+    generate_ssh_key: yes
+    append: yes
+    state: present
+    shell: /bin/bash
+  with_items: "{{ users }}"
+  when: item.servers and inventory_hostname in item.servers
+
+  tags:
+    - users
+    - accounts
+
+
+- name: Allow sudo to execute in non TTY environments
+  lineinfile: >
+    dest=/etc/sudoers
+    regexp="^Defaults    requiretty$"
+    line="#Defaults    requiretty"
+  tags:
+    - users
+    - accounts
+
+
+- name: Allow users to use sudo without a password
+  lineinfile: >
+    dest=/etc/sudoers
+    regexp='%sudo ' 
+    line='%sudo ALL=(ALL) NOPASSWD: ALL'
+    state=present
+    validate='visudo -cf %s'
+  tags:
+    - users
+    - accounts
+
+
+- name: Disable old users ssh
+  lineinfile: >
+    dest=/etc/ssh/sshd_config
+    state=absent
+    regexp='^.*?Allowusers'
+  tags:
+    - users
+    - accounts
+
+
+- name: Lock all users have password (except root)
+  script: lock_users.py
+  tags:
+    - users
+    - accounts
+
+
+- name: Update new authorized_keys
+  copy: >
+    src=public_keys/{{ item.0.name }}.pub
+    dest=/home/{{ item.0.name }}/.ssh/authorized_keys
+    mode=600
+  with_subelements:
+    - "{{ users }}"
+    - authorized_keys
+  when: item.0.servers and inventory_hostname in item.0.servers and item.0.name!="deploy"
+  tags:
+    - users
+    - accounts
+
+
+- name: Set owner file authorized_keys
+  file:
+    path=/home/{{ item.0.name }}/.ssh/authorized_keys
+    owner={{ item.0.name }}
+    group={{ item.0.name }}
+  with_subelements:
+    - "{{ users }}"
+    - authorized_keys
+  when: item.0.servers and inventory_hostname in item.0.servers and item.0.name!="deploy"
+  tags:
+    - users
+    - accounts
+
+
+- name: Remove old accounts
+  user: name='{{ item }}' state=absent remove=yes
+  with_items: "{{ absent_users }}"
+  tags:
+    - users
+    - accounts
+    - absent_users
+    - absent_accounts
+  ignore_errors: yes
+
+
+- name: Change color root user
+  lineinfile: >
+    dest=/root/.bashrc
+    line='force_color_prompt=yes'
+    line='PS1="\[\e[01;31m\]$PS1\[\e[00m\]"'
+    state=present
+  become: yes
+  tags:
+    - change_color
+
+
+- name: Remove sshd_config duplicated lines
+  lineinfile: >
+    dest=/etc/ssh/sshd_config
+    state=absent
+    regexp='^.*?{{ item }}'
+  with_items:
+    - "Port"
+    - "ListenAddress"
+    - "ChallengeResponseAuthentication"
+    - "PasswordAuthentication"
+    - "UsePAM"
+    - "PubkeyAuthentication"
+    - "PermitRootLogin"
+    - "LogLevel"
+    - "MaxAuthTries"
+    - "PermitEmptyPasswords"
+    - "X11Forwarding"
+    - "AllowUsers"
+  tags:
+    - users
+    - accounts
+
+
+- name: Disable password login and configure sshd
+  lineinfile: >
+    dest=/etc/ssh/sshd_config
+    state=present
+    line='{{ item }}'
+  with_items:
+    - "Port 1102"
+    - "UsePAM yes"
+    - "PermitRootLogin no"
+    - "PasswordAuthentication no"
+    - "ChallengeResponseAuthentication no"
+    - "PubkeyAuthentication yes"
+    - "LogLevel INFO"
+    - "MaxAuthTries 4"
+    - "PermitEmptyPasswords no"
+    - "X11Forwarding yes"
+  tags:
+    - users
+    - accounts
+
+
+
+- name: Allow users ssh to server
+  lineinfile: >
+    dest=/etc/ssh/sshd_config
+    line='AllowUsers {{ item.name }}'
+    state=present
+  with_items:
+    - "{{ users }}"
+  when: item.servers and inventory_hostname in item.servers
+
+  tags:
+    - users
+    - accounts
+
+
+- name: restart sshd
+  service: name={{ item }} state=restarted
+  with_items:
+    - sshd
+  ignore_errors: yes
+  become: yes
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "6"
+  tags:
+    - users
+    - accounts
+
+- name: restart sshd
+  systemd:
+    state: restarted
+    daemon_reload: yes
+    name: sshd
+  ignore_errors: yes
+  become: yes
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"
+  tags:
+    - users
+    - accounts

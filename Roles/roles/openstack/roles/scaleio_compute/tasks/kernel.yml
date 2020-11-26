@@ -1,0 +1,125 @@
+
+
+---
+
+- name: OS || Disable Selinux
+  selinux:
+    state: disabled
+
+- name: OS || Create package folder
+  file:
+    path: /root/openstack-package 
+    state: directory
+
+- name: OS || Copy RPM file
+  copy:
+    src: "{{ item }}"
+    dest: /root/openstack-package
+    owner: root
+    group: root
+    mode: 0644
+  with_items:
+    - EMC-ScaleIO-sdc-2.5-0.254.el7.x86_64.rpm
+    #- kernel-ml-4.18.12-1.el7.elrepo.x86_64.rpm
+    - service.sh
+
+- name: OS || Change hostname
+  shell: hostnamectl set-hostname "{{ hostname }}"
+
+- name: OS || Adjust timezone to Asia/Ho_Chi_Minh
+  file:
+    src: /usr/share/zoneinfo/Asia/Ho_Chi_Minh
+    dest: /etc/localtime
+    state: link
+
+- name: OS || Remove all DNS config if exists
+  lineinfile:
+    path: /etc/resolv.conf
+    regexp: "^nameserver"
+    state: absent
+
+- name: OS || Update DNS server
+  lineinfile:
+    path: /etc/resolv.conf
+    line: "nameserver 8.8.8.8"
+    state: present
+
+- name: OS || Install Kernel RPM
+  yum:
+    name:
+      #- /root/openstack-package/kernel-ml-4.18.12-1.el7.elrepo.x86_64.rpm
+      - /root/openstack-package/EMC-ScaleIO-sdc-2.5-0.254.el7.x86_64.rpm
+      - chrony
+      - centos-release-openstack-rocky
+      - epel-release
+    state: present
+
+- name: OS || Install Openstack Package
+  yum:
+    name:
+      - openstack-selinux
+      - openstack-nova-compute
+      - openstack-neutron
+      - openstack-neutron-ml2
+      - openstack-neutron-openvswitch
+      - ebtables
+      - iperf
+      - tcpdump
+      - htop
+      - nload
+      - bind-utils
+      - psmisc
+      - vim
+      - telnet
+      - traceroute
+      - net-tools
+      - tmux
+      - nano
+      - bash-completion
+      - bash-completion-extras
+      - wget
+    state: present
+
+#- name: OS || Update /etc/hosts
+#  copy:
+#    src: hosts
+#    dest: /etc/hosts
+#    owner: root
+#    group: root
+#    mode: 0644
+
+#- name: OS || Update Chronyd Local Server
+#  lineinfile:
+#    path: /etc/chrony.conf
+#    insertafter: '^# Please consider joining the pool'
+#    line: 'server ntpd-server iburst'
+
+- name: ScaleIO || Update scini.ko for ScaleIO SDC
+  copy:
+    src: scini.ko
+    dest: /bin/emc/scaleio/scini_sync/driver_cache/default/scini.ko
+    owner: root
+    group: root
+    mode: 0644
+
+- name: ScaleIO || Update MDM Address
+  lineinfile:
+    path: /bin/emc/scaleio/drv_cfg.txt
+    line: 'mdm {{ mdm_address }}'
+
+#- name: Kernel || Build Kernel with boot
+#  shell: |
+#    grub2-set-default 0
+#    grub2-mkconfig -o /boot/grub2/grub.cfg
+
+- name: OS || Disable Firewalld
+  systemd:
+    name: firewalld
+    state: stopped
+    enabled: no
+
+- name: OS || Enable Chronyd
+  systemd:
+    name: chronyd
+    state: restarted
+    enabled: yes

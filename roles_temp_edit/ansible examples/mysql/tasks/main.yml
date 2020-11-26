@@ -1,0 +1,4 @@
+---
+
+- import_tasks: mysql_redhat.yml
+  tags: mysql_install

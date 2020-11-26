@@ -1,0 +1,34 @@
+LoadPlugin syslog
+LoadPlugin cpu
+LoadPlugin interface
+LoadPlugin load
+LoadPlugin memory
+Include "/etc/collectd.d"
+Hostname "node-{{ node_id }}"
+LoadPlugin write_graphite
+LoadPlugin nginx
+<Plugin write_graphite>
+  <Node "CDN-node-{{ node_id }}">
+    Host "103.53.168.43"
+    Port "2003"
+    Protocol "tcp"
+    ReconnectInterval 0
+    LogSendErrors true
+    #Prefix "collectd"
+    #Postfix "collectd"
+    StoreRates true
+    AlwaysAppendDS false
+    EscapeCharacter "_"
+    SeparateInstances false
+    PreserveSeparator false
+    DropDuplicateFields false
+  </Node>
+</Plugin>
+<Plugin nginx>
+        URL "http://127.0.0.1/nginx_status"
+</Plugin>
+LoadPlugin disk
+<Plugin disk>
+        Disk "/^[hs]d[a-f][0-9]?$/"
+        IgnoreSelected false
+</Plugin>

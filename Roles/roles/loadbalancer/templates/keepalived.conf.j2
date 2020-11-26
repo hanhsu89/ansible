@@ -1,0 +1,48 @@
+global_defs {
+        script_user keepalived_script keepalived_script
+        enable_script_security
+}
+
+vrrp_script chk_haproxy {
+        script /usr/local/sbin/keepalived_check_script.sh
+        # execute every 2 seconds
+        interval 2
+        # it has to fail 2 times before switching state to fault
+        fall 2
+        # it has to succeed 2 times before switching state to master
+        rise 2
+}
+vrrp_instance VI_1 {
+        # The interface keepalived will manage
+        interface {{ hostvars[inventory_hostname]['ansible_default_ipv4']['interface'] }}
+        # How often to send out VRRP advertisements
+        advert_int 1
+        # The virtual router id number to assign the routers to
+        virtual_router_id 100
+        # The priority to assign to this device.
+        # This controls who will become the MASTER and BACKUP for a given
+        # VRRP instance (a lower number gets less priority)
+        nopreempt
+        unicast_src_ip {{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}
+        unicast_peer {
+                1.1.1.1
+        }
+        authentication {
+                auth_type PASS
+                auth_pass {{ keepalived.auth_pass }}
+        }
+        track_script {
+                chk_haproxy
+        }
+        notify /usr/local/sbin/keepalived_notify_script.sh
+        # The vrrp instance will track both eth0 and eth1
+        # (by default the vrrp instance will track its own interface).
+        # If any of the tracked interfaces goes down the vrrp instance will transition to FAULT state.
+        track_interface {
+                hostvars[inventory_hostname]['ansible_default_ipv4']['interface']
+        }
+        # The virtual IP addresses to float between nodes.
+        virtual_ipaddress {
+                {{ vip }} dev {{ hostvars[inventory_hostname]['ansible_default_ipv4']['interface'] }}
+        }
+}

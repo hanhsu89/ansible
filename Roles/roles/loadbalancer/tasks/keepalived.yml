@@ -1,0 +1,86 @@
+# - name: Create keepalived_script user and group
+#   block:
+#     - group:
+#         name: keepalived_script
+#         state: present
+#         system: yes
+#     - user:
+#         name: keepalived_script
+#         comment: 'Keepalived'
+#         shell: /bin/false
+#         group: keepalived_script
+#         system: yes
+#         state: present
+#         create_home: no
+
+# - name: Install neccessary packages
+#   apt:
+#     name:
+#       - build-essential
+#       - libssl-dev
+#     state: present
+#     update_cache: yes
+#     install_recommends: no
+#     force_apt_get: Yes
+
+# - name: Create neccessary directories
+#   file:
+#     path: /etc/keepalived
+#     state: directory
+
+# - name: Create keepalived status file
+#   file:
+#     path: "/var/run/keepalived_status"
+#     state: touch
+#     mode: 0644
+#     owner: keepalived_script
+#     group: keepalived_script
+
+# - name: Download keepalived
+#   unarchive:
+#     src: https://www.keepalived.org/software/keepalived-{{ keepalived.version }}.tar.gz
+#     remote_src: yes
+#     dest: /tmp
+#     mode: 0755
+#     owner: root
+#     creates: keepalived-{{ keepalived.version }}
+
+# - name: Build and install keepalived
+#   command: "{{ item }}"
+#   args:
+#     chdir: /tmp/keepalived-{{ keepalived.version }}
+#   loop:
+#     - ./configure
+#     - make
+#     - make install
+
+# - name: Create keepalived service
+#   template:
+#     src: keepalived.service.j2
+#     dest: /etc/systemd/system/keepalived.service
+
+- name: Create keepalived config file
+  template:
+    src: keepalived.conf.j2
+    dest: /etc/keepalived/keepalived.conf
+
+# - name: Create keepalived default file
+#   copy:
+#     src: keepalived
+#     dest: /etc/default/
+
+# - name: Create keepalived check scripts
+#   copy:
+#     src: "{{ item }}"
+#     dest: /usr/local/sbin/
+#     mode: 0755
+#   loop:
+#     - keepalived_check_script.sh
+#     - keepalived_notify_script.sh
+
+# - name: Be sure keepalived service is running and enabled
+#   systemd:
+#     name: keepalived
+#     state: started
+#     enabled: Yes
+#     daemon_reload: Yes

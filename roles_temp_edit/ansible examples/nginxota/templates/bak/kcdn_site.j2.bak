@@ -1,0 +1,104 @@
+#{{ ansible_managed }}
+
+# Upstream servers
+    {% for upstream in nginx_upstreams %}
+        upstream {{ upstream.name }} {
+
+    {% if upstream.strategy is defined %}
+            {{ upstream.strategy }};
+    {% endif %}
+
+    {% for server in upstream.servers %}
+            server {{ server }};
+    {% endfor %}
+
+    {% if upstream.keepalive is defined %}
+            keepalive {{ upstream.keepalive }};
+    {% endif %}
+        }
+    {% endfor %}
+
+#---------------------------------------------------------
+# proxy_cache
+    {% if nginx_proxy_cache_path %}
+        proxy_cache_path {{ nginx_proxy_cache_path }}/{{ server_name }} levels=1:2    keys_zone={{ server_name }}:2000m  inactive=5m  max_size=400g;
+    {% endif %}
+#---------------------------------------------------------
+
+{% for vhost in nginx_vhosts %}
+    server {
+        listen {{ vhost.listen | default('80 default_server') }};
+
+    {% if vhost.server_name is defined %}
+        server_name {{ vhost.server_name }};
+    {% endif %}
+
+    {% if vhost.root is defined %}
+        root {{ vhost.root }};
+    {% endif %}
+
+    index {{ vhost.index | default('index.html index.htm') }};
+
+    {% if vhost.error_page is defined %}
+        error_page {{ vhost.error_page }};
+    {% endif %}
+    {% if vhost.access_log is defined %}
+        access_log {{ vhost.access_log }};
+    {% endif %}
+    {% if vhost.error_log is defined %}
+        error_log {{ vhost.error_log }} error;
+    {% endif %}
+
+    {% if vhost.return is defined %}
+        return {{ vhost.return }};
+    {% endif %}
+
+    {% if vhost.extra_parameters is defined %}
+        {{ vhost.extra_parameters }}
+    {% endif %}
+}
+{% endfor %}
+#---------------------------------------------------------
+
+server {
+    access_log  /var/log/nginx/{{ server_name }}.access.log {{ format_log }};
+    error_log   /var/log/nginx/{{ server_name }}.error.log error;
+    listen      {{ listen }};
+    root        {{ document_root }};
+    server_name {{ domain_name }};
+#---------------------------------------------------------
+        location ~ .*\.(txt|html|xml)$ {
+            proxy_pass http://{{ server_name }};
+            include {{ nginx_proxy_param }};
+        }
+
+        location / {
+            {% for v in nginx_limit_rate_params %}
+                    {{ v }};
+            {% endfor %}
+            }
+
+            {% for v in nginx_secure_params %}
+                    {{ v }};
+            {% endfor %}
+            }
+
+        #---------------------------------------------------------
+        # international cdn 
+            {% for v in nginx_foreign_cen_params %}
+                    {{ v }};
+            {% endfor %}
+            }
+        #---------------------------------------------------------
+            proxy_pass http://{{ server_name }};
+            proxy_cache {{ server_name }};
+
+            include /usr/local/nginx/conf.d/params/nginx_proxy;
+
+            proxy_cache_valid      200 206 24h;
+            proxy_cache_valid  301 5m;
+            proxy_cache_valid  400 403 404 500 502 503 1m;
+            proxy_cache_key "$scheme$host$uri";
+        }
+#---------------------------------------------------------
+}

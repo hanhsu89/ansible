@@ -1,0 +1,12 @@
+[Unit]
+Description = Clam AntiVirus: freshclam update service
+After = network.target
+
+[Service]
+Type = forking
+ExecStart = /usr/bin/freshclam -d -c {{ clamav_freshclam_daily_checks_for_updates }}
+Restart = on-failure
+PrivateTmp = true
+
+[Install]
+WantedBy=multi-user.target

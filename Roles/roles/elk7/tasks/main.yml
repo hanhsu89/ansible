@@ -1,0 +1,18 @@
+---
+# tasks file for elasticsearch
+
+- import_tasks: elasticsearch.yml
+  become: yes
+  tags: elasticsearch
+
+- import_tasks: kibana.yml
+  become: yes
+  tags: kibana
+
+- import_tasks: logstash.yml
+  become: yes
+  tags: logstash
+
+- import_tasks: filebeat.yml
+  become: yes
+  tags: filebeat
