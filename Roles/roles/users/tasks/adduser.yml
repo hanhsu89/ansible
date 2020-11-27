@@ -46,27 +46,27 @@
     - authorized_keys
   when: item.0.servers and inventory_hostname in item.0.servers
 
-# - name: restart sshd | CentOS 7
-#   systemd:
-#     state: restarted
-#     daemon_reload: yes
-#     name: sshd
-#   ignore_errors: yes
-#   when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"
+- name: restart sshd | CentOS 7
+  systemd:
+    state: restarted
+    daemon_reload: yes
+    name: sshd
+  ignore_errors: yes
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"
 
-# - name: restart sshd | Ubuntu
-#   systemd:
-#     state: restarted
-#     daemon_reload: yes
-#     name: sshd
-#   ignore_errors: yes
-#   when: ansible_distribution == "Debian"
+- name: restart sshd | Ubuntu
+  systemd:
+    state: restarted
+    daemon_reload: yes
+    name: sshd
+  ignore_errors: yes
+  when: ansible_distribution == "Debian"
 
-# - name: Remove old accounts
-#   user: 
-#     name: '{{ item }}' 
-#     state: absent 
-#     remove: yes
-#   with_items: "{{ absent_users }}"
-#     - absent_users
-#   ignore_errors: yes
+- name: Remove old accounts
+  user: 
+    name: '{{ item }}' 
+    state: absent 
+    remove: yes
+  with_items: "{{ absent_users }}"
+    - absent_users
+  ignore_errors: yes
