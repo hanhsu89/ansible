@@ -1,24 +1,24 @@
 ---
 
-- name: Install Necessary Packages
-  apt:
-    name:
-      - python-pip
-      - python3-pip
-    state: present         
-    update_cache: yes
-    force_apt_get: yes
+# - name: Install Necessary Packages
+#   apt:
+#     name:
+#       - python-pip
+#       - python3-pip
+#     state: present         
+#     update_cache: yes
+#     force_apt_get: yes
 
-- name: Update new accounts
-  user:
-    name: "{{ item.name }}"
-    groups: "{{ item.groups }}"
-    generate_ssh_key: yes
-    append: yes
-    state: present
-    shell: /bin/bash
-  with_items: "{{ users }}"
-  when: item.servers and inventory_hostname in item.servers
+# - name: Update new accounts
+#   user:
+#     name: "{{ item.name }}"
+#     groups: "{{ item.groups }}"
+#     generate_ssh_key: yes
+#     append: yes
+#     state: present
+#     shell: /bin/bash
+#   with_items: "{{ users }}"
+#   when: item.servers and inventory_hostname in item.servers
 
 # - name: Disable old users ssh
 #   lineinfile: >
@@ -26,41 +26,41 @@
 #     state=absent
 #     regexp='^.*?Allowusers'
 
-- name: Update new user's authorized_keys
-  copy: >
-    src=public_keys/{{ item.0.name }}.pub
-    dest=/home/{{ item.0.name }}/.ssh/authorized_keys
-    mode=600
-  with_subelements:
-    - "{{ users }}"
-    - authorized_keys
-  when: item.0.servers and inventory_hostname in item.0.servers
+# - name: Update new user's authorized_keys
+#   copy: >
+#     src=public_keys/{{ item.0.name }}.pub
+#     dest=/home/{{ item.0.name }}/.ssh/authorized_keys
+#     mode=600
+#   with_subelements:
+#     - "{{ users }}"
+#     - authorized_keys
+#   when: item.0.servers and inventory_hostname in item.0.servers
 
-- name: Set owner file authorized_keys
-  file:
-    path: /home/{{ item.0.name }}/.ssh/authorized_keys
-    owner: "{{ item.0.name }}"
-    group: "{{ item.0.name }}"
-  with_subelements:
-    - "{{ users }}"
-    - authorized_keys
-  when: item.0.servers and inventory_hostname in item.0.servers
+# - name: Set owner file authorized_keys
+#   file:
+#     path: /home/{{ item.0.name }}/.ssh/authorized_keys
+#     owner: "{{ item.0.name }}"
+#     group: "{{ item.0.name }}"
+#   with_subelements:
+#     - "{{ users }}"
+#     - authorized_keys
+#   when: item.0.servers and inventory_hostname in item.0.servers
 
-- name: restart sshd | CentOS 7
-  systemd:
-    state: restarted
-    daemon_reload: yes
-    name: sshd
-  ignore_errors: yes
-  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"
+# - name: restart sshd | CentOS 7
+#   systemd:
+#     state: restarted
+#     daemon_reload: yes
+#     name: sshd
+#   ignore_errors: yes
+#   when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"
 
-- name: restart sshd | Ubuntu
-  systemd:
-    state: restarted
-    daemon_reload: yes
-    name: sshd
-  ignore_errors: yes
-  when: ansible_distribution == "Debian"
+# - name: restart sshd | Ubuntu
+#   systemd:
+#     state: restarted
+#     daemon_reload: yes
+#     name: sshd
+#   ignore_errors: yes
+#   when: ansible_distribution == "Debian"
 
 - name: Remove old accounts
   user: 
