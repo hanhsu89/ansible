@@ -16,8 +16,8 @@
 
 #=== Install MongoDB Replicaset_Run after Install MongoDB Standalone
 #
-# - name: Replicaset Config
-#   include: replicaset.yml
+- name: Replicaset Config
+  include: replicaset.yml
 
 
 #=== Uninstall MongoDB
