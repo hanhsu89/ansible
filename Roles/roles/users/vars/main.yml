@@ -16,4 +16,4 @@ users:
 
 #----------- REMOVE USER ------------
 absent_users:
-      - tungdd5
+      #- tungdd5
