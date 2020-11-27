@@ -16,4 +16,4 @@ users:
 
 #----------- REMOVE USER ------------
 absent_users:
-      #- anhpt
+      - tundd5
