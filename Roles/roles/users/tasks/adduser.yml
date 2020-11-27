@@ -68,5 +68,4 @@
     state: absent 
     remove: yes
   with_items: "{{ absent_users }}"
-    - absent_users
   ignore_errors: yes
