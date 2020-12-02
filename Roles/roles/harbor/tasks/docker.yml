@@ -1,0 +1,108 @@
+# - name: Check docker is installed
+#   command: 'which docker'
+#   register: docker_installed
+#   failed_when: docker_installed.rc == 0
+
+# - name: Install docker neccessay packages
+#   apt:
+#     name:
+#       - apt-transport-https
+#       - ca-certificates
+#       - curl
+#     state: present
+#     update_cache: Yes
+#     install_recommends: no
+#     force_apt_get: Yes
+#   when: docker_installed.rc != 0
+
+- name: Add docker signing key
+  apt_key:
+    url: https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg
+    state: present
+
+# - name: Add docker repository
+#   apt_repository:
+#     repo: deb [arch=amd64] https://download.docker.com/linux/{{ ansible_distribution | lower }}/ {{ ansible_distribution_release }} stable
+#     state: present
+#     filename: docker-ce
+
+# - name: Install latest docker
+#   apt:
+#     name:
+#       - docker-ce
+#       - docker-ce-cli
+#       - containerd.io
+#     state: present
+#     update_cache: Yes
+#     install_recommends: no
+#     force_apt_get: Yes
+#   when: docker_installed.rc != 0
+
+# - name: Upgrade docker to latest version if exist
+#   apt:
+#     name:
+#       - docker-ce
+#       - docker-ce-cli
+#       - containerd.io
+#     only_upgrade: Yes
+#     update_cache: yes
+#     state: latest
+#   when: docker_installed.rc == 0
+
+# - name: Create docker system group
+#   group:
+#     name: docker
+#     system: yes
+#     state: present
+#     gid: 999
+
+# - name: Download docker
+#   unarchive:
+#     remote_src: Yes
+#     src: https://download.docker.com/linux/static/stable/x86_64/docker-{{ docker.version }}.tgz
+#     dest: /usr/bin/
+#     mode: 0755
+#     extra_opts:
+#       - --strip-components=1
+
+# - name: Get latest docker-compose
+#   shell: curl -sS https://api.github.com/repos/docker/compose/releases/latest | grep browser_download_url | grep 'Linux' | grep -v 'sha256' | cut -d '"' -f 4
+#   args:
+#     executable: /bin/bash
+#   register: compose
+
+# - name: Install latest docker-compose
+#   get_url:
+#     url: "{{ compose.stdout }}"
+#     dest: /usr/local/bin/docker-compose
+#     mode: 0755
+
+# - name: Configure docker
+#   copy:
+#     src: daemon.json
+#     dest: /etc/docker/
+
+# - name: Create containerd config file
+#   copy:
+#     src: config.toml
+#     dest: /etc/containerd/
+
+- name: Create docker services
+  copy:
+    src: '{{ item }}'
+    dest: /etc/systemd/system/
+  loop:
+    - docker.service
+    - containerd.service
+    - docker.socket
+
+- name: Be sure docker services is running and enabled
+  systemd:
+    name: '{{ item }}'
+    state: restarted
+    enabled: Yes
+    daemon_reload: Yes
+  loop:
+    - docker.socket
+    - containerd
+    - docker

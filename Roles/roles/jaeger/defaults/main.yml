@@ -1,0 +1,4 @@
+jaeger:
+  version: 1.18.0
+es:
+  url: 'https://es1.service.staging.fwork:9200'

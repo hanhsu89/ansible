@@ -1,0 +1,60 @@
+# - name: Create jaeger system group
+#   group:
+#     name: jaeger
+#     system: yes
+#     state: present
+
+# - name: Create jaeger system user
+#   user:
+#     name: jaeger
+#     comment: 'Jaeger'
+#     system: yes
+#     shell: "/sbin/nologin"
+#     group: jaeger
+#     create_home: no
+#     home: /etc/jaeger
+
+# - name: Download jaeger
+#   unarchive:
+#     remote_src: Yes
+#     src: https://github.com/jaegertracing/jaeger/releases/download/v{{ jaeger.version }}/jaeger-{{ jaeger.version }}-linux-amd64.tar.gz
+#     dest: /usr/local/bin/
+#     extra_opts:
+#       - --strip-components=1
+#       - jaeger-{{ jaeger.version }}-linux-amd64/jaeger-collector
+#       - jaeger-{{ jaeger.version }}-linux-amd64/jaeger-query
+
+# - name: Create certs file for jaeger
+#   copy:
+#     src: "{{ item }}"
+#     dest: /etc/jaeger/certs/
+#   loop:
+#     - ca.pem
+#     - admin-es-key.pem
+#     - admin-es.pem
+#     - node-es-key.pem
+#     - node-es.pem
+
+- name: Create config for jaeger-collector and jaeger-query
+  template:
+    src: "{{ item.0 }}"
+    dest: "/etc/jaeger/{{ item.1 }}"
+  loop: "{{ ['collector.yaml.j2', 'query.yaml.j2'] | zip(['collector.yaml', 'query.yaml']) | list }}"
+
+# - name: Create service for jaeger-collector and jaeger-query
+#   copy:
+#     src: "{{ item }}"
+#     dest: /etc/systemd/system/
+#   loop:
+#     - jaeger-collector.service
+#     - jaeger-query.service
+
+- name: Besure jaeger-collector and jaeger-query is running and enabled
+  systemd:
+    name: "{{ item }}"
+    state: restarted
+    enabled: Yes
+    daemon_reload: Yes
+  loop:
+    - jaeger-collector
+    - jaeger-query

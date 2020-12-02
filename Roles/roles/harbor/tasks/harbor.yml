@@ -1,0 +1,85 @@
+# - name: Create harbor neccessary directory
+#   file:
+#     path: '{{ item }}'
+#     state: directory
+#     recurse: Yes
+#   loop:
+#     - '{{ harbor.work_dir }}'
+#     - '{{ harbor.work_dir }}/input'
+#     - '{{ harbor.config_dir }}'
+
+- name: Download harbor
+  unarchive:
+    remote_src: yes
+    src: '/home/anhpt81/harbor-offline-installer-v{{ harbor.version }}.tgz'
+    # src: https://storage.googleapis.com/harbor-releases/release-{{ harbor.version }}/harbor-offline-installer-v{{ harbor.version }}.tgz
+    dest: '{{ harbor.work_dir }}/'
+    extra_opts:
+      - --strip-components=1
+      - harbor/harbor.v{{ harbor.version }}.tar.gz
+
+# - name: Create docker certs directory
+#   file:
+#     path: /etc/docker/{{ harbor.url }}
+#     state: directory
+#     recurse: Yes
+
+# - name: Create harbor config file
+#   template:
+#     src: harbor.yml.j2
+#     dest: '{{ harbor.config_dir }}/harbor.yml'
+
+# - name: Prepare certs file for docker and harbor
+#   copy:
+#     src: '{{ item }}'
+#     dest: '{{ harbor.certs_dir }}/'
+#   loop:
+#     - fpt.work.key
+#     - fpt.work.crt
+
+# - name: Prepare certs file for docker and harbor
+#   copy:
+#     src: '{{ item }}'
+#     dest: '/etc/docker/{{ harbor.url }}/'
+#   loop:
+#     - fpt.work.key
+#     - fpt.work.crt
+
+- name: Load harbor docker image
+  shell: 'docker load -i {{ harbor.work_dir }}/harbor.v{{ harbor.version }}.tar.gz'
+  args:
+    executable: /bin/bash
+
+# - name: Prepare harbor configuration with notary
+#   set_fact:
+#     plugins: "{{ plugins + [ '--with-notary' ] }}"
+#   when: notary
+
+# - name: Prepare harbor configuration with trivy
+#   set_fact:
+#     plugins: "{{ plugins + [ '--with-trivy' ] }}"
+#   when: trivy
+
+# - name: Prepare harbor configuration with chartmuseum
+#   set_fact:
+#     plugins: "{{ plugins + [ '--with-chartmuseum' ] }}"
+#   when: chartmuseum
+
+# - name: Prepare harbor configuration
+#   shell: |
+#     docker run --rm -v {{ harbor.config_dir }}:/input:z \
+#       -v {{ harbor.data_volume }}:/data:z \
+#       -v {{ harbor.work_dir }}:/compose_location:z \
+#       -v {{ harbor.work_dir }}/common/config:/config:z \
+#       -v {{ harbor.data_volume }}/secret:/secret:z \
+#       -v /:/hostfs:z \
+#       goharbor/prepare:v{{ harbor.version }} {{ plugins | join(' ') }}
+#   args:
+#     executable: /bin/bash
+#     chdir: '{{ harbor.work_dir }}'
+
+# - name: Start harbor
+#   shell: 'docker-compose up -d'
+#   args:
+#     executable: /bin/bash
+#     chdir: '{{ harbor.work_dir }}'

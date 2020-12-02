@@ -27,6 +27,7 @@
 
 #=== Git
       - { role: gitlab-runner, tags: gitlab-runner }
+      - { role: gitlab, tags: gitlab }
 
 
 #=== Prometheus/Grafana with Exporters

@@ -1,0 +1,28 @@
+# private vars
+_config_dir: /etc/harbor
+_url: registry.{{ k8s_domain }}
+
+docker:
+  version: 19.03.9
+
+# Harbor vars
+harbor:
+  version: 2.0.0
+  url: '{{ _url }}'
+  port:
+    http: 80
+    https: 443
+  work_dir: '/var/lib/harbor'
+  config_dir: '{{ _config_dir }}'
+  certs_dir: '{{ _config_dir }}/certs'
+  data_volume: /harbor
+  admin_password: 'FWork@123'
+  # database_password: '{{ "FWork@123" | password_hash("sha512", "fwork") }}'
+  log:
+    level: info
+    rotate_count: 50
+    rotate_size: 200M
+    location: /var/log/harbor
+
+# Notary, trivy, chartmuseum
+plugins: []

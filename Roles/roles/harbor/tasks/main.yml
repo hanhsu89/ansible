@@ -1,0 +1,5 @@
+# - name: Install docker and docker-compose
+#   include: docker.yml
+
+- name: Install harbor
+  include: harbor.yml
