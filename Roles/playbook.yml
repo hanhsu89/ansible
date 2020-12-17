@@ -16,18 +16,26 @@
       - { role: selinux, tags: selinux }
       - { role: ssh_login_alert_2, tags: ssh_login }
       - { role: letsencrypt, tags: ssl }
-      - { role: haproxy, tags: haproxy }
-      - { role: keepalived, tags: keepalived }
-      - { role: redis, tags: redis }
-      - { role: openvpn_server, tags: openvpn_server }
-      - { role: openvpn_client, tags: openvpn_client }
-      - { role: mongodb, tags: mongodb }
+
       - { role: kafka, tags: kafka }
       - { role: consul, tags: consul }
+      - { role: redis, tags: redis }    
 
-#=== Git
+#=== HAProxy_Keepalived
+      - { role: haproxy, tags: haproxy }
+      - { role: keepalived, tags: keepalived }
+
+#=== OpenVPN
+      - { role: openvpn_server, tags: openvpn_server }
+      - { role: openvpn_client, tags: openvpn_client }
+
+#=== DBs
+      - { role: mongodb, tags: mongodb }
+      - { role: postgres, tags: postgres }
+
+#=== Git-CE, git-runner
       - { role: gitlab-runner, tags: gitlab-runner }
-      - { role: gitlab, tags: gitlab }
+      - { role: gitlab-ce, tags: gitlab-ce }
 
 
 #=== Prometheus/Grafana with Exporters

@@ -1,0 +1,28 @@
+---
+
+- name: Install NFS server
+  apt:
+    name: "{{ nfs_daemon_packages }}"
+    state: present
+    update_cache: yes
+
+- name: Ensure nfs server is started and enabled on boot
+  service:
+    name: "{{ nfs_daemon_name }}"
+    state: started
+    enabled: yes
+
+- set_fact:
+    nfs_service_is_installed: true  # Because the restart handler in template config may get called before we actually install the service, we need to put a "when" on the handler.
+
+- name: Configure /etc/default/nfs-kernel-server
+  template:
+    src: templates/etc/default/nfs-kernel-server.j2
+    dest: /etc/default/nfs-kernel-server
+    owner: root
+    group: root
+    mode: 0644
+    backup: true
+  notify:
+    - restart nfs config
+    - restart nfs

@@ -7,13 +7,13 @@ win
 
 #=== MongoDB StandAlone & Replicaset
 [mongodb]
-192.168.206.241 id=0 priority=3 primary=true 
-192.168.206.242 id=1 priority=2
-192.168.206.243 id=2 priority=1
+192.168.206.2 id=0 priority=3 primary=true 
+192.168.206.3 id=1 priority=2
+192.168.206.4 id=2 priority=1
 
 [mongodb_slave]
-192.168.206.242 id=1 priority=2
-192.168.206.243 id=2 priority=1
+192.168.206.3 id=1 priority=2
+192.168.206.4 id=2 priority=1
 #=== MongoDB StandAlone & Replicaset
 
 [redis]
@@ -30,6 +30,10 @@ win
 192.168.206.241
 192.168.206.242
 192.168.206.243
+
+
+[docker]
+192.168.206.2
 
 
 #========== Fwork ==========

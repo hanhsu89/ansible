@@ -19,6 +19,10 @@
 - name: Replicaset Config
   include: replicaset.yml
 
+#=== Add new Nodes
+# - name: Add new Nodes
+#   include: add_node.yml
+
 
 #=== Uninstall MongoDB
 #

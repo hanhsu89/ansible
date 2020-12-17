@@ -1,0 +1,32 @@
+---
+- name: Install NFS utilities
+  yum:
+    name: "{{ nfs_daemon_packages }}"
+    state: present
+    update_cache: true
+
+- name: Ensure rpcbind service is started and enabled on boot
+  service:
+    name: rpcbind
+    state: started
+    enabled: true
+
+- name: Ensure nfs service is started and enabled on boot
+  service:
+    name: "{{ nfs_daemon_name }}"
+    state: started
+    enabled: true
+
+- set_fact:
+    nfs_service_is_installed: true  # Because the restart handler in template config may get called before we actually install the service, we need to put a "when" on the handler.
+
+- name: Configure /etc/sysconfig/nfs
+  template:
+    src: templates/etc/sysconfig/nfs.j2
+    dest: /etc/sysconfig/nfs
+    owner: root
+    group: root
+    mode: 0644
+    backup: true
+  notify:
+    - restart nfs

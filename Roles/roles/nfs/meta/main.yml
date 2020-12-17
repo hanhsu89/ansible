@@ -1,0 +1,17 @@
+galaxy_info:
+  author: Dale Anderson
+  description: Configure NFS server and client nodes
+  company: Acro Media Inc.
+  license: GPLv3
+  min_ansible_version: 2.4
+  platforms:
+    - name: Ubuntu
+      versions:
+        - xenial
+        - bionic
+    - name: EL
+      versions:
+        - 6
+  galaxy_tags:
+    - nfs
+dependencies: []

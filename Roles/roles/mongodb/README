@@ -2,9 +2,63 @@ Percona Server for MongoDB
 (Standalone, Replication Set, Sharding)
 ==================================
 
+// Docker
+https://github.com/tugberkugurlu/mongodb-replica-set
+
+docker run -d
+  -p 27017:27017 \
+  -e MONGO_ROLE="primary" \
+  -e MONGO_SECONDARY="hostname or IP of secondary" \
+  -e MONGO_ARBITER="hostname or IP of arbiter" \
+  -e MONGO_ROOT_USER="myRootUser" \
+  -e MONGO_ROOT_PASSWORD="myRootUserPassword" \
+  -e MONGO_APP_USER="myAppUser" \
+  -e MONGO_APP_PASSWORD="myAppUserPassword" \
+  -e MONGO_APP_DATABASE="myAppDatabase" \
+  yourname/mongo-rep-set:latest
+
+mongo1:
+  restart: always
+  environment:
+    MONGO_ROLE: primary
+  tty: true
+  hostname: mongo1
+  image: ongoworks/mongo-rep-set:latest
+  links:
+  - mongo2:mongo2
+  - mongo3:mongo3
+  stdin_open: true
+
+mongo2:
+  restart: always
+  tty: true
+  hostname: mongo2
+  image: ongoworks/mongo-rep-set:latest
+  links:
+  - mongo1:mongo1
+  - mongo3:mongo3
+  stdin_open: true
+
+mongo3:
+  restart: always
+  environment:
+    JOURNALING: 'no'
+  tty: true
+  hostname: mongo3
+  image: ongoworks/mongo-rep-set:latest
+  links:
+  - mongo1:mongo1
+  - mongo2:mongo2
+  stdin_open: true
 
 
+// Secure
+To start MongoDB with --auth option (crontab -u mongodb -e) this will protect MongoDB from unauthorized access (for more security read this article): https://docs.mongodb.com/manual/administration/security-checklist/
+    
+    @reboot /usr/bin/mongod --config /etc/mongod.conf --auth --fork
 
+
+====> 
 https://www.percona.com/doc/percona-server-for-mongodb/4.0/install/apt.html
 https://repo.percona.com/apt/
 
