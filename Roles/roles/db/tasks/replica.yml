@@ -1,8 +1,0 @@
-- name: Ensure replicaset {{ mongo.replset }} exists
-  mongodb_replicaset:
-    login_host: localhost
-    login_user: "{{ mongo.user }}"
-    login_password: "{{ mongo.password }}"
-    replica_set: "{{ mongo.replset }}"
-    members: "{{ groups['vm30'] }}"
-  when: primary and primary is defined
