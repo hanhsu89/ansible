@@ -1,37 +1,26 @@
 ---
-# tasks file for ssh_login_alert
-- name: Install Required Packages
-  become: yes
+- name: Install Necessary Packages | Ubuntu
+  apt:
+    force_apt_get: yes    
+    state: latest
+    name:
+      - jq
+  ignore_errors: yes
+  when: ansible_os_family == "Debian"
+
+- name: Install Necessary Packages | CentOS
   yum:
     name:
-      - git
-      - curl
-    state: present
-  tags:
-    - ssh_login
+      - jq   
+    state: latest
+  when: ansible_os_family == 'RedHat'
 
-- name: Clone git to /opt/ folder
-  become: yes
-  git:
-    repo: git@github.com:hanhsu89/ssh_alert_login_to_tele.git
-    dest: /opt/ssh_alert_login_to_tele
-    force: yes
-  tags:
-    - ssh_login
+- name: Delete file ssh_login_alert.sh OLD
+  file:
+    path: /etc/profile.d/ssh_login_alert.sh
+    state: absent
 
-- name: Copy file config
-  become: yes
+- name: Copy ssh_login_alert.sh to server
   template:
-    src: credentials.config.j2
-    dest: /opt/ssh_alert_login_to_tele/credentials.config
-    #force: yes
-  tags:
-    - ssh_login
-
-- name: Set Crontab
-  become: yes
-  cron:
-    name: "Set Alert SSH_Login"
-    job: "bash /opt/ssh_alert_login_to_tele/deploy.sh"
-  tags:
-    - ssh_login    
+    src: ssh_login_alert.sh.j2
+    dest: /etc/profile.d/ssh_login_alert.sh
