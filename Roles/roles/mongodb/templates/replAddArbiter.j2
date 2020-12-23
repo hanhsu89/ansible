@@ -1,0 +1,3 @@
+{% for host in groups['mongodb_arbiter'] %}
+rs.addArb("{{ hostvars[host]['ansible_hostname'] }}:{{ mongodb_port }}")
+{% endfor %}

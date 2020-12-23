@@ -1,14 +1,44 @@
 Kafka
 ==================================
 
+Default Ports
+Port    Description
+2181    Client connection port
+2888    Quorum port for clustering
+3888    Leader election port for clustering
+
+
 ===> Command
   https://docs.cloudera.com/documentation/kafka/latest/topics/kafka_command_line.html
 
 => Show topic
   /usr/share/kafka/bin#
   ./kafka-topics.sh --zookeeper localhost:2181 --list
+  ./zookeeper-shell.sh localhost:2181 ls /brokers/topics
 
-=> Show message
+  ./zookeeper-shell.sh localhost:2181 ls /brokers/ids # Gives the list of active brokers
+  ./zookeeper-shell.sh localhost:2181 ls /brokers/topics #Gives the list of topics
+  ./zookeeper-shell.sh localhost:2181 get /brokers/ids/0 #Gives more detailed information of the broker id '0'
+
+  ./zookeeper-shell.sh localhost:2181 get /brokers/ids/1
+Connecting to localhost:2181
+
+WATCHER::
+
+WatchedEvent state:SyncConnected type:None path:null
+{"listener_security_protocol_map":{"INSIDE":"PLAINTEXT","OUTSIDE":"PLAINTEXT"},"endpoints":["INSIDE://fwork-kafka2:9094","OUTSIDE://kafka2.service.staging.fwork:9092"],"jmx_port":-1,"host":"fwork-kafka2","timestamp":"1591098357682","port":9094,"version":4}
+
+
+=> Create topic
+  ./kafka-topics.sh --create --zookeeper localhost:2181 --topic hanhsu --partitions 3 --replication-factor 1
+
+=> Delete topic ( Add line delete.topic.enable=true to server.properties)
+  ./kafka-topics.sh --zookeeper localhost:2181 --delete --topic test
+
+=> Add events/messages into the topic
+  ./kafka-console-producer.sh --topic hanhsu --bootstrap-server localhost:9092
+
+=> Show events/message in topic
   ./kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic send-email --from-beginning
 
 => Show detail of Topics
@@ -19,12 +49,6 @@ Topic: send-email       PartitionCount: 3       ReplicationFactor: 1    Configs:
         Topic: send-email       Partition: 0    Leader: 2       Replicas: 2     Isr: 2
         Topic: send-email       Partition: 1    Leader: 0       Replicas: 0     Isr: 0
         Topic: send-email       Partition: 2    Leader: 1       Replicas: 1     Isr: 1
-
-=> Create topic
-  ./kafka-topics.sh --create --zookeeper localhost:2181 --topic hanhsu --partitions 3 --replication-factor 1
-
-=> Delete topic ( Add line delete.topic.enable=true to server.properties)
-  ./kafka-topics.sh --zookeeper localhost:2181 --delete --topic test
 
 => Status Cluster
   ./zookeeper-shell.sh localhost:2181 ls /brokers/ids
@@ -54,14 +78,6 @@ http://cloudurable.com/blog/kafka-tutorial-kafka-from-command-line/index.html
 
 
 https://medium.com/hacking-talent/kafka-all-you-need-to-know-8c7251b49ad0
-
-
-Default Ports
-Port    Description
-2181    Client connection port
-2888    Quorum port for clustering
-3888    Leader election port for clustering
-
 
 
 #======== Note for ZooKeeper

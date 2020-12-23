@@ -22,6 +22,9 @@ https://rtfm.co.ua/en/redis-replication-part-4-writing-an-ansible-role-fore-the-
     redis-cli -a 64212833414c2245486c3c4472a742112d3bc525 --cluster create 192.168.206.241:6379 192.168.206.242:6379 192.168.206.243:6379 192.168.206.241:9736 192.168.206.242:9736 192.168.206.243:9736 --cluster-replicas 1
 
 
+redis-cli     
+127.0.0.1:6379> monitor 
+
 
 ===> AUTH command
 root@ubuntu-243:/etc/redis# redis-cli

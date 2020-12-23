@@ -1,0 +1,129 @@
+---
+
+- name: Disable selinux temporary
+  command: setenforce 0
+  ignore_errors: True
+
+- name: Disable selinux after reboot
+  selinux:
+    state: disabled
+
+- name: Repo MariaDB CentOS 7
+  template:
+    src: MariaDB-CentOS.repo.j2
+    dest: /etc/yum.repos.d/MariaDB.repo
+    mode: 0644
+
+- name: Install MariaDB
+  yum:
+    name:
+      - MariaDB-server
+      - MariaDB-client
+      - galera
+    state: present
+  when: ansible_os_family == 'RedHat'
+
+#===== Percona_XtraBackup
+- name: Install Packages
+  yum:
+    name:
+      - libev
+    state: present
+
+- name: CentOS | Install the Percona repository
+  yum:
+    name:
+      - https://repo.percona.com/yum/percona-release-latest.noarch.rpm
+    state: present
+  when: ansible_os_family == 'RedHat'
+
+- name: CentOS | Install Percona XtraBackup
+  yum:
+    name:
+      - percona-xtrabackup-{{ xtrabackup_version }}
+    state: present
+  when: ansible_os_family == 'RedHat'
+
+#======  
+- name: Create log directory
+  file: 
+    path: "{{ item }}"
+    state: directory
+    owner: mysql
+    group: mysql
+  with_items:
+    - /var/log/mysql
+    - /var/log/mysqld
+    - /var/log/mysqld/tmpdir
+
+- name: MariaDB Master Config
+  template:
+    src: server.cnf_master.j2
+    dest: /etc/my.cnf.d/server.cnf
+    mode: 0644
+  notify:
+    - restart mariadb 
+  when: roles == 'master'
+
+- name: MariaDB Slave Config
+  template:
+    src: server.cnf_slave.j2
+    dest: /etc/my.cnf.d/server.cnf
+    mode: 0644
+  notify:
+    - restart mariadb 
+  when: roles == 'slave'
+
+- name: Start MariaDB service
+  service:
+    name: mariadb
+    state: started
+    enabled: yes    
+
+- name: Create replication user
+  mysql_user:
+    name: "{{ mysql_replication_user }}"
+    password: "{{ mysql_replication_password }}"
+    host: "{{ hostvars[groups['mysql_repl'][1]].node_host }}"
+    #priv: "*.*:SUPER,REPLICATION CLIENT"
+    priv: "*.*:REPLICATION SLAVE"
+    state: present
+  when: roles == 'master'
+
+#======== Config for Replication =======
+- name: stop MySQL slave process
+  mysql_replication:
+    mode: stopslave
+  when: roles == 'slave'
+
+- name: get binlog file
+  command: >-
+    sed -r 's/^(.*)\s[0-9]+$/\1/'
+    /var/lib/mysql/xtrabackup_binlog_pos_innodb
+  args:
+    warn: false
+  register: binlog_file
+  when: roles == 'master'  
+
+- name: get binlog position
+  command: >-
+    sed -r 's/^.*\s([0-9]+)$/\1/'
+    /var/lib/mysql/xtrabackup_binlog_pos_innodb
+  args:
+    warn: false
+  register: binlog_position
+  when: roles == 'master' 
+
+- name: configure MySQL slave process
+  mysql_replication:
+    master_host: "{{ hostvars[groups['mysql_repl'][0]].node_host }}"
+    master_user: "{{ mysql_replication_user }}"
+    master_password: "{{ mysql_replication_password }}"
+    master_log_file: "{{ binlog_file.stdout }}"
+    master_log_pos: "{{ binlog_position.stdout }}"
+    mode: changemaster
+  when: roles == 'slave'
+
+- name: start MySQL slave process
+  mysql_replication:
+    mode: startslave

@@ -1,0 +1,65 @@
+---
+
+#=== Update all nodes to /etc/hosts file
+- name: Update the /etc/hosts file with nodes name
+  lineinfile:
+    dest: "/etc/hosts"
+    regexp: ".*\t{{ hostvars[item]['ansible_hostname']}}\t{{ hostvars[item]['ansible_hostname']}}"
+    line: "{{ hostvars[item]['ansible_default_ipv4']['address'] }}\t{{ hostvars[item]['ansible_hostname']}}"
+    state: present
+    backup: yes
+  with_items: "{{groups['mongodb']}}"
+
+
+#=== Setup MongoDB on Arbiter node
+- name: Install percona-server-mongodb | Debian
+  include: install_debian.yml
+  when: "(ansible_os_family == 'Debian') and (arbiter and arbiter is defined)"
+
+- name: Install percona-server-mongodb | RedHat
+  include: install_redhat.yml
+  when: "(ansible_os_family == 'RedHat') and (arbiter and arbiter is defined)"  
+
+- name: Tune MongoDB
+  include: tuning.yml
+  when: arbiter and arbiter is defined
+
+- name: Enable Replicaset on Arbiter nodes
+  lineinfile: 
+    dest: "/etc/mongod.conf"
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  with_items:
+    - { regexp: '^#replication:', line: 'replication:' }
+    - { regexp: '^#  replSetName: mongodb-rs', line: '  replSetName: {{ replicaSetName }}' }
+  when: arbiter and arbiter is defined
+
+- name: Start MongoDB Service
+  service:
+    name: mongod
+    state: started
+    enabled: yes
+    daemon_reload: true
+  when: arbiter and arbiter is defined
+
+
+#=== Copy script add Arbiter on MASTER node
+- name: Copy script to MASTER node
+  template: 
+    src: replAddArbiter.j2
+    dest: /tmp/replAddArbiter.js
+  when: primary and primary is defined
+
+- name: Add Arbiter node (Run on MASTER)
+  command: mongo -port {{ mongodb_port }} /tmp/replAddArbiter.js
+  when: primary and primary is defined
+
+
+#=== Restart Arbiter node after All done
+- name: Restart MongoDB Service
+  service:
+    name: mongod
+    state: restarted
+    enabled: yes
+    daemon_reload: true
+  when: arbiter and arbiter is defined

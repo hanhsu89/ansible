@@ -1,0 +1,11 @@
+db = db.getSiblingDB('admin');
+db.createUser(
+  {
+    user: "{{ mongodb_user.username }}",
+    pwd: "{{ mongodb_user.password }}",
+    roles: [ { role: "{{ mongodb_user.role_1 }}", db: "{{ mongodb_user.db }}" },
+             { role: "{{ mongodb_user.role_2 }}", db: "{{ mongodb_user.db }}" },
+               "readWriteAnyDatabase"
+            ]
+  }
+)

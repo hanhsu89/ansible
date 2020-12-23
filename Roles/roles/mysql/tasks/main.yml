@@ -1,13 +1,4 @@
 ---
 
-- import_tasks: mysql.yml
-  tags: mysql
-
-- import_tasks: mysql_repl.yml
-  tags: mysql_repl
-
-- import_tasks: mysql_galera.yml
-  tags: mysql_galera
-
-- import_tasks: percona_xtrabackup.yml
-  tags: xtrabackup
+- name: Install MariaDB
+  include: mariadb.yml

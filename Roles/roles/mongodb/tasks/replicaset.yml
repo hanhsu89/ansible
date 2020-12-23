@@ -1,33 +1,44 @@
 ---
 
-- name: Create Admin user rights userAdminAnyDatabase
-  mongodb_user:
-    database: admin
-    user: "{{ mongodb_user }}"
-    password: "{{ mongodb_password }}"
-    roles:
-      - db: admin
-        role: userAdminAnyDatabase
-    state: present
-  ignore_errors: true
-  when: primary and primary is defined
+- name: Copy script create user admin to MASTER node
+  template: 
+    src: create_user_admin.j2
+    dest: /tmp/create_user_admin.js
+  when: "(replicaset and replicaset is defined) and (primary and primary is defined)"
 
-- name: Create Root user rights root
-  mongodb_user:
-    database: admin
-    user: "{{ mongodb_user }}"
-    password: "{{ mongodb_password }}"
-    roles:
-      - db: admin
-        role: root
-    state: present
-  ignore_errors: true
-  when: primary and primary is defined
+- name: Run script create user admin on MASTER node
+  command: mongo -port {{ mongodb_port }} /tmp/create_user_admin.js
+  when: "(replicaset and replicaset is defined) and (primary and primary is defined)"
+
+# - name: Create Admin user rights userAdminAnyDatabase
+#   mongodb_user:
+#     database: admin
+#     user: "{{ mongodb_user.username }}"
+#     password: "{{ mongodb_user.password }}"
+#     roles:
+#       - db: admin
+#         role: userAdminAnyDatabase
+#     state: present
+#   ignore_errors: true
+#   when: "(replicaset and replicaset is defined) and (primary and primary is defined)"
+
+# - name: Create Root user rights root
+#   mongodb_user:
+#     database: admin
+#     user: "{{ mongodb_user.username }}"
+#     password: "{{ mongodb_user.password }}"
+#     roles:
+#       - db: admin
+#         role: root
+#     state: present
+#   ignore_errors: true
+#   when: "(replicaset and replicaset is defined) and (primary and primary is defined)"
 
 - name: Stop MongoDB Service
   service:
     name: mongod
     state: stopped
+  when: replicaset and replicaset is defined
 
 - name: Update the /etc/hosts file with node name
   lineinfile:
@@ -37,6 +48,7 @@
     state: present
     backup: yes
   with_items: "{{groups['mongodb']}}"
+  when: replicaset and replicaset is defined
 
 # - name: Create keyfile on {{ path_keyfile }}
 #   shell: openssl rand -base64 756 > {{ path_keyfile }}
@@ -71,6 +83,7 @@
   with_items:
     - { regexp: '^#replication:', line: 'replication:' }
     - { regexp: '^#  replSetName: mongodb-rs', line: '  replSetName: {{ replicaSetName }}' }
+  when: replicaset and replicaset is defined
 
 # - name: Copy keyfile to nodes
 #   template:
@@ -86,13 +99,14 @@
     state: started
     enabled: yes
     daemon_reload: true
+  when: replicaset and replicaset is defined
 
 - name: Copy script initiate replicaset to MASTER node
   template: 
     src: replSetInit.j2
     dest: /tmp/replSetInit.js
-  when: primary and primary is defined
+  when: "(replicaset and replicaset is defined) and (primary and primary is defined)"
 
 - name: Initialize the replicaset on MASTER node
   command: mongo -port {{ mongodb_port }} /tmp/replSetInit.js
-  when: primary and primary is defined
+  when: "(replicaset and replicaset is defined) and (primary and primary is defined)"

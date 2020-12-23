@@ -1,0 +1,59 @@
+---
+
+- name: Install Necessary Packages
+  apt:
+    name:
+      - software-properties-common
+      - apt-transport-https
+    state: present         
+    force_apt_get: yes
+
+- name: Enable the repository
+  get_url:
+    url: "https://downloads.mariadb.com/MariaDB/mariadb_repo_setup"
+    dest: /tmp/mariadb_repo_setup
+
+- name: Enable the repository
+  command: "bash /tmp/mariadb_repo_setup"
+
+# - name: Install Package
+#   apt_repository:
+#     repo: deb [arch=amd64,arm64,ppc64el] http://sfo1.mirrors.digitalocean.com/mariadb/repo/10.5/ubuntu bionic main
+#     state: present
+
+# - name: Update apt cache
+#   apt:
+#     update_cache: yes
+#     cache_valid_time: 300
+#     force_apt_get: yes
+
+# - name: Add MariaDB Repository
+#   template:
+#     src: mariadb_repo.j2
+#     dest: /etc/apt/sources.list.d/mariadb.list
+#     mode: 0644
+
+- name: Install MariaDB
+  apt:
+    name:
+      - mariadb-server
+      - mariadb-client
+      - mariadb-backup
+      - maxscale
+    state: present         
+    update_cache: yes
+    force_apt_get: yes
+
+- name: Start MariaDB Service
+  service:
+    name: mariadb
+    state: started
+    enabled: yes
+    daemon_reload: true
+  
+- name: Check status of MariaDB service
+  service_facts:
+  register: service_state
+
+- debug:
+    var: service_state.ansible_facts.services["mariadb.service"].state       

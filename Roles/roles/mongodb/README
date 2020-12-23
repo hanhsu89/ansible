@@ -71,7 +71,7 @@ https://github.com/PharosProduction/tutorial-mongodb-ansible/blob/master/mongodb
 
 
 ===> Create DB test Cluster
-    mongo --eval="db.getSiblingDB('hanhsu').createCollection('empty')"
+    mongo --eval="db.getSiblingDB('hanhsu').createCollection('items')"
 
 
 ===> Add & Config new host

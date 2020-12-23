@@ -3,11 +3,13 @@ Install MariaDB
 ==================================
 
 
-### Install 
+### Install Standalone 
 ------------------------------------
 
-https://mariadb.com/kb/en/installing-mariadb-deb-files/
-https://mariadb.com/kb/en/mariadb-package-repository-setup-and-usage/
+
+### Install Replication
+------------------------------------
+
 
 ### Install Galera
 ------------

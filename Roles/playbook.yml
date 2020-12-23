@@ -14,7 +14,6 @@
       - { role: terraform, tags: terraform }
       - { role: vault, tags: vault }
       - { role: selinux, tags: selinux }
-      - { role: ssh_login_alert_2, tags: ssh_login }
       - { role: letsencrypt, tags: ssl }
 
       - { role: kafka, tags: kafka }
@@ -32,6 +31,7 @@
 #=== DBs
       - { role: mongodb, tags: mongodb }
       - { role: postgres, tags: postgres }
+      - { role: mysql, tags: mysql }
 
 #=== Git-CE, git-runner
       - { role: gitlab-runner, tags: gitlab-runner }

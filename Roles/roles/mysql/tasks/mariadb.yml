@@ -1,0 +1,67 @@
+---
+
+# - name: Install Necessary Packages
+#   apt:
+#     name:
+#       - software-properties-common
+#       - apt-transport-https
+#     state: present         
+#     force_apt_get: yes
+
+# - name: Get upstream APT GPG key
+#   apt_key:
+#     id: '{{ item }}'
+#     keyserver: '{{ ansible_local.core.keyserver
+#                    if (ansible_local|d() and ansible_local.core|d() and
+#                        ansible_local.core.keyserver)
+#                    else "hkp://pool.sks-keyservers.net" }}'
+#     state: 'present'
+#   with_items: '{{ mariadb_apt_keys }}'
+
+- name: Configure upstream APT repository
+  apt_repository:
+    repo: '{{ mariadb_repository }}'
+    state: present
+    update_cache: yes
+
+# - name: Install Package
+#   apt_repository:
+#     repo: deb [arch=amd64,arm64,ppc64el] http://sfo1.mirrors.digitalocean.com/mariadb/repo/10.5/ubuntu bionic main
+#     state: present
+
+- name: Update apt cache
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+    force_apt_get: yes
+
+# - name: Add MariaDB Repository
+#   template:
+#     src: mariadb_repo.j2
+#     dest: /etc/apt/sources.list.d/mariadb.list
+#     mode: 0644
+
+- name: Install MariaDB
+  apt:
+    name:
+      - mariadb-server
+      - mariadb-client
+      - mariadb-backup
+      - maxscale
+    state: present         
+    update_cache: yes
+    force_apt_get: yes
+
+- name: Start MariaDB Service
+  service:
+    name: mariadb
+    state: started
+    enabled: yes
+    daemon_reload: true
+  
+- name: Check status of MariaDB service
+  service_facts:
+  register: service_state
+
+- debug:
+    var: service_state.ansible_facts.services["mariadb.service"].state       

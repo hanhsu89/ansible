@@ -7,28 +7,24 @@ win
 
 #=== MongoDB StandAlone & Replicaset
 [mongodb]
-192.168.206.2 replicaset=true id=0 priority=3 primary=true 
-192.168.206.3 replicaset=true id=1 priority=2
-192.168.206.4 replicaset=true id=2 priority=1
-192.168.206.5 arbiter=true                                  # Arbiter
+192.168.206.2 id=0 priority=3 primary=true 
+192.168.206.3 id=1 priority=2
+192.168.206.4 id=2 priority=1
 
 [mongodb_slave]
 192.168.206.3 id=1 priority=2
 192.168.206.4 id=2 priority=1
-
-[mongodb_arbiter]
-192.168.206.5
 #=== MongoDB StandAlone & Replicaset
 
 [redis]
-192.168.206.2 primary=true 
-192.168.206.3
-192.168.206.4
-
-[kafka]
-192.168.206.241
+192.168.206.241 primary=true 
 192.168.206.242
 192.168.206.243
+
+[kafka]
+192.168.1.30
+192.168.1.31
+192.168.1.32
 
 [consul]
 192.168.206.241
@@ -37,7 +33,7 @@ win
 
 
 [mysql]
-192.168.206.4
+192.168.206.2
 
 
 #========== Fwork ==========

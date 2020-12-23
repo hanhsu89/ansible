@@ -7,8 +7,12 @@
 version: 44
 
 mongodb_port: 27017
-mongodb_user: "hanhnn"
-mongodb_password: "123@hanhsu"
+mongodb_user: 
+    username: hanhsu
+    password: 123@hanhsu
+    role_1: root
+    role_2: userAdminAnyDatabase
+    db: admin
 
 path_systemlog: /data/log/mongodb/mongod.log
 path_pidfile: /var/run/mongodb/mongod.pid

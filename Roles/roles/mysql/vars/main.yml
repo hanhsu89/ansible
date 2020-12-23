@@ -35,3 +35,18 @@ mysql_replication_master: ''
 
 mysql_replication_user: replica
 mysql_replication_password: replica123@
+
+#==============
+mariadb_upstream_version: 10.5
+mariadb_apt_keys: ['0xcbcb082a1bb943db', '0xF1656F24C74CD1D8']
+mariadb_distribution: '{{ ansible_local.core.distribution
+                         if (ansible_local|d() and ansible_local.core|d() and
+                             ansible_local.core.distribution|d())
+                         else ansible_distribution }}'
+mariadb_distribution_release: '{{ ansible_local.core.distribution_release
+                                 if (ansible_local|d() and ansible_local.core|d() and
+                                     ansible_local.core.distribution_release|d())
+                                 else ansible_distribution_release }}'                         
+mariadb_repository: deb [arch=amd64,arm64,ppc64el] http://mariadb.mirror.liquidtelecom.com/repo/{{ mariadb_upstream_version }}/{{ mariadb_distribution | lower }} {{ ansible_distribution_release }} main
+
+#deb [arch=amd64,arm64,ppc64el] http://mariadb.mirror.liquidtelecom.com/repo/{{ mariadb_upstream_version }}/{{ mariadb_distribution | lower }} $(lsb_release -cs) main

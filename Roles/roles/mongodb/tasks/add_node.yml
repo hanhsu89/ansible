@@ -18,7 +18,7 @@
 
 
 #=== Setup Replicaset
-- name: Update the /etc/hosts file with node name
+- name: Update the /etc/hosts file with nodes name
   lineinfile:
     dest: "/etc/hosts"
     regexp: ".*\t{{ hostvars[item]['ansible_hostname']}}\t{{ hostvars[item]['ansible_hostname']}}"
