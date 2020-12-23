@@ -1,13 +1,30 @@
 Kafka
 ==================================
 
+https://vsudo.net/blog/gia-tri-mac-dinh-kafka.html
+
 Default Ports
 Port    Description
 2181    Client connection port
 2888    Quorum port for clustering
 3888    Leader election port for clustering
 
-https://www.cloudkarafka.com/blog/2016-11-30-part1-kafka-for-beginners-what-is-apache-kafka.html#:~:text=Broker%3A%20Handles%20all%20requests%20from,Sends%20records%20to%20a%20broker.
+What is the maximum replication factor for a partition of kafka topic
+Replication factor determines the number of replications each partition have, this allows Kafka to automatically failover to these replicas when a server in the cluster fails so that messages remain available in case of failures
+
+Partition replicas are distributed across brokers and one broker should keep one replica that means we can't have more replicas than the number of brokers
+
+Max Replication factor <= brokers number.
+
+This is also meant to determine min.insync.replicas, that means it will always be less than or equal to replication-factor
+
+min.insync.replicas means <= Replication factor
+
+min.insync.replicas is the minimum number of copies of the data that you are willing to be online at any time to continue running and accepting new incoming messages.
+
+Ideally replication factor 3 is good as mentioned above, however, based on the use case you can tune replication factor less than 2 (means high risk) and the same time more than 3 provide better availability but more overhead and more size required.
+
+
 
 ===> Command
   https://docs.cloudera.com/documentation/kafka/latest/topics/kafka_command_line.html
@@ -15,7 +32,9 @@ https://www.cloudkarafka.com/blog/2016-11-30-part1-kafka-for-beginners-what-is-a
 => Show topic
   /usr/share/kafka/bin#
   ./kafka-topics.sh --zookeeper localhost:2181 --list
+  OR
   ./zookeeper-shell.sh localhost:2181 ls /brokers/topics
+  ./zookeeper-shell.sh kafka1.service.staging.fwork,kafka2.service.staging.fwork,kafka3.service.staging.fwork ls /brokers/topics
 
   ./zookeeper-shell.sh localhost:2181 ls /brokers/ids # Gives the list of active brokers
   ./zookeeper-shell.sh localhost:2181 ls /brokers/topics #Gives the list of topics
@@ -33,6 +52,8 @@ WatchedEvent state:SyncConnected type:None path:null
 => Create topic
   ./kafka-topics.sh --create --zookeeper localhost:2181 --topic hanhsu --partitions 3 --replication-factor 1
 
+  --replication-factor  => Số bản sao topic
+
 => Delete topic ( Add line delete.topic.enable=true to server.properties)
   ./kafka-topics.sh --zookeeper localhost:2181 --delete --topic test
 
@@ -42,9 +63,11 @@ WatchedEvent state:SyncConnected type:None path:null
 => Show events/message in topic
   ./kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic send-email --from-beginning
 
+  
 => Show detail of Topics
   ./kafka-topics.sh --describe --zookeeper localhost:2181
   ./kafka-topics.sh --describe --zookeeper localhost:2181 --topic topic_name
+  ./kafka-topics.sh --describe --zookeeper kafka1.service.staging.fwork,kafka2.service.staging.fwork,kafka3.service.staging.fwork --topic send-email --max-messages 1
 
 Topic: send-email       PartitionCount: 3       ReplicationFactor: 1    Configs: 
         Topic: send-email       Partition: 0    Leader: 2       Replicas: 2     Isr: 2

@@ -1,5 +1,29 @@
-Redis Standalone & Cluster Master-Slave
+Redis
 ==================================
+
+https://medium.com/opstree-technology/redis-cluster-architecture-replication-sharding-and-failover-86871e783ac0
+
+https://redis.io/topics/cluster-tutorial
+redis-cli cluster nodes
+3fc783611028b1707fd65345e763befb36454d73 127.0.0.1:7004 slave 3e3a6cb0d9a9a87168e266b0a0b24026c0aae3f0 0 1385503418521 0 connected
+a211e242fc6b22a9427fed61285e85892fa04e08 127.0.0.1:7003 slave 97a3a64667477371c4479320d683e4c8db5858b1 0 1385503419023 0 connected
+97a3a64667477371c4479320d683e4c8db5858b1 :0 myself,master - 0 0 0 connected 0-5959 10922-11422
+3c3a0c74aae0b56170ccb03a76b60cfe7dc1912e 127.0.0.1:7005 master - 0 1385503419023 3 connected 11423-16383
+3e3a6cb0d9a9a87168e266b0a0b24026c0aae3f0 127.0.0.1:7001 master - 0 1385503417005 0 connected 5960-10921
+2938205e12de373867bf38f1ca29d31d0ddb3e46 127.0.0.1:7002 slave 3c3a0c74aae0b56170ccb03a76b60cfe7dc1912e 0 1385503418016 3 connected
+
+=> The output of the CLUSTER NODES command may look intimidating, but it is actually pretty simple, and is composed of the following tokens:
+Node ID
+ip:port
+flags: master, slave, myself, fail, ...
+if it is a slave, the Node ID of the master
+Time of the last pending PING still waiting for a reply.
+Time of the last PONG received.
+Configuration epoch for this node (see the Cluster specification).
+Status of the link to this node.
+Slots served...
+
+
 
 There are 16384 slots. These slots are divided by the number of servers.
 If there are 3 servers; 1, 2 and 3 then
