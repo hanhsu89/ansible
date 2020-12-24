@@ -58,11 +58,11 @@
 #     value: '30'
 #     state: present
 
-- name: net.ipv4.tcp_keepalive_intvl
-  sysctl:
-    name: net.ipv4.tcp_keepalive_intvl
-    value: '30'
-    state: present
+# - name: net.ipv4.tcp_keepalive_intvl
+#   sysctl:
+#     name: net.ipv4.tcp_keepalive_intvl
+#     value: '30'
+#     state: present
 
 - name: net.ipv4.tcp_keepalive_time
   sysctl:
