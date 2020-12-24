@@ -7,5 +7,5 @@ config_dir: /etc/elasticsearch
 home_dir: /usr/share/elasticsearch
 
 kibana_user: admin
-kibana_password: 123@hanhsu
-elk_ip: 192.168.10.45
+kibana_password: admin@123
+elk_ip: 10.10.35.73

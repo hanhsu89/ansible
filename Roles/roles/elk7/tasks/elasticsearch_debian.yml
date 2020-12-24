@@ -1,0 +1,108 @@
+---
+
+- name: Install Java
+  apt: 
+    update_cache: yes
+    name: 
+      - default-jdk
+    state: present
+
+- name: Add Elasticsearch yum repository
+  template:
+    src: elasticsearch.repo.j2
+    dest: /etc/apt/sources.list.d/elasticsearch.repo
+    mode: 0644
+
+- name: Add Elasticsearch GPG key
+  rpm_key:
+    state: present
+    key: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+
+- name: Update apt cache
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+    force_apt_get: yes
+
+- name: Install Elasticsearch
+  apt: 
+    name: elasticsearch
+    state: present
+    update_cache: yes
+    force_apt_get: yes
+
+- name: Update file config elastichsearch
+  template: 
+    src: elasticsearch.j2
+    dest: /etc/elasticsearch/elasticsearch.yml
+    mode: 0750
+
+- name: Add file serivice management for enable bootstrap.memory_lock
+  blockinfile: 
+    path: /usr/lib/systemd/system/elasticsearch.service
+    insertafter: '^LimitNOFILE'
+    content: |
+      LimitMEMLOCK=infinity
+
+- name: Optimize sysconfig for elasticsearch
+  blockinfile:
+    path: /etc/sysconfig/elasticsearch
+    content: |
+      ES_JAVA_OPTS="-Xms{{ (ansible_memtotal_mb * 0.0006)|int }}g -Xmx{{ (ansible_memtotal_mb * 0.0006)|int }}g" 
+      MAX_LOCKED_MEMORY=unlimited
+
+- name: Optimize limits.conf when enable bootstrap.memory_lock
+  blockinfile:
+    path: /etc/security/limits.conf
+    content: |
+      *   soft    memlock         unlimited
+      *   hard    memlock         unlimited
+      *   soft    nofile          65536
+      *   hard    nofile          65536
+
+- name: Enable ip_conntrack
+  shell: modprobe ip_conntrack
+
+- name: Optimize sysctl.conf
+  template: 
+    src: sysctl.j2
+    dest: /etc/sysctl.conf
+
+- name: Apply sysctl config
+  shell: sysctl -p
+
+- name: Reload systemd to reread configs
+  command: systemctl daemon-reload
+    
+- name: Edit /etc/elasticsearch/jvm.options JVM max
+  lineinfile:
+    path: /etc/elasticsearch/jvm.options
+    state: present
+    regexp: '^-Xms'
+    insertafter: '^-Xms'
+    line: '-Xms{{ (ansible_memtotal_mb * 0.0006)|int }}g'
+  
+- name: Edit /etc/elasticsearch/jvm.options JVM min
+  lineinfile:
+    path: /etc/elasticsearch/jvm.options
+    state: present
+    regexp: '^-Xmx'
+    insertafter: '^-Xmx'
+    line: '-Xmx{{ (ansible_memtotal_mb * 0.0006)|int }}g'
+
+- name: Create data folder
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: elasticsearch
+    group: elasticsearch
+    mode: 0744
+  with_items:
+    - "{{ data_dir }}"
+    - "{{ log_dir }}"
+
+- name: Restart & Enable Elasticsearch Service
+  service: 
+    name: elasticsearch
+    state: restarted    
+    enabled: yes
