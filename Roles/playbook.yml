@@ -21,6 +21,8 @@
       - { role: consul, tags: consul }
       - { role: redis, tags: redis }    
 
+      - { role: ssh_login_alert, tags: ssh_login } 
+
 #=== ELK
       - { role: elk, tags: elk }
       - { role: elasticsearch, tags: elastic }
