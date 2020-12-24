@@ -26,11 +26,11 @@
     - restart mongodb
 
 #=== tune-up some virtual memory parameters
-- name:  Set vm.dirty_ratio 
-  sysctl:
-    name: vm.dirty_ratio
-    value: '15'
-    state: present
+# - name:  Set vm.dirty_ratio 
+#   sysctl:
+#     name: vm.dirty_ratio
+#     value: '15'
+#     state: present
 
 - name:  Set vm.dirty_background_ratio 
   sysctl:

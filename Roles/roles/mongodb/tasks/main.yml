@@ -1,13 +1,13 @@
 ---
 
 #=== Install MongoDB Standalone
-- name: Install percona-server-mongodb | Debian
-  include: install_debian.yml
-  when: ansible_os_family == 'Debian'
+# - name: Install percona-server-mongodb | Debian
+#   include: install_debian.yml
+#   when: ansible_os_family == 'Debian'
 
-- name: Install percona-server-mongodb | RedHat
-  include: install_redhat.yml
-  when: ansible_os_family == 'RedHat'
+# - name: Install percona-server-mongodb | RedHat
+#   include: install_redhat.yml
+#   when: ansible_os_family == 'RedHat'
 
 - name: Tune MongoDB
   include: tuning.yml
