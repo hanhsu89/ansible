@@ -41,21 +41,46 @@ win
 
 #========== SCP ==========
 [scp]
-10.10.35.62	# Master_1
+10.10.35.60     # Master_1
+10.10.35.61		# Master_2
+10.10.35.62		# Master_3
+10.10.35.63		# DMZ_Zone_1
+10.10.35.64		# DMZ_Zone_2
+10.10.35.65		# Intergration_Zone_1
+10.10.35.66		# Intergration_Zone_2
+10.10.35.67		# Kafka_1
+10.10.35.68		# Kafka_2
+10.10.35.69		# Kafka_3
+10.10.35.70		# AI_Zone_1
+10.10.35.71		# AI_Zone_2
+10.10.35.72		# AI_Zone_3
+10.10.35.73		# Monitor
+10.10.35.74		# Streaming_1
+10.10.35.75		# Streaming_2
+10.10.35.76		# Streaming_3
+10.10.35.77		# MongoDB_1
+10.10.35.78		# MongoDB_2
+10.10.35.79		# MongoDB_3
+10.10.35.80		# HA1
+10.10.35.81		# HA2
+
+[scp_kafka]
+10.10.35.67		# Kafka_1
+10.10.35.68		# Kafka_2
+10.10.35.69		# Kafka_3
+
+[scp_mongodb]
+10.10.35.77		# MongoDB_1
+10.10.35.78		# MongoDB_2
+10.10.35.79		# MongoDB_3
+
+[scp_ha]
+10.10.35.80		# HA1
+10.10.35.81		# HA2
 #========== SCP ==========
 
+
 #========== Fwork ==========
-
-[stg-mongodb]
-10.10.35.5	# MongoDB 1
-10.10.35.11	# MongoDB 2
-10.10.35.12	# MongoDB 3
-
-[stg-kafka]
-10.10.35.25	# Kafka 1
-10.10.35.26	# Kafka 2
-10.10.35.27	# Kafka 3
-
 [stg]
 10.10.35.6	# Haproxy1
 10.10.35.7	# Haproxy2
@@ -82,6 +107,17 @@ win
 10.10.35.30	# Etcd 3
 10.10.35.37	# NFS_Registry
 
+[stg-mongodb]
+10.10.35.5	# MongoDB 1
+10.10.35.11	# MongoDB 2
+10.10.35.12	# MongoDB 3
+
+[stg-kafka]
+10.10.35.25	# Kafka 1
+10.10.35.26	# Kafka 2
+10.10.35.27	# Kafka 3
+
+
 [dev]
 10.0.1.11	# k8s-master-01
 10.0.1.21	# k8s-worker-01
@@ -93,7 +129,6 @@ win
 10.0.1.1	# k8s-lb
 10.0.1.200	# gitlab
 10.0.1.100	# fwork-dev
-
 #========== Fwork ==========
 
 
