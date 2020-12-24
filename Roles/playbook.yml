@@ -23,6 +23,7 @@
 
 #=== ELK
       - { role: elk, tags: elk }
+      - { role: elasticsearch, tags: elastic }
 
 #=== HAProxy_Keepalived
       - { role: haproxy, tags: haproxy }
