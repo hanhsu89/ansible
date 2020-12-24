@@ -8,6 +8,20 @@
     update_cache: yes
     force_apt_get: yes
 
+- name: Allow sudo to execute in non TTY environments
+  lineinfile: >
+    dest=/etc/sudoers
+    regexp="^Defaults    requiretty$"
+    line="#Defaults    requiretty"
+
+- name: Allow users to use sudo without a password
+  lineinfile: >
+    dest=/etc/sudoers
+    regexp='%sudo ' 
+    line='%sudo ALL=(ALL) NOPASSWD: ALL'
+    state=present
+    validate='visudo -cf %s'
+
 - name: Update new accounts
   user:
     name: "{{ item.name }}"
