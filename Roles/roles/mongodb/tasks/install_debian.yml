@@ -23,7 +23,6 @@
   apt:
     name:
       - numactl
-      - python-pip
       - python3-pip
       - python-pymongo
     state: present         
