@@ -24,7 +24,6 @@
     name:
       - numactl
       - python3-pip
-      - python-pymongo
     state: present         
     update_cache: yes
     force_apt_get: yes
