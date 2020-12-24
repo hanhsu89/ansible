@@ -9,13 +9,13 @@
 #   include: install_redhat.yml
 #   when: ansible_os_family == 'RedHat'
 
-- name: Tune MongoDB
-  include: tuning.yml
+# - name: Tune MongoDB
+#   include: tuning.yml
 
 
 #=== Install MongoDB Replicaset_Run after Install MongoDB Standalone
-# - name: Replicaset Config
-#   include: replicaset.yml
+- name: Replicaset Config
+  include: replicaset.yml
 
 
 #=== Add new Nodes
