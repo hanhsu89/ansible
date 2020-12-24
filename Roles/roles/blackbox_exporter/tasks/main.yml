@@ -64,6 +64,9 @@
     state: started
     enabled: yes
 
+- name: Reload systemd to reread configs
+  command: systemctl daemon-reload
+  
 - name: Check if blackbox_exporter is accessible
   uri:
     url: http://localhost:9115
