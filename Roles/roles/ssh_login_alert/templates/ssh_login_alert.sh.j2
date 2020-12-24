@@ -31,7 +31,7 @@ if [ -n "$SSH_CLIENT" ]; then
     ORG=$(cat $TMPFILE | jq '.org' | sed 's/"//g')
 
     # Nội dung cảnh báo
-    TEXT=$(echo -e "SSH => Alert\nDate $DATE_EXEC\nUser: ${USER} \nLogged in to DEV"_"$HOSTNAME"_"$IPADDR \nFrom $IP - $ORG - $CITY, $REGION, $COUNTRY on port $PORT")
+    TEXT=$(echo -e "SSH => Alert\nDate $DATE_EXEC\nUser: ${USER} \nLogged in to SCP"_"$HOSTNAME"_"$IPADDR \nFrom $IP - $ORG - $CITY, $REGION, $COUNTRY on port $PORT")
 
     # Gửi cảnh báo
     curl -s -X POST --max-time $TIMEOUT $URL -d "chat_id=$USERID" -d text="$TEXT" > /dev/null

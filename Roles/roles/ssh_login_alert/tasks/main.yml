@@ -15,11 +15,6 @@
     state: latest
   when: ansible_os_family == 'RedHat'
 
-- name: Delete file ssh_login_alert.sh OLD
-  file:
-    path: /etc/profile.d/ssh_login_alert.sh
-    state: absent
-
 - name: Copy ssh_login_alert.sh to server
   template:
     src: ssh_login_alert.sh.j2
