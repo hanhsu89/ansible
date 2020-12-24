@@ -40,7 +40,6 @@
 - name: install java
   apt:
     name:       
-      - java-openjdk
       - default-jdk
     state: present
     update_cache: yes
