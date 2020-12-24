@@ -46,11 +46,11 @@
     state: present
 
 #=== Tunes network stack
-- name: Set net.core.somaxconn 
-  sysctl:
-    name: net.core.somaxconn
-    value: '4096'
-    state: present
+# - name: Set net.core.somaxconn 
+#   sysctl:
+#     name: net.core.somaxconn
+#     value: '4096'
+#     state: present
 
 - name: Set net.ipv4.tcp_fin_timeout
   sysctl:
