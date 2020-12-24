@@ -20,7 +20,7 @@
 - name: Install Packages
   apt:
     name:
-      - install apt-transport-https
+      - apt-transport-https
     state: present
     update_cache: yes
 
