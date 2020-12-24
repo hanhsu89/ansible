@@ -52,11 +52,11 @@
 #     value: '4096'
 #     state: present
 
-- name: Set net.ipv4.tcp_fin_timeout
-  sysctl:
-    name: net.ipv4.tcp_fin_timeout
-    value: '30'
-    state: present
+# - name: Set net.ipv4.tcp_fin_timeout
+#   sysctl:
+#     name: net.ipv4.tcp_fin_timeout
+#     value: '30'
+#     state: present
 
 - name: net.ipv4.tcp_keepalive_intvl
   sysctl:
