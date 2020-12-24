@@ -21,7 +21,10 @@
       - { role: consul, tags: consul }
       - { role: redis, tags: redis }    
 
-      - { role: ssh_login_alert, tags: ssh_login } 
+
+#=== SSH_Configs
+      - { role: ssh_login_alert, tags: ssh_login }
+      - { role: ssh_banner, tags: ssh_banner }       
 
 #=== ELK
       - { role: elk, tags: elk }
