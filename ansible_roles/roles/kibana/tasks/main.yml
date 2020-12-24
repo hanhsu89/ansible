@@ -45,16 +45,16 @@
     mode: 0644
   notify: restart kibana
 
-- name: Allow intra net access to Kibana
-  iptables:
-    chain: INPUT
-    protocol: tcp
-    source: 10.0.0.0/8
-    destination_port: '{{ kibana_server_port }}'
-    jump: ACCEPT
+# - name: Allow intra net access to Kibana
+#   iptables:
+#     chain: INPUT
+#     protocol: tcp
+#     source: 10.0.0.0/8
+#     destination_port: '{{ kibana_server_port }}'
+#     jump: ACCEPT
 
-- name: Save iptables rules to /etc/sysconfig/iptables Logstash
-  lineinfile:
-    path: /etc/sysconfig/iptables
-    insertafter: '^# END SA MANAGED BLOCK '
-    line: '-A INPUT -s 10.0.0.0/8 -p tcp -m tcp --dport "{{ kibana_server_port }}" -j ACCEPT'
+# - name: Save iptables rules to /etc/sysconfig/iptables Logstash
+#   lineinfile:
+#     path: /etc/sysconfig/iptables
+#     insertafter: '^# END SA MANAGED BLOCK '
+#     line: '-A INPUT -s 10.0.0.0/8 -p tcp -m tcp --dport "{{ kibana_server_port }}" -j ACCEPT'

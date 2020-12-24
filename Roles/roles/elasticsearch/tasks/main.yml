@@ -67,30 +67,30 @@
   notify:
   - restart elasticsearch
 
-- name: Allow intra net access to ElasticSearch (9200)
-  iptables:
-    chain: INPUT
-    protocol: tcp
-    source: 10.0.0.0/8
-    destination_port: '9200'
-    jump: ACCEPT
+# - name: Allow intra net access to ElasticSearch (9200)
+#   iptables:
+#     chain: INPUT
+#     protocol: tcp
+#     source: 10.0.0.0/8
+#     destination_port: '9200'
+#     jump: ACCEPT
 
-- name: Save iptables rules to /etc/sysconfig/iptables ElasticSearch (9200)
-  lineinfile:
-    path: /etc/sysconfig/iptables
-    insertafter: '^# END SA MANAGED BLOCK '
-    line: '-A INPUT -s 10.0.0.0/8 -p tcp -m tcp --dport 9200 -j ACCEPT'
+# - name: Save iptables rules to /etc/sysconfig/iptables ElasticSearch (9200)
+#   lineinfile:
+#     path: /etc/sysconfig/iptables
+#     insertafter: '^# END SA MANAGED BLOCK '
+#     line: '-A INPUT -s 10.0.0.0/8 -p tcp -m tcp --dport 9200 -j ACCEPT'
 
-- name: Allow intra net access to ElasticSearch (9300)
-  iptables:
-    chain: INPUT
-    protocol: tcp
-    source: 10.0.0.0/8
-    destination_port: '9300'
-    jump: ACCEPT
+# - name: Allow intra net access to ElasticSearch (9300)
+#   iptables:
+#     chain: INPUT
+#     protocol: tcp
+#     source: 10.0.0.0/8
+#     destination_port: '9300'
+#     jump: ACCEPT
 
-- name: Save iptables rules to /etc/sysconfig/iptables ElasticSearch (9300)
-  lineinfile:
-    path: /etc/sysconfig/iptables
-    insertafter: '^# END SA MANAGED BLOCK '
-    line: '-A INPUT -s 10.0.0.0/8 -p tcp -m tcp --dport 9300 -j ACCEPT'
+# - name: Save iptables rules to /etc/sysconfig/iptables ElasticSearch (9300)
+#   lineinfile:
+#     path: /etc/sysconfig/iptables
+#     insertafter: '^# END SA MANAGED BLOCK '
+#     line: '-A INPUT -s 10.0.0.0/8 -p tcp -m tcp --dport 9300 -j ACCEPT'

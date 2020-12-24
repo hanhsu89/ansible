@@ -1,7 +1,0 @@
----
-# tasks file for elasticsearch
-
-
-- name: Install Elasticsearch | Debian
-  include: elasticsearch_debian.yml
-  when: ansible_os_family == 'Debian'  

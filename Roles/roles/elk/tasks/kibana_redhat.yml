@@ -1,0 +1,87 @@
+---
+- name: Install Kibana
+  yum: 
+    name: kibana
+    state: installed
+
+- name: Update file config kibana
+  template: 
+    src: kibana.j2
+    dest: /etc/kibana/kibana.yml
+
+- name: Enable Kibana Service
+  systemd:
+    name: kibana.service
+    enabled: yes
+
+- name: Start Kibana Service
+  systemd:
+    name: kibana
+    state: restarted
+    enabled: yes    
+
+#- name: Install pip
+#  yum:
+#    name: python-pip
+#    update_cache: yes
+#    state: latest
+
+# Install Pexpect to handle promts of the terminal
+#- name: Installing Python Pexpect
+#  pip:
+#    name: pexpect
+#    state: latest
+#  become: yes
+
+# Writes the create user script in the temp directory
+#- name: Create kibana admin user
+#  template:
+#    src=kibanaAdmin.j2
+#    dest=/tmp/createUser
+#    owner=root
+#    group=root
+#    mode=0744
+
+# Runs the script to create Kibana admin user
+#- name: Create Kibana admin user
+#  expect:
+#    command: bash /tmp/createUser
+#    responses:
+#      'Password:' : "{{kibana_password}}"
+#
+# Install NGINX and configure it as reverse proxy to be able 
+# to access Kibana from the public IP address.
+#
+
+- name: Install epel-release
+  yum: 
+    name: epel-release
+    state: installed  
+
+- name: Install NGINX
+  yum: 
+    name:
+      - nginx
+      - httpd-tools
+    state: installed    
+
+- name: Nginx Config
+  template:
+    src: nginx.j2
+    dest: /etc/nginx/nginx.conf
+
+- name: Kibana vhost
+  template:
+    src: kibana.conf.j2
+    dest: /etc/nginx/conf.d/kibana.conf
+
+- name: Enable NGINX Service
+  systemd:
+    name: nginx.service
+    enabled: yes
+
+- name: Start NGINX Service
+  systemd:
+    name: nginx
+    state: restarted
+    enabled: yes    

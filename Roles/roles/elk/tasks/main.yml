@@ -1,0 +1,21 @@
+---
+# tasks file for elasticsearch
+
+#=== Debian
+- name: Install Elasticsearch | Debian
+  include: elasticsearch_debian.yml
+  when: ansible_os_family == 'Debian'  
+
+- name: Install Kibana | Debian
+  include: kibana_debian.yml
+  when: ansible_os_family == 'Debian'
+
+
+#=== RedHat
+- name: Install Elasticsearch | RedHat
+  include: elasticsearch_redhat.yml
+  when: ansible_os_family == 'RedHat'  
+
+- name: Install Kibana | RedHat
+  include: kibana_redhat.yml
+  when: ansible_os_family == 'RedHat'

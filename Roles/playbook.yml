@@ -21,6 +21,9 @@
       - { role: consul, tags: consul }
       - { role: redis, tags: redis }    
 
+#=== ELK
+      - { role: elk, tags: elk }
+
 #=== HAProxy_Keepalived
       - { role: haproxy, tags: haproxy }
       - { role: keepalived, tags: keepalived }
