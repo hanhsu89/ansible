@@ -16,7 +16,8 @@
   apt_repository: 
     repo: deb http://ppa.launchpad.net/linuxuprising/java/ubuntu bionic main
     state: present
-
+    update_cache: true
+    
 - name: Add Java Key
   apt_key:
     id: 73C3DB2A
