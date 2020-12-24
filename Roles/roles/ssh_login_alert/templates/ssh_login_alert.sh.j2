@@ -20,7 +20,7 @@ TMPFILE='/tmp/ipinfo.txt'
 if [ -n "$SSH_CLIENT" ]; then
     IP=$(echo $SSH_CLIENT | awk '{print $1}')
     PORT=$(echo $SSH_CLIENT | awk '{print $3}')
-    HOSTNAME=$(hostname -f)
+    HOSTNAME=$(hostname)
     IPADDR=$(echo $SSH_CONNECTION | awk '{print $3}')
 
     # Lấy các thông tin từ IP người truy cập theo trang ipinfo.io
