@@ -1,7 +1,7 @@
 ---
 
-- name: Install elasticsearch | Debian
-  include: elasticsearch_debian.yml  
+# - name: Install elasticsearch | Debian
+#   include: elasticsearch_debian.yml  
 
 - name: Config elasticsearch
   include: elasticsearch_config.yml
