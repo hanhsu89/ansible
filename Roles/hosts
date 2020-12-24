@@ -7,14 +7,14 @@ win
 
 #=== MongoDB StandAlone & Replicaset
 [mongodb]
-192.168.206.2 id=0 priority=3 primary=true 
-192.168.206.3 id=1 priority=2
-192.168.206.4 id=2 priority=1
+10.10.35.77 replicaset=true id=0 priority=3 primary=true 
+10.10.35.78 replicaset=true id=1 priority=2
+10.10.35.79 replicaset=true id=2 priority=1
 192.168.206.5 arbiter=true           # Arbiter
 
 [mongodb_slave]
-192.168.206.3 id=1 priority=2
-192.168.206.4 id=2 priority=1
+10.10.35.78 replicaset=true id=1 priority=2
+10.10.35.79 replicaset=true id=2 priority=1
 
 [mongodb_arbiter]
 192.168.206.5

@@ -8,8 +8,8 @@ version: 44
 
 mongodb_port: 27017
 mongodb_user: 
-    username: hanhsu
-    password: 123@hanhsu
+    username: scp
+    password: Scp@123
     role_1: root
     role_2: userAdminAnyDatabase
     db: admin

@@ -1,16 +1,16 @@
 ---
 
 #=== Install MongoDB Standalone
-# - name: Install percona-server-mongodb | Debian
-#   include: install_debian.yml
-#   when: ansible_os_family == 'Debian'
+- name: Install percona-server-mongodb | Debian
+  include: install_debian.yml
+  when: ansible_os_family == 'Debian'
 
-# - name: Install percona-server-mongodb | RedHat
-#   include: install_redhat.yml
-#   when: ansible_os_family == 'RedHat'
+- name: Install percona-server-mongodb | RedHat
+  include: install_redhat.yml
+  when: ansible_os_family == 'RedHat'
 
-# - name: Tune MongoDB
-#   include: tuning.yml
+- name: Tune MongoDB
+  include: tuning.yml
 
 
 #=== Install MongoDB Replicaset_Run after Install MongoDB Standalone
@@ -24,8 +24,8 @@
 
 
 #=== Add Arbiter node
-- name: Add Arbiter node
-  include: add_arbiter.yml
+# - name: Add Arbiter node
+#   include: add_arbiter.yml
 # them option chay sau khi job Replicaset Config done
 
 
