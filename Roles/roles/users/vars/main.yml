@@ -4,10 +4,9 @@
 users:
   - name: tungdd5
     servers:
-      #[stg-mongodb]
-      - 10.10.35.5	# MongoDB 1
-      - 10.10.35.11	# MongoDB 2
-      - 10.10.35.12	# MongoDB 3
+      #[stg-kafka]
+      - 10.10.35.25	# Kafka 1
+      - 10.10.35.26	# Kafka 2
 
     groups: sudo
     authorized_keys:
