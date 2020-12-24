@@ -2,3 +2,17 @@
 
 - name: include java.yml
   include: java.yml
+
+
+- name: include elasticsearch_debian.yml 
+  include: elasticsearch_debian.yml  
+
+- name: include elasticsearch_config.yml
+  include: elasticsearch_config.yml
+
+
+- name: Make sure elasticsearch is started
+  service: 
+    name: elasticsearch
+    state: started
+    enabled: yes
