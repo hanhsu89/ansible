@@ -75,8 +75,8 @@ win
 10.10.35.79		# MongoDB_3
 
 [scp_ha]
-10.10.35.80		# HA1
-10.10.35.81		# HA2
+10.10.35.80 roles=master	# HA1
+10.10.35.81	roles=backup	# HA2
 #========== SCP ==========
 
 

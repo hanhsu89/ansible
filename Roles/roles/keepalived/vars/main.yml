@@ -9,8 +9,8 @@ keepalived_check_process: "haproxy"
 auth_type: "PASS"
 auth_pass: "1111"
 
-interface: "ens33"
-virtual_ipaddress: "192.168.10.45"
+interface: "ens4"
+virtual_ipaddress: "118.69.18.240"
 
 priority_master: 101
 priority_backup: 100
