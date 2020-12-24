@@ -1,14 +1,10 @@
 ---
 
 # - name: Install elasticsearch | Debian
-#   include: elasticsearch_debian.yml  
+#   include: Debian.yml  
+
+# - name: Install elasticsearch | Redhat
+#   include: Redhat.yml  
 
 - name: Config elasticsearch
-  include: elasticsearch_config.yml
-
-
-# - name: Make sure elasticsearch is started
-#   service: 
-#     name: elasticsearch
-#     state: started
-#     enabled: yes
+  include: config.yml
