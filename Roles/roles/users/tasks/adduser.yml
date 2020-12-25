@@ -53,10 +53,10 @@
     src=public_keys/{{ item.0.name }}.pub
     dest=/home/{{ item.0.name }}/.ssh/authorized_keys
     mode=600
+    remote_src=yes
   with_subelements:
     - "{{ users }}"
     - authorized_keys
-  remote_src: yes
   when: item.0.servers and inventory_hostname in item.0.servers
 
 - name: Set owner file authorized_keys
