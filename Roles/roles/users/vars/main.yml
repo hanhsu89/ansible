@@ -2,7 +2,7 @@
 
 #----------- ADD USER ------------
 users:
-  - name: hanhnn
+  - name: hanhnn4
     servers:
       #[scp]
       # - 10.10.35.60   # K8s_Master_1
@@ -30,7 +30,7 @@ users:
 
     groups: sudo
     authorized_keys:
-      - hanhnn.pub
+      - hanhnn4.pub
 
 
 #----------- REMOVE USER ------------
