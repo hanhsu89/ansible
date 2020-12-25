@@ -1,26 +1,26 @@
 ---
 
-- name: Install Necessary Packages
-  apt:
-    name:
-      - python3-pip
-    state: present         
-    update_cache: yes
-    force_apt_get: yes
+# - name: Install Necessary Packages
+#   apt:
+#     name:
+#       - python3-pip
+#     state: present         
+#     update_cache: yes
+#     force_apt_get: yes
 
-- name: Allow sudo to execute in non TTY environments
-  lineinfile: >
-    dest=/etc/sudoers
-    regexp="^Defaults    requiretty$"
-    line="#Defaults    requiretty"
+# - name: Allow sudo to execute in non TTY environments
+#   lineinfile: >
+#     dest=/etc/sudoers
+#     regexp="^Defaults    requiretty$"
+#     line="#Defaults    requiretty"
 
-- name: Allow users to use sudo without a password
-  lineinfile: >
-    dest=/etc/sudoers
-    regexp='%sudo ' 
-    line='%sudo ALL=(ALL) NOPASSWD: ALL'
-    state=present
-    validate='visudo -cf %s'
+# - name: Allow users to use sudo without a password
+#   lineinfile: >
+#     dest=/etc/sudoers
+#     regexp='%sudo ' 
+#     line='%sudo ALL=(ALL) NOPASSWD: ALL'
+#     state=present
+#     validate='visudo -cf %s'
 
 - name: Update new accounts
   user:
@@ -33,52 +33,52 @@
   with_items: "{{ users }}"
   when: item.servers and inventory_hostname in item.servers
 
-- name: Disable old users ssh
-  lineinfile: >
-    dest=/etc/ssh/sshd_config
-    state=absent
-    regexp='^.*?Allowusers'
+# - name: Disable old users ssh
+#   lineinfile: >
+#     dest=/etc/ssh/sshd_config
+#     state=absent
+#     regexp='^.*?Allowusers'
 
-- name: Update new user's authorized_keys
-  copy: >
-    src=public_keys/{{ item.0.name }}.pub
-    dest=/home/{{ item.0.name }}/.ssh/authorized_keys
-    mode=600
-  with_subelements:
-    - "{{ users }}"
-    - authorized_keys
-  when: item.0.servers and inventory_hostname in item.0.servers
+# - name: Update new user's authorized_keys
+#   copy: >
+#     src=public_keys/{{ item.0.name }}.pub
+#     dest=/home/{{ item.0.name }}/.ssh/authorized_keys
+#     mode=600
+#   with_subelements:
+#     - "{{ users }}"
+#     - authorized_keys
+#   when: item.0.servers and inventory_hostname in item.0.servers
 
-- name: Set owner file authorized_keys
-  file:
-    path: /home/{{ item.0.name }}/.ssh/authorized_keys
-    owner: "{{ item.0.name }}"
-    group: "{{ item.0.name }}"
-  with_subelements:
-    - "{{ users }}"
-    - authorized_keys
-  when: item.0.servers and inventory_hostname in item.0.servers
+# - name: Set owner file authorized_keys
+#   file:
+#     path: /home/{{ item.0.name }}/.ssh/authorized_keys
+#     owner: "{{ item.0.name }}"
+#     group: "{{ item.0.name }}"
+#   with_subelements:
+#     - "{{ users }}"
+#     - authorized_keys
+#   when: item.0.servers and inventory_hostname in item.0.servers
 
-- name: restart sshd | CentOS 7
-  systemd:
-    state: restarted
-    daemon_reload: yes
-    name: sshd
-  ignore_errors: yes
-  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"
+# - name: restart sshd | CentOS 7
+#   systemd:
+#     state: restarted
+#     daemon_reload: yes
+#     name: sshd
+#   ignore_errors: yes
+#   when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"
 
-- name: restart sshd | Ubuntu
-  systemd:
-    state: restarted
-    daemon_reload: yes
-    name: sshd
-  ignore_errors: yes
-  when: ansible_distribution == "Debian"
+# - name: restart sshd | Ubuntu
+#   systemd:
+#     state: restarted
+#     daemon_reload: yes
+#     name: sshd
+#   ignore_errors: yes
+#   when: ansible_distribution == "Debian"
 
-- name: Remove old accounts
-  user: 
-    name: '{{ item }}' 
-    state: absent 
-    remove: yes
-  with_items: "{{ absent_users }}"
-  ignore_errors: yes
+# - name: Remove old accounts
+#   user: 
+#     name: '{{ item }}' 
+#     state: absent 
+#     remove: yes
+#   with_items: "{{ absent_users }}"
+#   ignore_errors: yes

@@ -2,35 +2,35 @@
 
 #----------- ADD USER ------------
 users:
-  - name: hanhnn4
+  - name: hanhnn
     servers:
       #[scp]
-      - 10.10.35.60   # K8s_Master_1
-      - 10.10.35.61		# K8s_Master_2
-      - 10.10.35.62		# K8s_Master_3
-      - 10.10.35.63		# K8s_Worker_1
-      - 10.10.35.64		# K8s_Worker_2
-      - 10.10.35.65		# K8s_Worker_3
-      - 10.10.35.66		# K8s_Worker_4
+      # - 10.10.35.60   # K8s_Master_1
+      # - 10.10.35.61		# K8s_Master_2
+      # - 10.10.35.62		# K8s_Master_3
+      # - 10.10.35.63		# K8s_Worker_1
+      # - 10.10.35.64		# K8s_Worker_2
+      # - 10.10.35.65		# K8s_Worker_3
+      # - 10.10.35.66		# K8s_Worker_4
       - 10.10.35.67		# Kafka_1
       - 10.10.35.68		# Kafka_2
       - 10.10.35.69		# Kafka_3
-      - 10.10.35.70		# K8s_Worker_5
-      - 10.10.35.71		# K8s_Worker_6
-      - 10.10.35.72		# K8s_Worker_7
-      - 10.10.35.73		# Monitor_Log
-      - 10.10.35.74		# K8s_Worker_8
-      - 10.10.35.75		# K8s_Worker_9
-      - 10.10.35.76		# K8s_Worker_10
-      - 10.10.35.77		# MongoDB_1
-      - 10.10.35.78		# MongoDB_2
-      - 10.10.35.79		# MongoDB_3
-      - 10.10.35.80		# HA1
-      - 10.10.35.81		# HA2
+      # - 10.10.35.70		# K8s_Worker_5
+      # - 10.10.35.71		# K8s_Worker_6
+      # - 10.10.35.72		# K8s_Worker_7
+      # - 10.10.35.73		# Monitor_Log
+      # - 10.10.35.74		# K8s_Worker_8
+      # - 10.10.35.75		# K8s_Worker_9
+      # - 10.10.35.76		# K8s_Worker_10
+      # - 10.10.35.77		# MongoDB_1
+      # - 10.10.35.78		# MongoDB_2
+      # - 10.10.35.79		# MongoDB_3
+      # - 10.10.35.80		# HA1
+      # - 10.10.35.81		# HA2
 
     groups: sudo
     authorized_keys:
-      - hanhnn4.pub
+      - hanhnn.pub
 
 
 #----------- REMOVE USER ------------
