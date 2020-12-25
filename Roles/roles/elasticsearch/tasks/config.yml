@@ -1,12 +1,16 @@
 ---
 
+#=== Disable swapping
+
+
+#=== Heap size settings (no more than 50% of physical RAM)
 - name: Edit /etc/elasticsearch/jvm.options JVM max for Xms
   lineinfile:
     path: /etc/elasticsearch/jvm.options
     state: present
     regexp: '^-Xms'
     insertafter: '^-Xms'
-    line: '-Xms{{ (ansible_memtotal_mb * 0.0006)|int }}g'
+    line: '-Xms{{ (ansible_memtotal_mb * 0.00045)|int }}g'
 
 - name: Edit /etc/elasticsearch/jvm.options JVM max for Xmx
   lineinfile:
@@ -14,4 +18,46 @@
     state: present
     regexp: '^-Xmx'
     insertafter: '^-Xmx'
-    line: '-Xmx{{ (ansible_memtotal_mb * 0.0006)|int }}g'
+    line: '-Xmx{{ (ansible_memtotal_mb * 0.00045)|int }}g'
+
+ 
+#=== Enable bootstrap.memory_lock in elasticsearch.yml & Configuring system settings
+- name: Add file serivice management for enable bootstrap.memory_lock
+  blockinfile: 
+    path: /lib/systemd/system/elasticsearch.service
+    insertafter: '^LimitNOFILE'
+    content: |
+      LimitMEMLOCK=infinity
+
+- name: Optimize sysconfig for elasticsearch
+  blockinfile:
+    path: /etc/default/elasticsearch
+    content: |
+      ES_JAVA_OPTS="-Xms{{ (ansible_memtotal_mb * 0.00045)|int }}g -Xmx{{ (ansible_memtotal_mb * 0.00045)|int }}g" 
+      MAX_LOCKED_MEMORY=unlimited
+
+- name: Optimize limits.conf when enable bootstrap.memory_lock
+  blockinfile:
+    path: /etc/security/limits.conf
+    content: |
+      *   soft    memlock         unlimited
+      *   hard    memlock         unlimited
+      *   soft    nofile          65536
+      *   hard    nofile          65536
+
+- name: Enable ip_conntrack
+  shell: modprobe ip_conntrack
+
+
+
+- name: Optimize sysctl.conf
+  template: 
+    src: sysctl.j2
+    dest: /etc/sysctl.conf
+
+- name: Apply sysctl config
+  shell: sysctl -p
+
+- name: Reload systemd to reread configs
+  systemd:
+    daemon_reload: yes

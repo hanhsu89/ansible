@@ -30,7 +30,6 @@
     state=present
     validate='visudo -cf %s'
 
-
 - name: Update new accounts
   user:
     name: "{{ item.name }}"
@@ -69,7 +68,7 @@
     - authorized_keys
   when: item.0.servers and inventory_hostname in item.0.servers
 
-- name: restart sshd | CentOS 7
+- name: Restart sshd service | CentOS 7
   systemd:
     state: restarted
     daemon_reload: yes
@@ -77,7 +76,7 @@
   ignore_errors: yes
   when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"
 
-- name: restart sshd | Ubuntu
+- name: Restart sshd service | Ubuntu
   systemd:
     state: restarted
     daemon_reload: yes
