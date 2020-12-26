@@ -23,7 +23,7 @@
 
 - command: "ssh-keyscan {{item}}"
   register: known_host_keys
-  with_items: "{{test}}"
+  with_items: "{{ ssh_hosts }}"
 
 - name: Add ssh keys to know hosts
   known_hosts:

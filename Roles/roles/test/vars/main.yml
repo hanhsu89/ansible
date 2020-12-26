@@ -8,3 +8,6 @@ docker_version: "19.03.5"
 
 
 known_hosts: "~/.ssh/known_hosts"
+
+ssh_hosts:
+  - 10.10.35.78
