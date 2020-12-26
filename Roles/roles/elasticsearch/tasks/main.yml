@@ -6,5 +6,5 @@
 # - name: Install elasticsearch | Redhat
 #   include: Redhat.yml  
 
-- name: Config elasticsearch
+- name: System Configuration
   include: config.yml

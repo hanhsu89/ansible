@@ -1,0 +1,15 @@
+---
+
+sysctl_config:
+  - token: fs.protected_hardlinks
+    value: 1
+    comment: provides protection from ToCToU races
+  - token: fs.protected_symlinks
+    value: 1
+    comment: provides protection from ToCToU races
+  - token: kernel.kptr_restrict
+    value: 1
+    comment: makes locating kernel addresses more difficult
+  - token: kernel.perf_event_paranoid
+    value: 2
+    comment: set perf only available to root

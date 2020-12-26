@@ -8,7 +8,6 @@
       - { role: docker, tags: docker }
       - { role: ntp, tags: ntp }
       - { role: packages, tags: packages }
-      - { role: firewall, tags: firewall }
       - { role: users, tags: users }
       - { role: common, tags: common }
       - { role: common_k8s, tags: commonk8s }
@@ -17,10 +16,16 @@
       - { role: selinux, tags: selinux }
       - { role: letsencrypt, tags: ssl }
 
+      - { role: swap, tags: swap }   
+
+#=== Filewalls
+      - { role: firewallcsf, tags: firewallcsf }      
+      - { role: firewall, tags: firewall }
+
+#=== MemCache & Streaming tools
       - { role: kafka, tags: kafka }
       - { role: consul, tags: consul }
       - { role: redis, tags: redis }    
-
 
 #=== SSH_Configs
       - { role: ssh_login_alert, tags: ssh_login }
@@ -28,7 +33,7 @@
 
 #=== ELK
       - { role: elk, tags: elk }
-      - { role: elasticsearch, tags: elastic }
+      - { role: elasticsearch, tags: elasticsearch }
 
 #=== HAProxy_Keepalived
       - { role: haproxy, tags: haproxy }
@@ -63,4 +68,3 @@
       - { role: bind_dns, tags: bind_dns }
       - { role: snmp, tags: snmp }
 
-      - { role: firewallcsf, tags: firewallcsf }

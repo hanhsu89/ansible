@@ -1,7 +1,24 @@
 ---
 
 #=== Disable swapping
+- name: Disable swapping
+  include_role:
+    name: swap
 
+#=== Configure swappiness
+- name: Set vm.swappiness
+  sysctl:
+    name: vm.swappiness
+    value: '1'
+    state: present
+    reload: yes
+
+- name: Set net.ipv4.tcp_retries2
+  sysctl:
+    name: net.ipv4.tcp_retries2
+    value: '5'
+    state: present
+    reload: yes
 
 #=== Heap size settings (no more than 50% of physical RAM)
 - name: Edit /etc/elasticsearch/jvm.options JVM max for Xms
@@ -20,7 +37,6 @@
     insertafter: '^-Xmx'
     line: '-Xmx{{ (ansible_memtotal_mb * 0.00045)|int }}g'
 
- 
 #=== Enable bootstrap.memory_lock in elasticsearch.yml & Configuring system settings
 - name: Add file serivice management for enable bootstrap.memory_lock
   blockinfile: 
@@ -48,16 +64,22 @@
 - name: Enable ip_conntrack
   shell: modprobe ip_conntrack
 
-
-
-- name: Optimize sysctl.conf
-  template: 
-    src: sysctl.j2
-    dest: /etc/sysctl.conf
-
 - name: Apply sysctl config
   shell: sysctl -p
 
 - name: Reload systemd to reread configs
   systemd:
     daemon_reload: yes
+
+
+- name: Copy config file to /etc/elasticsearch
+  template:
+    src: elasticsearch.yml.j2
+    dest: /etc/elasticsearch/elasticsearch.yml
+    mode: 0660
+
+- name: Restart elasticsearch service
+  service: 
+    name: elasticsearch  
+    state: restarted
+    enabled: yes
