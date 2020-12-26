@@ -1,9 +1,13 @@
 ---
 
-- name: Gen key
-  include: genkey.yml
+# - name: Gen key
+#   include: genkey.yml
 
 #   delay: 5
 
 # - name: Push key
 #   include: pushkey.yml
+
+
+- name: Add key hosts to known_hosts
+  include: known_hosts.yml

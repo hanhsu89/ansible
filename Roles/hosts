@@ -4,6 +4,8 @@ win
 [win]
 192.168.206.241
 
+[test]
+10.10.35.81
 
 #=== MongoDB StandAlone & Replicaset
 [mongodb]
