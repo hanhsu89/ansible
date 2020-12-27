@@ -71,7 +71,6 @@
   systemd:
     daemon_reload: yes
 
-
 - name: Copy config file to /etc/elasticsearch
   template:
     src: elasticsearch.yml.j2

@@ -33,6 +33,8 @@
 
 #=== ELK
       - { role: elk, tags: elk }
+      - { role: kibana, tags: kibana }
+      - { role: logstash, tags: logstash }      
       - { role: elasticsearch, tags: elasticsearch }
 
 #=== HAProxy_Keepalived

@@ -1,10 +1,12 @@
 ---
 
-# - name: Install elasticsearch | Debian
-#   include: Debian.yml  
+- name: Install elasticsearch | Debian
+  include: Debian.yml  
+  when: ansible_os_family == 'Debian'
 
-# - name: Install elasticsearch | Redhat
-#   include: Redhat.yml  
+- name: Install elasticsearch | Redhat
+  include: RedHat.yml  
+  when: ansible_os_family == 'RedHat'
 
 - name: System Configuration
   include: config.yml

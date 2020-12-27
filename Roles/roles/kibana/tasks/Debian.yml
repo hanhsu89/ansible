@@ -1,0 +1,38 @@
+---
+
+- name: HTTPS APT transport for Elasticsearch repository
+  apt:
+    name:
+      - apt-transport-https
+    state: present
+    update_cache: yes
+    force_apt_get: yes
+
+- name: Get APT Repo Key
+  apt_key:
+    url: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+    state: present
+
+- name: Install APT Repo fot Elasticsearch
+  apt_repository:
+    repo: deb https://artifacts.elastic.co/packages/7.x/apt stable main
+    state: present
+    filename: elastic-7.x
+    update_cache: yes
+
+- name: Download Kibana v{{ kibana_version }}
+  get_url: 
+    url: https://artifacts.elastic.co/downloads/kibana/kibana-{{ kibana_version }}-amd64.deb
+    dest: "/tmp/kibana-{{ kibana_version }}.deb"
+
+- name: Install Kibana{{ kibana_version }}
+  apt: 
+    deb: /tmp/kibana-{{ kibana_version }}.deb
+    force_apt_get: yes    
+
+- name: Start kibana service
+  service:
+    name: kibana
+    state: started
+    daemon_reload: yes
+    enabled: yes

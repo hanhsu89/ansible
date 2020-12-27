@@ -1,0 +1,16 @@
+---
+
+- name: Copy kibana configuration
+  template:
+    src: kibana.yml.j2
+    dest: /etc/kibana/kibana.yml
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Restart kibana service
+  service:
+    name: kibana
+    state: restarted
+    daemon_reload: yes
+    enabled: yes

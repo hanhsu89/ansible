@@ -1,7 +1,0 @@
----
-# tasks file for ansible-role-elasticsearch
-
-- import_tasks: Debian.yml
-  become: yes
-  tags: es_opendistro
-  

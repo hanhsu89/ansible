@@ -1,9 +1,3 @@
 ---
 
 include: install.yml
-tags:
-  - filebeat_install
-
-include: uninstall.yml
-tags:
-  - filebeat_uninstall

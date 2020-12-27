@@ -1,6 +1,6 @@
 input {
   beats {
-    port => {{ logstash_listen_port_beats }}
+    port => {{ listen_port_beats }}
 {% if logstash_ssl_certificate_file and logstash_ssl_key_file %}
     ssl => true
     ssl_certificate => "{{ logstash_ssl_dir }}/{{ logstash_ssl_certificate_file | basename }}"

@@ -75,7 +75,10 @@ http.port: {{ http_port }}
 # Pass an initial list of hosts to perform discovery when this node is started:
 # The default list of hosts is ["127.0.0.1", "[::1]"]
 #
+
 discovery.seed_hosts: []
+discovery.type: single-node
+
 #
 # Bootstrap the cluster using an initial set of master-eligible nodes:
 #
@@ -95,4 +98,7 @@ discovery.seed_hosts: []
 #
 # Require explicit names when deleting indices:
 #
-#action.destructive_requires_name: true
+
+action.destructive_requires_name: true
+action.auto_create_index: true
+xpack.security.enabled: true

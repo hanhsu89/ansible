@@ -1,0 +1,42 @@
+---
+
+- name: Create Logstash configuration (Input/Output) files
+  template:
+    src: "{{ item }}.j2"
+    dest: "/etc/logstash/conf.d/{{ item }}"
+    owner: root
+    group: root
+    mode: 0644
+  with_items:
+    - input_beats.conf
+    - output_elasticsearch.conf
+  notify: restart logstash
+
+- name: Create Logstash filters
+  copy:
+    src: "{{ item }}"
+    dest: "/etc/logstash/conf.d/{{ item }}"
+    owner: root
+    group: root
+    mode: 0644
+  with_items:
+    - filter_syslog.conf
+    #- filter_nginx.conf
+  notify: restart logstash
+
+- name: Create Logstash configuration file for local syslog
+  template:
+    src: input_local_syslog.conf.j2
+    dest: /etc/logstash/conf.d/input_local_syslog.conf
+    owner: root
+    group: root
+    mode: 0644
+  when: monitor_local_syslog | bool
+  notify: restart logstash
+
+# - name: Ensure configuration for local syslog is absent if disabled
+#   file:
+#     path: /etc/logstash/conf.d/input_local_syslog.conf
+#     state: absent
+#   when: not monitor_local_syslog
+#   notify: restart logstash

@@ -1,42 +1,45 @@
 ---
 
-- name: Install Necessary Packages
+- name: HTTPS APT transport for Elasticsearch repository | Debian
   apt:
     name:
       - apt-transport-https
     state: present
     update_cache: yes
-
-- name: Get APT Repo Key
+    force_apt_get: yes
+    
+- name: Get APT Repo Key | Debian
   apt_key:
     url: https://artifacts.elastic.co/GPG-KEY-elasticsearch
     state: present
 
-- name: Install APT Repo fot Elasticsearch
+- name: Install APT Repo fot Elasticsearch | Debian
   apt_repository:
     repo: deb https://artifacts.elastic.co/packages/7.x/apt stable main
     state: present
-    filename: elastic-7.x.list
+    filename: elastic-7.x
     update_cache: yes
 
-- name: Install Java Lastest
+- name: Install Java | Debian
   apt:
     name:
       - default-jdk
       - default-jre
     state: present
     update_cache: yes
+    force_apt_get: yes    
 
-- name: Install Elasticsearch
+- name: Install Elasticsearch | Debian
   apt:
     name: elasticsearch
     state: present
     update_cache: yes
+    force_apt_get: yes 
 
-- name: Reload systemd to reread configs
+- name: Reload systemd to reread configs | Debian
   command: systemctl daemon-reload
 
-- name: Start elasticsearch service & Enable service
+- name: Start elasticsearch service & Enable service | Debian
   service: 
     name: elasticsearch  
     state: started
