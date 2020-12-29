@@ -33,8 +33,9 @@
 
 #=== ELK
       - { role: elk, tags: elk }
+      - { role: curator, tags: curator }       
       - { role: kibana, tags: kibana }
-      - { role: logstash, tags: logstash }      
+      - { role: logstash, tags: logstash }            
       - { role: elasticsearch, tags: elasticsearch }
 
 #=== HAProxy_Keepalived

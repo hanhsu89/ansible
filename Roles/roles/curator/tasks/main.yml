@@ -1,0 +1,21 @@
+---
+
+- name: Get APT Repo Key | Debian
+  apt_key:
+    url: https://packages.elastic.co/GPG-KEY-elasticsearch
+    state: present
+
+- name: Install APT Repo fot curator | Debian
+  apt_repository:
+    repo: deb [arch=amd64] https://packages.elastic.co/curator/5/debian stable main
+    state: present
+    filename: curator
+    update_cache: yes
+
+- name: Install curator | Debian
+  apt:
+    name:
+      - elasticsearch-curator
+    state: present
+    update_cache: yes
+    force_apt_get: yes

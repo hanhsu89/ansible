@@ -1,5 +1,5 @@
 [test]
-10.10.35.78
+192.168.206.2
 
 #=== MongoDB StandAlone & Replicaset
 [mongodb]

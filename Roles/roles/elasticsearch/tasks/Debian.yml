@@ -36,11 +36,14 @@
     update_cache: yes
     force_apt_get: yes 
 
-- name: Reload systemd to reread configs | Debian
-  command: systemctl daemon-reload
+# - name: Reload systemd to reread configs | Debian
+#   command: systemctl daemon-reload
 
-- name: Start elasticsearch service & Enable service | Debian
-  service: 
-    name: elasticsearch  
-    state: started
-    enabled: yes
+# - name: Start elasticsearch service & Enable service | Debian
+#   service: 
+#     name: elasticsearch  
+#     state: started
+#     enabled: yes
+
+# - name: Gen password for user elastic
+#   command: "/usr/share/elasticsearch/bin/elasticsearch-setup-passwords interactive auto"

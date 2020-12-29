@@ -40,7 +40,7 @@
 #=== Enable bootstrap.memory_lock in elasticsearch.yml & Configuring system settings
 - name: Add file serivice management for enable bootstrap.memory_lock
   blockinfile: 
-    path: /lib/systemd/system/elasticsearch.service
+    path: /usr/lib/systemd/system/elasticsearch.service
     insertafter: '^LimitNOFILE'
     content: |
       LimitMEMLOCK=infinity
