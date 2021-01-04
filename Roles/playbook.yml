@@ -55,7 +55,6 @@
       - { role: gitlab-runner, tags: gitlab-runner }
       - { role: gitlab-ce, tags: gitlab-ce }
 
-
 #=== Prometheus/Grafana with Exporters
       - { role: prometheus, tags: prometheus }
       - { role: grafana, tags: grafana }
@@ -70,4 +69,3 @@
 
       - { role: bind_dns, tags: bind_dns }
       - { role: snmp, tags: snmp }
-

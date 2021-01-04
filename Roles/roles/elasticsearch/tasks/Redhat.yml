@@ -1,25 +1,25 @@
 ---
 
-- name: Install Necessary Packages
+- name: Install Necessary Packages | RedHat
   apt:
     name:
       - apt-transport-https
     state: present
     update_cache: yes
 
-- name: Get APT Repo Key
+- name: Get APT Repo Key | RedHat
   apt_key:
     url: https://artifacts.elastic.co/GPG-KEY-elasticsearch
     state: present
 
-- name: Install APT Repo fot Elasticsearch
+- name: Install APT Repo fot Elasticsearch | RedHat
   apt_repository:
     repo: deb https://artifacts.elastic.co/packages/7.x/apt stable main
     state: present
     filename: elastic-7.x.list
     update_cache: yes
 
-- name: Install Java Lastest
+- name: Install Java Lastest | RedHat
   apt:
     name:
       - default-jdk
@@ -27,13 +27,13 @@
     state: present
     update_cache: yes
 
-- name: Install Elasticsearch
+- name: Install Elasticsearch | RedHat
   apt:
     name: elasticsearch
     state: present
     update_cache: yes
 
-- name: Reload systemd to reread configs
+- name: Reload systemd to reread configs | RedHat
   command: systemctl daemon-reload
 
 - name: Start elasticsearch service & Enable service

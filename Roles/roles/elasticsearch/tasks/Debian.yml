@@ -36,14 +36,17 @@
     update_cache: yes
     force_apt_get: yes 
 
-# - name: Reload systemd to reread configs | Debian
-#   command: systemctl daemon-reload
+- name: Reload systemd to reread configs | Debian
+  command: systemctl daemon-reload
 
-# - name: Start elasticsearch service & Enable service | Debian
-#   service: 
-#     name: elasticsearch  
-#     state: started
-#     enabled: yes
+- name: Copy config file to folder Elasticsearch's config
+  template:
+    src: elasticsearch.yml.j2
+    dest: "{{ folder_config }}/elasticsearch.yml"
+    mode: 0660
 
-# - name: Gen password for user elastic
-#   command: "/usr/share/elasticsearch/bin/elasticsearch-setup-passwords interactive auto"
+- name: Start elasticsearch service & Enable service | Debian
+  service: 
+    name: elasticsearch  
+    state: started
+    enabled: yes

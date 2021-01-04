@@ -77,7 +77,7 @@ http.port: {{ http_port }}
 #
 
 discovery.seed_hosts: []
-discovery.type: single-node
+discovery.type: {{ discovery_type }}
 
 #
 # Bootstrap the cluster using an initial set of master-eligible nodes:
@@ -101,4 +101,5 @@ discovery.type: single-node
 
 action.destructive_requires_name: true
 action.auto_create_index: true
+
 xpack.security.enabled: true

@@ -1,5 +1,9 @@
 ---
 
+#=== Gen Password
+- name: Gen password
+  shell: " {{ folder_home }}/elasticsearch-setup-passwords auto -b | grep PASSWORD > /etc/elasticsearch/password"
+
 #=== Disable swapping
 - name: Disable swapping
   include_role:
@@ -21,35 +25,35 @@
     reload: yes
 
 #=== Heap size settings (no more than 50% of physical RAM)
-- name: Edit /etc/elasticsearch/jvm.options JVM max for Xms
+- name: Set JVM max for Xms
   lineinfile:
     path: /etc/elasticsearch/jvm.options
     state: present
     regexp: '^-Xms'
     insertafter: '^-Xms'
-    line: '-Xms{{ (ansible_memtotal_mb * 0.00045)|int }}g'
+    line: '-Xms{{ (ansible_memtotal_mb * 0.0006)|int }}g'
 
-- name: Edit /etc/elasticsearch/jvm.options JVM max for Xmx
+- name: Set JVM max for Xmx
   lineinfile:
-    path: /etc/elasticsearch/jvm.options
+    path: "{{ folder_config}}/jvm.options"
     state: present
     regexp: '^-Xmx'
     insertafter: '^-Xmx'
-    line: '-Xmx{{ (ansible_memtotal_mb * 0.00045)|int }}g'
+    line: '-Xmx{{ (ansible_memtotal_mb * 0.0006)|int }}g'
 
 #=== Enable bootstrap.memory_lock in elasticsearch.yml & Configuring system settings
 - name: Add file serivice management for enable bootstrap.memory_lock
   blockinfile: 
-    path: /usr/lib/systemd/system/elasticsearch.service
+    path: "{{ folder_service }}/elasticsearch.service"
     insertafter: '^LimitNOFILE'
     content: |
       LimitMEMLOCK=infinity
 
 - name: Optimize sysconfig for elasticsearch
   blockinfile:
-    path: /etc/default/elasticsearch
+    path: "{{ folder_sysconfig }}"
     content: |
-      ES_JAVA_OPTS="-Xms{{ (ansible_memtotal_mb * 0.00045)|int }}g -Xmx{{ (ansible_memtotal_mb * 0.00045)|int }}g" 
+      ES_JAVA_OPTS="-Xms{{ (ansible_memtotal_mb * 0.0006)|int }}g -Xmx{{ (ansible_memtotal_mb * 0.0006)|int }}g" 
       MAX_LOCKED_MEMORY=unlimited
 
 - name: Optimize limits.conf when enable bootstrap.memory_lock
@@ -71,11 +75,11 @@
   systemd:
     daemon_reload: yes
 
-- name: Copy config file to /etc/elasticsearch
-  template:
-    src: elasticsearch.yml.j2
-    dest: /etc/elasticsearch/elasticsearch.yml
-    mode: 0660
+# - name: Copy config file to /etc/elasticsearch
+#   template:
+#     src: elasticsearch.yml.j2
+#     dest: /etc/elasticsearch/elasticsearch.yml
+#     mode: 0660
 
 - name: Restart elasticsearch service
   service: 

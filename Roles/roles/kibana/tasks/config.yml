@@ -1,5 +1,13 @@
 ---
 
+- name: Get elasticsearch_username
+  shell: cat /etc/elasticsearch/password | grep elastic | awk '{print $2}'
+  register: elasticsearch_username
+
+- name: Get elasticsearch_password
+  shell: cat /etc/elasticsearch/password | grep elastic | awk '{print $4}'
+  register: elasticsearch_password
+
 - name: Copy kibana configuration
   template:
     src: kibana.yml.j2

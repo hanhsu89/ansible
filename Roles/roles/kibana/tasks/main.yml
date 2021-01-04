@@ -1,12 +1,12 @@
 ---
 
-- name: Install kibana | Debian
-  include: Debian.yml  
-  when: ansible_os_family == 'Debian'
+# - name: Install kibana | Debian
+#   include: Debian.yml  
+#   when: ansible_os_family == 'Debian'
 
-- name: Install kibana | Redhat
-  include: RedHat.yml  
-  when: ansible_os_family == 'RedHat'
+# - name: Install kibana | Redhat
+#   include: RedHat.yml  
+#   when: ansible_os_family == 'RedHat'
 
 - name: System Configuration
   include: config.yml

@@ -7,8 +7,7 @@ docker_version: "19.03.13"
 
 
 #=== docker-compose
-#=== Check version:
-#=== https://github.com/docker/compose/releases/
+#=== Check version: https://github.com/docker/compose/releases/
 
 docker_compose_version: "1.27.4"
 docker_compose_path: /usr/local/bin/docker-compose

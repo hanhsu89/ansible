@@ -6,5 +6,10 @@ path_logs: /var/log/elasticsearch
 network_host: 0.0.0.0
 http_port: 9200
 
-folder_home: /usr/share/elasticsearch/bin/
-folder_config: /etc/elasticsearch/
+folder_home: /usr/share/elasticsearch/bin
+folder_config: /etc/elasticsearch
+folder_service: /usr/lib/systemd/system
+folder_sysconfig: /etc/default/elasticsearch
+
+#=== Cluster
+discovery_type: single-node

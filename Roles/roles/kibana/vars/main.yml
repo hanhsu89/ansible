@@ -2,9 +2,10 @@
 
 kibana_version: "7.10.1"
 
-kibana_server_port: 5601
-kibana_server_host: "0.0.0.0"
+server_port: 5601
+server_host: "0.0.0.0"
 
-kibana_elasticsearch_url: "http://localhost:9200"
-kibana_elasticsearch_username: "elastic"
-kibana_elasticsearch_password: "dF4pwhoz0b65RxF23hLA"
+elasticsearch_url: "http://localhost:9200"
+
+# elasticsearch_user: "{{ elasticsearch_username.stdout }}"
+# elasticsearch_pass: "{{ elasticsearch_password.stdout }}"
