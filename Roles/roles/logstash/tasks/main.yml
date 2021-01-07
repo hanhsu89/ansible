@@ -1,12 +1,12 @@
 ---
 
-# - name: Install Logstash | Debian
-#   include: Debian.yml  
-#   when: ansible_os_family == 'Debian'
+- name: Install Logstash | Debian
+  include: Debian.yml  
+  when: ansible_os_family == 'Debian'
 
-# - name: Install Logstash | Redhat
-#   include: RedHat.yml  
-#   when: ansible_os_family == 'RedHat'
+- name: Install Logstash | Redhat
+  include: RedHat.yml  
+  when: ansible_os_family == 'RedHat'
 
 - name: System Configuration
   include: config.yml
