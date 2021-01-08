@@ -18,6 +18,9 @@
 
       - { role: swap, tags: swap }   
 
+#=== NGINX
+      - { role: nginx, tags: nginx }    
+
 #=== Filewalls
       - { role: firewallcsf, tags: firewallcsf }      
       - { role: firewall, tags: firewall }

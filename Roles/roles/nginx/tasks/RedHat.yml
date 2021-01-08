@@ -1,0 +1,189 @@
+---
+
+- name: Disable selinux temporary
+  command: setenforce 0
+  ignore_errors: True
+
+- name: Disable selinux after reboot
+  selinux:
+    state: disabled
+
+- name: Install Epel Repo
+  yum:
+    name: epel-release
+    state: present
+
+- name: install required yum packages
+  yum:
+    name:
+      - wget
+      - gcc
+      - gcc-c++
+      - make
+      - perl
+      - perl-devel
+      - perl-ExtUtils-Embed
+      - GeoIP
+      - GeoIP-devel
+      - pcre
+      - pcre-devel
+      - zlib
+      - zlib-devel
+      - openssl
+      - openssl-devel
+      - git
+      - net-tools
+      - vim
+      - bind-utils
+    state: present
+
+- name: Check nginx old version if exist
+  command: "{{ nginx_binary_file }} -v"
+  register: result
+  ignore_errors: True
+
+- name: Download nginx source file
+  get_url:
+    url: "http://nginx.org/download/nginx-{{ nginx_version }}.tar.gz"
+    dest: "{{ nginx_src_dir }}/nginx-{{ nginx_version }}.tar.gz"
+    timeout: 120
+  when: (result is failed) or ('{{ nginx_version }}' not in result.stderr)
+
+- name: Decompress nginx source file
+  unarchive:
+    src: "{{ nginx_src_dir }}/nginx-{{ nginx_version }}.tar.gz"
+    dest: "{{ nginx_src_dir }}"
+    copy: "no"
+
+- name: Git clone nginx VTS module for monitoring
+  git:
+    repo: 'git://github.com/vozlt/nginx-module-vts.git'
+    dest: "{{nginx_vts_build_dir}}/nginx-module-vts/"
+    clone: yes
+
+- name: Build nginx from source
+  command: chdir={{ nginx_src_dir }}/nginx-{{ nginx_version }} {{ item }}
+  with_items:
+  - ./configure {{ nginx_vts_custom_modules }}
+  - make -j 4
+  - make install
+
+- name: Remove default config nginx
+  shell: "rm -rf {{ nginx_install_dir }}/conf/*.default"
+
+- name: Create systemd service for os_family RedHat
+  template:
+    src: nginx.service.j2
+    dest: /usr/lib/systemd/system/nginx.service
+    mode: 0755
+  when: ansible_os_family == "RedHat" and ansible_service_mgr == "systemd"
+
+- name: Create systemd service file for Debian
+  template:
+    src: nginx.service.j2
+    dest: /etc/systemd/system/nginx.service
+    mode: 0755
+  when: ansible_os_family == "Debian" and ansible_service_mgr == "systemd"
+
+- name: Reload systemd to reread configs
+  systemd:
+    daemon_reload: yes
+  when: ansible_service_mgr == "systemd"
+
+- name: Create init file for RedHat version < 7
+  template:
+    src: nginx.init.j2
+    dest: /etc/init.d/nginx
+    mode: 0755
+  when: ansible_os_family == "RedHat" and ansible_service_mgr != "systemd"
+
+- name: Create init file for Ubuntu version below 16
+  template:
+    src: nginx.init.debian.j2
+    dest: /etc/init.d/nginx
+    mode: 0755
+  when: ansible_os_family == "Debian" and ansible_service_mgr != "systemd"
+
+- name: Nginx | Create Group
+  group:
+    name: "{{ nginx_group }}"
+    state: present
+
+- name: Nginx | Create User
+  user:
+    name: "{{ nginx_user }}"
+    group: "{{ nginx_group }}"
+    shell: /sbin/nologin
+    state: present
+
+- name: Create conf.d directory for backend
+  file: path={{ item }} state=directory
+  with_items:
+    - "{{ nginx_config_dir }}"
+    - "{{ nginx_nossl_dir }}"
+    - "{{ nginx_params_dir }}"
+  when: roles == "backend"
+
+- name: File nginx.conf for backend
+  template:
+    src: nginx.conf.j2
+    dest: "{{ nginx_main_file }}"
+    owner: "root"
+    group: "root"
+    mode: 0644
+  when: roles == "backend"
+  notify: restart nginx
+
+- name: Create conf.d directory for loadbalancer
+  file: path={{ item }} state=directory
+  with_items:
+    - "{{ nginx_config_dir }}"
+    - "{{ nginx_certs_dir }}"
+    - "{{ nginx_nossl_dir }}"
+    - "{{ nginx_ssl_dir }}"
+    - "{{ nginx_params_dir }}"
+  when: roles == "loadbalancer"
+
+- name: File nginx_proxy for Loadbalancer
+  template:
+    src: nginx_proxy.j2
+    dest: "{{ nginx_params_dir }}/nginx_proxy"
+    owner: "root"
+    group:   "root"
+    mode: 0644
+  when: roles == "loadbalancer"
+
+- name: File nginx.conf for Loadbalancer
+  template:
+    src: nginx.conf.j2
+    dest: "{{ nginx_main_file }}"
+    owner: "root"
+    group:   "root"
+    mode: 0644
+  when: roles == "loadbalancer"
+  notify: restart nginx
+
+- name: Create nginx binany symlink
+  file:
+    src: "{{ nginx_binary_file }}"
+    dest: /usr/bin/nginx
+    state: link
+
+- name: Clone Certbot into configured directory.
+  git:
+    repo: "{{ certbot_repo }}"
+    dest: "{{ certbot_dir }}"
+    version: "{{ certbot_version }}"
+    update: "{{ certbot_keep_updated }}"
+    force: yes
+  when: roles == "loadbalancer"
+
+- name: Generate strong DHE parameter
+  command: openssl dhparam -dsaparam -out {{dhparam_path}} {{dhparam_size}} creates={{dhparam_path}}
+  when: roles == "loadbalancer"
+
+- name: Config logrotate nginx
+  template:
+    src: nginx_logrotate.j2
+    dest: /etc/logrotate.d/nginx
+    mode: 0644

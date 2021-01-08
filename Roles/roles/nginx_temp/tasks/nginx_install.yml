@@ -1,0 +1,24 @@
+---
+
+- name: Add epel-release repo
+  yum:
+    name: epel-release
+    state: present
+
+- name: Install latest nginx (Centos)
+  yum:
+    name: nginx
+    state: latest      
+  when: ansible_os_family == "RedHat"
+
+- name: Install latest nginx (Debian/Ubuntu)
+  apt:
+    name: nginx
+    state: latest      
+  when: ansible_os_family == "Debian"
+
+- name: Start nginx service
+  service:
+    name: nginx
+    state: started  
+    enabled: yes        

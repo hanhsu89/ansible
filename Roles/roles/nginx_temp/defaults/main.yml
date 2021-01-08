@@ -1,51 +1,26 @@
 ---
+# Default install 
 
 # nginx_install
-# Check version stable in: http://nginx.org/en/download.html
-nginx_version: "1.18.0"
-
+nginx_version: "1.16.1"
 nginx_group: "nginx"
 nginx_user: "nginx"
 
-nginx_install_dir: "/usr/local/nginx"
 nginx_src_dir: "/usr/local/src"
+nginx_install_dir: "/usr/local/nginx"
+
 nginx_main_file: "{{ nginx_install_dir }}/conf/nginx.conf"
+
 nginx_config_dir: "{{ nginx_install_dir }}/conf.d"
 nginx_binary_file: "{{ nginx_install_dir }}/sbin/nginx"
 nginx_log_dir: "/var/log/nginx"
 
-
-#===== Build with Modules ==========
-nginx_vts_build_dir: "/tmp/nginx"
-nginx_rtmp_build_dir: "/tmp/nginx"
+nginx_certs_dir: "{{ nginx_config_dir }}/certs"
+nginx_nossl_dir: "{{ nginx_config_dir }}/nossl"
+nginx_ssl_dir: "{{ nginx_config_dir }}/ssl"
+nginx_params_dir: "{{ nginx_config_dir }}/params"
 
 nginx_custom_modules: "--prefix=/usr/local/nginx \
-  --sbin-path=/usr/local/nginx/sbin/nginx \
-  --conf-path=/usr/local/nginx/conf/nginx.conf \
-  --pid-path=/var/run/nginx.pid \
-  --http-log-path=/var/log/nginx/access.log \
-  --error-log-path=/var/log/nginx/error.log \
-  --without-mail_pop3_module \
-  --without-mail_imap_module \
-  --without-mail_smtp_module \
-  --without-http_split_clients_module \
-  --without-http_uwsgi_module \
-  --without-http_scgi_module \
-  --with-http_realip_module \
-  --with-http_secure_link_module \
-  --with-http_geoip_module \
-  --with-http_gzip_static_module \
-  --with-debug \
-  --with-file-aio \
-  --with-threads \
-  --with-http_addition_module \
-  --with-ld-opt=-Wl,-E --with-http_ssl_module \
-  --with-http_stub_status_module \
-  --add-module=/tmp/nginx/nginx-module-vts \
-  --add-module=/tmp/nginx/nginx-module-rtmp"
-#===== Build with Modules ==========
-
-nginx_custom_modules_temp: "--prefix=/usr/local/nginx \
   --sbin-path=/usr/local/nginx/sbin/nginx \
   --conf-path=/usr/local/nginx/conf/nginx.conf \
   --http-log-path=/var/log/nginx/access.log \
@@ -67,11 +42,31 @@ nginx_custom_modules_temp: "--prefix=/usr/local/nginx \
   --with-ld-opt=-Wl,-E --with-http_ssl_module \
   --with-http_stub_status_module"
 
-
-nginx_certs_dir: "{{ nginx_config_dir }}/certs"
-nginx_nossl_dir: "{{ nginx_config_dir }}/nossl"
-nginx_ssl_dir: "{{ nginx_config_dir }}/ssl"
-nginx_params_dir: "{{ nginx_config_dir }}/params"
+#===== Build with VTS module ==========
+nginx_vts_build_dir: "/tmp/nginx"
+nginx_vts_custom_modules: "--prefix=/usr/local/nginx \
+  --sbin-path=/usr/local/nginx/sbin/nginx \
+  --conf-path=/usr/local/nginx/conf/nginx.conf \
+  --http-log-path=/var/log/nginx/access.log \
+  --error-log-path=/var/log/nginx/error.log \
+  --without-mail_pop3_module \
+  --without-mail_imap_module \
+  --without-mail_smtp_module \
+  --without-http_split_clients_module \
+  --without-http_uwsgi_module \
+  --without-http_scgi_module \
+  --with-http_realip_module \
+  --with-http_secure_link_module \
+  --with-http_geoip_module \
+  --with-http_gzip_static_module \
+  --with-debug \
+  --with-file-aio \
+  --with-threads \
+  --with-http_addition_module \
+  --with-ld-opt=-Wl,-E --with-http_ssl_module \
+  --with-http_stub_status_module \
+  --add-module=/tmp/nginx/nginx-module-vts"
+#===== Build with VTS module ==========
 
 # DH Param variables
 dhparam_size: "2048"

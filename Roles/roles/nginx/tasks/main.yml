@@ -1,33 +1,7 @@
 ---
-#====== Install from source
-- import_tasks: nginx_src_debian.yml
+
+- import_tasks: Debian.yml
   when: ansible_os_family == "Debian"
-  tags: 
-    - nginx_src
-    - nginx_vts
 
-- import_tasks: nginx_src_redhat.yml
+- import_tasks: RedHat.yml
   when: ansible_os_family == "RedHat"
-  tags: 
-    - nginx_src
-    - nginx_vts
-
-- import_tasks: nginx_src_install.yml
-  tags: nginx_src
-
-- include_tasks: nginx_vhost.yml
-  with_items:
-    - "{{ nginx_vhost_domain }}"
-  tags: nginx_vhost
-
-#====== Install by YUM/APT
-- import_tasks: nginx_src_debian.yml
-  when: ansible_os_family == "Debian"
-  tags: nginx
-
-- import_tasks: nginx_src_redhat.yml
-  when: ansible_os_family == "RedHat"
-  tags: nginx
-
-- import_tasks: nginx_install.yml
-  tags: nginx
