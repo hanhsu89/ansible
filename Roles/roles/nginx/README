@@ -1,2 +1,13 @@
 NGINX
 =========
+
+// Modules
+https://github.com/nginx-modules
+
+
+https://github.com/openresty/lua-nginx-module/tags
+
+
+// lua
+https://github.com/openresty/lua-nginx-module/releases/tag/v0.10.19
+https://github.com/openresty/lua-nginx-module/archive/v0.10.19.tar.gz

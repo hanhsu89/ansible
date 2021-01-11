@@ -2,8 +2,9 @@ Consul
 =========
 
 
-Check cluster members
-    consul members
+// List service
+https://www.consul.io/api-docs/agent/service
+
 
 
 Access Consul UI

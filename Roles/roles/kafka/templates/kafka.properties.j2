@@ -29,7 +29,8 @@ broker.id.generation.enable=false
 #     listeners = listener_name://host_name:port
 #   EXAMPLE:
 #     listeners = PLAINTEXT://your.host.name:9092
-listeners=INSIDE://:9094,OUTSIDE://:{{ kafka_port }}
+
+listeners=INSIDE://0.0.0.0:9094,OUTSIDE://0.0.0.0:{{ kafka_port }}
 max.connections={{ kafka_max_connection }}
 connections.max.idle.ms=600000
 transaction.max.timeout.ms=600000
@@ -38,7 +39,8 @@ request.timeout.ms=600000
 # Hostname and port the broker will advertise to producers and consumers. If not set,
 # it uses the value for "listeners" if configured.  Otherwise, it will use the value
 # returned from java.net.InetAddress.getCanonicalHostName().
-advertised.listeners=INSIDE://:9094,OUTSIDE://kafka{{ groups['kafka'].index(inventory_hostname) + 1 }}.{{ domain }}:{{ kafka_port }}
+
+advertised.listeners=INSIDE://0.0.0.0:9094,OUTSIDE://kafka{{ groups['kafka'].index(inventory_hostname) + 1 }}.{{ domain }}:{{ kafka_port }}
 auto.create.topics.enable=true
 background.threads=10
 compression.type=producer

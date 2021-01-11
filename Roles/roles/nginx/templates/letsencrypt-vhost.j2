@@ -1,9 +1,0 @@
-server {
-    listen      80;
-    server_name  {{ item.name }};
-   #Letsencrypt
-     location /.well-known/ {
-              log_not_found off;
-              root /usr/local/nginx/html;
-        }
-}

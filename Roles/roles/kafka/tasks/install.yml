@@ -95,7 +95,6 @@
     name: zookeeper
     state: started
     daemon_reload: true
-    enabled: yes    
   register: zookeeper
 
 - name: Be sure kafka is running and enabled
@@ -103,5 +102,4 @@
     name: kafka
     state: restarted
     daemon_reload: yes
-    enabled: yes
   when: zookeeper is succeeded

@@ -6,7 +6,7 @@ Wants=network-online.target
 
 [Service]
 Type=forking
-PIDFile=/var/run/nginx.pid
+#PIDFile=/var/run/nginx.pid
 ExecStartPre={{ nginx_binary_file }} -t -c {{ nginx_main_file }}
 
 ExecStart={{ nginx_binary_file }} -c {{ nginx_main_file }}

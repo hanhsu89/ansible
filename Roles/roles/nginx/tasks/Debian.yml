@@ -21,12 +21,29 @@
   apt:
     name:
       - build-essential
+      - apt-transport-https
       - libpcre3
+      - libgd3
       - libpcre3-dev
       - zlib1g-dev
       - libssl-dev
+      - libperl-dev
       - libgeoip-dev
+      - geoip-bin
+      - libgd-dev
+      - libgeoip1
+      - libxml2
+      - libxml2-dev
+      - libxslt1.1
+      - libxslt1-dev
       - git
+      - python-minimal
+      - perl
+      - tar
+      - checkinstall
+      - libtemplate-perl
+      - python-apt
+      - dirmngr
     state: present
     update_cache: yes
     force_apt_get: yes
@@ -49,16 +66,46 @@
     dest: "{{ nginx_src_dir }}"
     copy: "no"
 
+- name: Git clone Nginx Development Kit (NDK)
+  git:
+    repo: "{{ nginx_devel_kit_url }}"
+    dest: "{{modules_build_dir}}/nginx_devel_kit/"
+    clone: yes
+
 - name: Git clone nginx VTS module for monitoring
   git:
-    repo: 'git://github.com/vozlt/nginx-module-vts.git'
-    dest: "{{nginx_vts_build_dir}}/nginx-module-vts/"
+    repo: "{{ nginx_vts_module_url }}"
+    dest: "{{modules_build_dir}}/nginx_module_vts/"
     clone: yes
 
 - name: Git clone nginx RTMP module for Streaming
   git:
-    repo: 'git://github.com/arut/nginx-rtmp-module.git'
-    dest: "{{nginx_rtmp_build_dir}}/nginx-module-rtmp/"
+    repo: "{{ nginx_rtmp_module_url }}"
+    dest: "{{modules_build_dir}}/nginx_module_rtmp/"
+    clone: yes
+
+- name: Git clone nginx_http_geoip2_module
+  git:
+    repo: "{{ nginx_http_geoip2_module_url }}"
+    dest: "{{modules_build_dir}}/nginx_http_geoip2_module/"
+    clone: yes
+
+- name: Git clone nginx_headers_more_module
+  git:
+    repo: "{{ nginx_headers_more_module_url }}"
+    dest: "{{modules_build_dir}}/nginx_headers_more_module/"
+    clone: yes
+    
+- name: Git clone nginx_vod_module
+  git:
+    repo: "{{ nginx_vod_module_url }}"
+    dest: "{{modules_build_dir}}/nginx_vod_module/"
+    clone: yes
+
+- name: Git clone nginx_cache_purge_module
+  git:
+    repo: "{{ nginx_cache_purge_module_url }}"
+    dest: "{{modules_build_dir}}/nginx_cache_purge_module/"
     clone: yes
 
 - name: Build NGINX from source with Modules
@@ -90,92 +137,22 @@
 - name: Reload systemd to reread configs
   systemd:
     daemon_reload: yes
-  when: ansible_service_mgr == "systemd"
 
-- name: Create init file for RedHat version < 7
+- name: Start NGINX Service
+  service:
+    name: nginx
+    state: restarted
+    enabled: yes
+    daemon_reload: true
+
+- name: Config logrotate nginx
   template:
-    src: nginx.init.j2
-    dest: /etc/init.d/nginx
-    mode: 0755
-  when: ansible_os_family == "RedHat" and ansible_service_mgr != "systemd"
+    src: nginx_logrotate.j2
+    dest: /etc/logrotate.d/nginx
+    mode: 0644
 
-- name: Create init file for Ubuntu version below 16
-  template:
-    src: nginx.init.debian.j2
-    dest: /etc/init.d/nginx
-    mode: 0755
-  when: ansible_os_family == "Debian" and ansible_service_mgr != "systemd"
-
-
-
-# - name: Create nginx binany symlink
-#   file:
-#     src: "{{ nginx_binary_file }}"
-#     dest: /usr/bin/nginx
-#     state: link
-
-# - name: Clone Certbot into configured directory.
-#   git:
-#     repo: "{{ certbot_repo }}"
-#     dest: "{{ certbot_dir }}"
-#     version: "{{ certbot_version }}"
-#     update: "{{ certbot_keep_updated }}"
-#     force: yes
-#   when: roles == "loadbalancer"
-
-# - name: Generate strong DHE parameter
-#   command: openssl dhparam -dsaparam -out {{dhparam_path}} {{dhparam_size}} creates={{dhparam_path}}
-#   when: roles == "loadbalancer"
-
-# - name: Config logrotate nginx
-#   template:
-#     src: nginx_logrotate.j2
-#     dest: /etc/logrotate.d/nginx
-#     mode: 0644
-
-# - name: Create conf.d directory for backend
-#   file: path={{ item }} state=directory
-#   with_items:
-#     - "{{ nginx_config_dir }}"
-#     - "{{ nginx_nossl_dir }}"
-#     - "{{ nginx_params_dir }}"
-#   when: roles == "backend"
-
-# - name: File nginx.conf for backend
-#   template:
-#     src: nginx.conf.j2
-#     dest: "{{ nginx_main_file }}"
-#     owner: "root"
-#     group: "root"
-#     mode: 0644
-#   when: roles == "backend"
-#   notify: restart nginx
-
-# - name: Create conf.d directory for loadbalancer
-#   file: path={{ item }} state=directory
-#   with_items:
-#     - "{{ nginx_config_dir }}"
-#     - "{{ nginx_certs_dir }}"
-#     - "{{ nginx_nossl_dir }}"
-#     - "{{ nginx_ssl_dir }}"
-#     - "{{ nginx_params_dir }}"
-#   when: roles == "loadbalancer"
-
-# - name: File nginx_proxy for Loadbalancer
-#   template:
-#     src: nginx_proxy.j2
-#     dest: "{{ nginx_params_dir }}/nginx_proxy"
-#     owner: "root"
-#     group:   "root"
-#     mode: 0644
-#   when: roles == "loadbalancer"
-
-# - name: File nginx.conf for Loadbalancer
-#   template:
-#     src: nginx.conf.j2
-#     dest: "{{ nginx_main_file }}"
-#     owner: "root"
-#     group:   "root"
-#     mode: 0644
-#   when: roles == "loadbalancer"
-#   notify: restart nginx
+- name: Create nginx binany symlink
+  file:
+    src: "{{ nginx_binary_file }}"
+    dest: /usr/bin/nginx
+    state: link
