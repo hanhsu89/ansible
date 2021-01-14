@@ -40,6 +40,11 @@ nginx_custom_modules: "--prefix=/usr/local/nginx \
   --without-http_uwsgi_module \
   --without-http_scgi_module \
   --with-http_dav_module \
+    --with-http_ssl_module  \
+    --with-http_flv_module \
+    --with-http_gunzip_module \
+    --with-http_random_index_module \
+    --with-http_auth_request_module \
   --with-http_mp4_module \
   --with-http_v2_module \  
   --with-http_realip_module \
@@ -60,10 +65,9 @@ nginx_custom_modules: "--prefix=/usr/local/nginx \
   --add-module=/tmp/nginx/nginx_devel_kit \
   --add-module=/tmp/nginx/nginx_headers_more_module \
   --add-module=/tmp/nginx/nginx_vod_module \
+  --add-module=/tmp/nginx/nginx_http_geoip2_module \
   --add-module=/tmp/nginx/nginx_cache_purge_module"
 #===== Build with Modules ==========
-
-  # --add-module=/tmp/nginx/nginx_http_geoip2_module \ // Error
 
 
 nginx_certs_dir: "{{ nginx_config_dir }}/certs"

@@ -44,6 +44,29 @@
       - libtemplate-perl
       - python-apt
       - dirmngr
+      - make
+      - cmake
+      - libjemalloc-dev 
+      - uuid-dev 
+      - libatomic1 
+      - libatomic-ops-dev 
+      - expat 
+      - unzip 
+      - autoconf 
+      - automake 
+      - libtool 
+      - libgd-dev 
+      - libmaxminddb-dev 
+      - libxslt1-dev 
+      - g++ 
+      - curl
+      - flex
+      - bison
+      - doxygen
+      - libyajl-dev
+      - dh-autoreconf
+      - libcurl4-gnutls-dev
+      - libpcre++-dev
     state: present
     update_cache: yes
     force_apt_get: yes
@@ -107,6 +130,10 @@
     repo: "{{ nginx_cache_purge_module_url }}"
     dest: "{{modules_build_dir}}/nginx_cache_purge_module/"
     clone: yes
+
+#===== ModSecurity module
+
+#=====
 
 - name: Build NGINX from source with Modules
   command: chdir={{ nginx_src_dir }}/nginx-{{ nginx_version }} {{ item }}

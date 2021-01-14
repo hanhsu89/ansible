@@ -18,6 +18,9 @@
 
       - { role: swap, tags: swap }   
 
+#=== shudown / restart
+      - { role: shutdown, tags: shutdown } 
+
 #=== NGINX
       - { role: nginx, tags: nginx }    
 
