@@ -8,18 +8,19 @@
       - { role: docker, tags: docker }
       - { role: ntp, tags: ntp }
       - { role: packages, tags: packages }
-      - { role: users, tags: users }
       - { role: common, tags: common }
       - { role: common_k8s, tags: commonk8s }
       - { role: terraform, tags: terraform }
       - { role: vault, tags: vault }
       - { role: selinux, tags: selinux }
       - { role: letsencrypt, tags: ssl }
-
       - { role: swap, tags: swap }   
 
+#=== SSH
+      - { role: users, tags: users }
+    
 #=== shudown / restart
-      # - { role: shutdown, tags: shutdown } 
+      - { role: shutdown, tags: shutdown } 
 
 #=== NGINX
       - { role: nginx, tags: nginx }    

@@ -40,11 +40,11 @@ nginx_custom_modules: "--prefix=/usr/local/nginx \
   --without-http_uwsgi_module \
   --without-http_scgi_module \
   --with-http_dav_module \
-    --with-http_ssl_module  \
-    --with-http_flv_module \
-    --with-http_gunzip_module \
-    --with-http_random_index_module \
-    --with-http_auth_request_module \
+  --with-http_ssl_module  \
+  --with-http_flv_module \
+  --with-http_gunzip_module \
+  --with-http_random_index_module \
+  --with-http_auth_request_module \
   --with-http_mp4_module \
   --with-http_v2_module \  
   --with-http_realip_module \

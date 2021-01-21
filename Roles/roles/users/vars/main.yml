@@ -32,17 +32,22 @@ users:
   #   authorized_keys:
   #     - hanhnn4.pub
 
-  - name: tungdd5
-    servers:
-      #[scp]
-      #- 10.10.35.60   # K8s_Master_1
+  # - name: tungdd5
+  #   servers:
+  #     #[scp]
+  #     #- 10.10.35.60   # K8s_Master_1
 
-      #[dev_kafka]
-      - 10.0.1.24
+  #     #[dev_kafka]
+  #     - 10.0.1.24
+
+  - name: test
+    servers:
+      #[scp_test]
+      - 10.10.35.46
 
     groups: sudo
     authorized_keys:
-      - tungdd5.pub
+      - test.pub
 
 
       
