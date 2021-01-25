@@ -42,8 +42,8 @@ users:
 
   - name: hanhnn4
     servers:
-      # [fwork_cache]
-      - 10.10.35.55
+      # [scp_test]
+      - 10.10.35.47
 
     groups: sudo
     authorized_keys:
