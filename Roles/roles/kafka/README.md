@@ -7,14 +7,49 @@ Port    Description
 2888    Quorum port for clustering
 3888    Leader election port for clustering
 
+
+https://www.confluent.io/blog/kafka-client-cannot-connect-to-broker-on-aws-on-docker-etc/
+
+
+https://hackernoon.com/best-practices-for-apache-kafka-configuration-maf31rn
+https://docs.cloudera.com/documentation/kafka/latest/topics/kafka_performance.html
+https://docs.microsoft.com/en-us/azure/event-hubs/apache-kafka-configurations
+https://medium.com/streamthoughts/apache-kafka-rebalance-protocol-or-the-magic-behind-your-streams-applications-e94baf68e4f2
+https://medium.com/bakdata/solving-my-weird-kafka-rebalancing-problems-c05e99535435
+https://stackoverflow.com/questions/47734281/kafka-consumers-rebalance-unexpectedly
+
 https://www.cloudkarafka.com/blog/2016-11-30-part1-kafka-for-beginners-what-is-apache-kafka.html#:~:text=Broker%3A%20Handles%20all%20requests%20from,Sends%20records%20to%20a%20broker.
+
+===> Import/Export
+https://www.scaleway.com/en/docs/configure-apache-kafka/
+
 
 ===> Command
   https://docs.cloudera.com/documentation/kafka/latest/topics/kafka_command_line.html
 
+https://www.baeldung.com/ops/listing-kafka-consumers
+
+===> Show Group
+./kafka-consumer-groups.sh  --list --bootstrap-server localhost:9092
+group-mailer-service
+notify-app
+KMOffsetCache-68ee1af4194f
+group-web-push
+group-in-app-notification
+jaeger-ingester
+
+./kafka-consumer-groups.sh --describe --group group-mailer-service --bootstrap-server localhost:9092 
+
+GROUP                TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID                                         HOST            CLIENT-ID
+group-mailer-service send-email      0          10845           10845           0               mailer-backend-1e5b6740-3416-4576-a7cf-38c6b1abfc3a /10.10.35.21    mailer-backend
+group-mailer-service send-email      2          4480            4480            0               mailer-backend-c8cf2467-75a3-40c8-bc5c-f6980e8f7b6c /10.10.35.18    mailer-backend
+group-mailer-service send-email      1          4613            4613            0               mailer-backend-fe5075be-02ee-4303-882d-92e76c1df39f /10.10.35.17    mailer-backend
+
+
 => Show topic
   /usr/share/kafka/bin#
   ./kafka-topics.sh --zookeeper localhost:2181 --list
+  ./kafka-topics.sh --zookeeper localhost:2181 --describe send-email
   ./zookeeper-shell.sh localhost:2181 ls /brokers/topics
 
   ./zookeeper-shell.sh localhost:2181 ls /brokers/ids # Gives the list of active brokers
@@ -129,9 +164,22 @@ https://github.com/dixudx/ansible-zookeeper/blob/master/templates/myid.j2
 https://github.com/dixudx/ansible-zookeeper/blob/master/templates/zoo.cfg.j2
 
 
-#======== Note =======
-#/opt/zookeeper-3.4.9/conf/zoo.cfg
 
-#server.1=master:2888:3888
-#server.2=slave1:2888:3888
-#server.3=slave2:2888:3888
+// Config
+https://jaceklaskowski.gitbooks.io/apache-kafka/content/kafka-properties.html
+https://docs.confluent.io/platform/current/kafka/deployment.html
+
+These conditions needed to be keep in mind to change session.timeout.ms:
+
+group.max.session.timeout.ms in the server.properties > session.timeout.ms in the consumer.properties.
+group.min.session.timeout.ms in the server.properties < session.timeout.ms in the consumer.properties.
+request.timeout.ms > session.timeout.ms + fetch.wait.max.ms
+(session.timeout.ms)/3 > heartbeat.interval.ms
+session.timeout.ms > Worst case processing time of Consumer Records per consumer poll(ms).
+
+
+Another reason of this problem is not sending heartbeat in session.timeout.ms. So maybe you can consider to increase this.
+
+heartbeat.interval.ms: The expected time between heartbeats to the consumer coordinator when using Kafka's group management facilities. Heartbeats are used to ensure that the consumer's session stays active and to facilitate rebalancing when new consumers join or leave the group. The value must be set lower than session.timeout.ms, but typically should be set no higher than 1/3 of that value. It can be adjusted even lower to control the expected time for normal rebalances.
+
+session.timeout.ms: The timeout used to detect client failures when using Kafka's group management facility. The client sends periodic heartbeats to indicate its liveness to the broker. If no heartbeats are received by the broker before the expiration of this session timeout, then the broker will remove this client from the group and initiate a rebalance.
