@@ -147,6 +147,11 @@
 10.10.35.26	# Kafka 2
 10.10.35.27	# Kafka 3
 
+[fwork_redis]
+10.10.35.22	# Redis 1
+10.10.35.23	# Redis 2
+10.10.35.24	# Redis 3
+
 [fwork_dev]
 10.0.1.11	# k8s-master-01
 10.0.1.21	# k8s-worker-01
