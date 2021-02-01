@@ -2,14 +2,16 @@
 
 #----------- ADD USER ------------
 users:
-  - name: hanhnn4
+  - name: tungdd5
     servers:
-      # [scp_test]
-      - 10.10.35.47
+      # [fwork_redis]
+      - 10.10.35.22	# Redis 1
+      - 10.10.35.23	# Redis 2
+      - 10.10.35.24	# Redis 3
 
     groups: sudo
     authorized_keys:
-      - hanhnn4.pub
+      - tungdd5.pub
 
 
       

@@ -44,5 +44,9 @@ autopurge.purgeInterval=24
 
 # Zookeeper cluster bootstrap
 {% for host in groups['kafka'] %}
+{%- if host == inventory_hostname %}
+server.{{ loop.index }}=0.0.0.0:2888:3888
+{% else -%}
 server.{{ loop.index }}={{ host }}:2888:3888
+{% endif -%}
 {% endfor -%}

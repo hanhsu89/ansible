@@ -30,8 +30,8 @@ broker.id.generation.enable=false
 #   EXAMPLE:
 #     listeners = PLAINTEXT://your.host.name:9092
 
-listeners=INSIDE://0.0.0.0:9094,OUTSIDE://0.0.0.0:{{ kafka_port }}
-max.connections={{ kafka_max_connection }}
+listeners=INSIDE://:9094,OUTSIDE://:9092
+max.connections=100000
 connections.max.idle.ms=600000
 transaction.max.timeout.ms=600000
 request.timeout.ms=600000
@@ -40,11 +40,12 @@ request.timeout.ms=600000
 # it uses the value for "listeners" if configured.  Otherwise, it will use the value
 # returned from java.net.InetAddress.getCanonicalHostName().
 
-advertised.listeners=INSIDE://0.0.0.0:9094,OUTSIDE://kafka{{ groups['kafka'].index(inventory_hostname) + 1 }}.{{ domain }}:{{ kafka_port }}
+advertised.listeners=INSIDE://:9094,OUTSIDE://kafka{{ groups['kafka'].index(inventory_hostname) + 1 }}.{{ domain }}:9092
 auto.create.topics.enable=true
 background.threads=10
 compression.type=producer
 message.max.bytes=1000012
+delete.topic.enable=true
 
 # Maps listener names to security protocols, the default is for them to be the same. See the config documentation for more details
 listener.security.protocol.map=INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
@@ -83,9 +84,11 @@ num.recovery.threads.per.data.dir=1
 ############################# Internal Topic Settings  #############################
 # The replication factor for the group metadata internal topics "__consumer_offsets" and "__transaction_state"
 # For anything other than development testing, a value greater than 1 is recommended to ensure availability such as 3.
+
 offsets.topic.replication.factor={{ groups['kafka'] | length }}
 transaction.state.log.replication.factor=1
 transaction.state.log.min.isr=1
+default.replication.factor=3
 
 ############################# Log Flush Policy #############################
 
@@ -147,5 +150,3 @@ zookeeper.connection.timeout.ms=5000
 # We override this to 0 here as it makes for a better out-of-the-box experience for development and testing.
 # However, in production environments the default value of 3 seconds is more suitable as this will help to avoid unnecessary, and potentially expensive, rebalances during application startup.
 group.initial.rebalance.delay.ms=3
-
-delete.topic.enable=true
